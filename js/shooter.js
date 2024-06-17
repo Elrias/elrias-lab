@@ -119,6 +119,9 @@ function init() {
     enemies = []
     particles = []
     score = 0
+    frames = 0
+    frameRate = 999
+    velocityModifier = 1
     scoreElement.innerHTML = score
     endScore.innerHTML = score
 }
@@ -127,6 +130,7 @@ function getFrameRate() {
     setTimeout(() => {
         frameRate = frames - 1
         velocityModifier = 144 / frameRate
+        console.log(velocityModifier)
     }, 1000)
 }
 
@@ -275,7 +279,6 @@ function animate() {
     frames++
     difficultyScaling()
     spawnEnemies()
-    console.log(velocityModifier)
 }
 
 // Récupération des clics et leur position sur l'écran pour créer et orienter les projectiles
