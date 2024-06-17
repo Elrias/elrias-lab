@@ -11,7 +11,9 @@ const menuContainer = document.querySelector('#menuContainer')
 const endScore = document.querySelector('#endScore')
 
 let frames = 0
-let spawnRate = 240
+let frameRate = 999
+let velocityModifier = 1
+let spawnRate
 
 // Definition des classes
 class Player {
@@ -110,7 +112,6 @@ let player = new Player(x, y, 10, 'white')
 let projectiles = []
 let enemies = []
 let particles = []
-//let bonuses = []
 
 function init() {
     player = new Player(x, y, 10, 'white')
@@ -120,6 +121,13 @@ function init() {
     score = 0
     scoreElement.innerHTML = score
     endScore.innerHTML = score
+}
+
+function getFrameRate() {
+    setTimeout(() => {
+        frameRate = frames - 1
+        velocityModifier = 144 / frameRate
+    }, 1000)
 }
 
 // Fonction gérant l'apparition des ennemis sur les bords du canvas
@@ -143,8 +151,8 @@ function spawnEnemies() {
         // Orientation des ennemis vers le centre de l'écran
         const angle = Math.atan2(canvas.height / 2 - y, canvas.width / 2 - x)
         const velocity = {
-            x: Math.cos(angle),
-            y: Math.sin(angle)
+            x: Math.cos(angle) * velocityModifier,
+            y: Math.sin(angle) * velocityModifier
         }
         // Ajout de l'ennemi dans l'array
            enemies.push(new Enemy(x, y, radius, color, velocity))
@@ -154,19 +162,19 @@ function spawnEnemies() {
 // Fonction gérant l'augmentation de la difficulté en fonction du score
 function difficultyScaling() {
     if(score < 500) {
-        spawnRate = 240
+        spawnRate = frameRate * 2
     }
     else if (score < 2000 && score >= 500) {
-        spawnRate = 180
+        spawnRate = Math.round(frameRate * 1.5)
     }
     else if (score < 5000 && score >= 2000) {
-        spawnRate = 120
+        spawnRate = frameRate
     }
     else if (score < 10000 && score >= 5000) {
-        spawnRate = 60
+        spawnRate = Math.round(frameRate / 2)
     }
     else {
-        spawnRate = 30
+        spawnRate = Math.round(frameRate / 4)
     }
 }
 
@@ -267,14 +275,15 @@ function animate() {
     frames++
     difficultyScaling()
     spawnEnemies()
+    console.log(velocityModifier)
 }
 
 // Récupération des clics et leur position sur l'écran pour créer et orienter les projectiles
 addEventListener('click', (event) => {
     const angle = Math.atan2(event.clientY - canvas.height / 2, event.clientX - canvas.width / 2)
     const velocity = {
-        x: Math.cos(angle) *4,
-        y: Math.sin(angle) *4
+        x: (Math.cos(angle) *4) * velocityModifier,
+        y: (Math.sin(angle) *4) * velocityModifier
     }
 
     projectiles.push(new Projectile(canvas.width / 2, canvas.height / 2, 5, 'white', velocity))
@@ -284,5 +293,6 @@ startBtn.addEventListener('click', () => {
     // Départ du jeu
     init()
     animate()
+    getFrameRate()
     menuContainer.style.display = 'none'
 })
