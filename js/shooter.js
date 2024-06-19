@@ -1,15 +1,37 @@
 // Définition du canvas et contexte
 const canvas = document.querySelector('canvas')
 const c = canvas.getContext('2d')
-
 canvas.width = innerWidth
 canvas.height = innerHeight
 
+// Elements HTML
 const scoreElement = document.querySelector('#scoreElement')
+
 const startBtn = document.querySelector('#startBtn')
+const leaderboardBtn = document.querySelector('#leaderboardBtn')
+const returnBtn = document.querySelector('#returnBtn')
+
 const menuContainer = document.querySelector('#menuContainer')
 const endScore = document.querySelector('#endScore')
+const leaderboardContainer = document.querySelector('#leaderboardContainer')
+const leaderboardList = document.querySelector('#leaderboardList')
 
+// Elements leaderboard
+const scorers = [
+    { name: 'Alice', score: 300 },
+    { name: 'Bob', score: 450 },
+    { name: 'Charlie', score: 200 },
+    { name: 'Dave', score: 350 },
+    { name: 'Eve', score: 400 }
+]
+
+const medals = [
+    './assets/shooter/gold_medal.png',
+    './assets/shooter/silver_medal.png',
+    './assets/shooter/bronze_medal.png'
+]
+
+// Elements gameplay
 let frames = 0
 let frameRate = 999
 let velocityModifier = 1
@@ -130,7 +152,6 @@ function getFrameRate() {
     setTimeout(() => {
         frameRate = frames - 1
         velocityModifier = 144 / frameRate
-        console.log(velocityModifier)
     }, 1000)
 }
 
@@ -234,6 +255,7 @@ function animate() {
             cancelAnimationFrame(animationId)
             endScore.innerHTML = score
             menuContainer.style.display = 'flex'
+            refreshLeaderboard()
         }
         // Calcul de la distance entre les ennemis et les projectiles
         projectiles.forEach((projectile, indexP) => {
@@ -281,6 +303,26 @@ function animate() {
     spawnEnemies()
 }
 
+// Fonction gérant l'actualisation du leaderboard
+function refreshLeaderboard() {
+    let exist = false;
+
+    const newScorer = { name: document.getElementById('usernameInput').value, score: score }
+
+    scorers.forEach((scorer, index) => {
+        if(scorer.name === newScorer.name) {
+            exist = true;
+            if(scorer.score < newScorer.score) {
+                scorers.splice(index, 1)
+                scorers.push(newScorer)
+            }
+        }
+    })
+    if(!exist) {
+        scorers.push(newScorer)
+    }
+}
+
 // Récupération des clics et leur position sur l'écran pour créer et orienter les projectiles
 addEventListener('click', (event) => {
     const angle = Math.atan2(event.clientY - canvas.height / 2, event.clientX - canvas.width / 2)
@@ -293,9 +335,51 @@ addEventListener('click', (event) => {
 })
 
 startBtn.addEventListener('click', () => {
-    // Départ du jeu
+    // Start game
     init()
     animate()
     getFrameRate()
     menuContainer.style.display = 'none'
+})
+
+leaderboardBtn.addEventListener('click', () => {
+    // Load leaderboard
+    scorers.sort((a, b) => b.score - a.score)
+    leaderboardList.innerHTML = '';
+
+    const headerItem = document.createElement('li');
+    headerItem.classList.add('header');
+    headerItem.innerHTML = `
+        <span>Rank</span>
+        <span>Username</span>
+        <span>Score</span>
+    `;
+    leaderboardList.appendChild(headerItem);
+
+    scorers.forEach((scorer, index) => {
+        const listItem = document.createElement('li')
+        
+        let rank =''
+        if (index < 3) {
+            rank = `<img src="${medals[index]}" alt="Medal" class="medal">`
+        }
+        else {
+            rank = index + 1
+        }
+        listItem.innerHTML = `
+        <span>${rank}</span>
+        <span>${scorer.name}</span>
+        <span>${scorer.score}</span>
+        `
+        leaderboardList.appendChild(listItem)
+    })
+
+    leaderboardContainer.style.display = 'flex'
+    menuContainer.style.display = 'none'
+})
+
+returnBtn.addEventListener('click', () => {
+    // Close leaderboard
+    menuContainer.style.display = 'flex'
+    leaderboardContainer.style.display = 'none'
 })
