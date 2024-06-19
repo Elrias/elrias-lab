@@ -17,13 +17,14 @@ const leaderboardContainer = document.querySelector('#leaderboardContainer')
 const leaderboardList = document.querySelector('#leaderboardList')
 
 // Elements leaderboard
-const scorers = [
-    { name: 'Alice', score: 300 },
-    { name: 'Bob', score: 450 },
-    { name: 'Charlie', score: 200 },
-    { name: 'Dave', score: 350 },
-    { name: 'Eve', score: 400 }
-]
+let scorers
+fetchScores().then(scores => {
+    scorers = scores.map(score => ({
+        name: score.name,
+        score: score.score
+    }))
+    console.log(scorers);
+})
 
 const medals = [
     './assets/shooter/gold_medal.png',
@@ -303,23 +304,44 @@ function animate() {
     spawnEnemies()
 }
 
+function escapeHTML(str) {
+    return str.replace(/&/g, '&amp;')
+              .replace(/</g, '&lt;')
+              .replace(/>/g, '&gt;')
+              .replace(/"/g, '&quot;')
+              .replace(/'/g, '&#039;')
+}
+
+function getUsername() {
+    let userInput = document.getElementById('usernameInput').value
+
+    if(userInput.trim() === '') {
+        userInput = 'Anonymous' + Math.round(Math.random() * 99)
+    }
+    const safeInput = escapeHTML(userInput)
+    return safeInput
+}
+
 // Fonction gérant l'actualisation du leaderboard
 function refreshLeaderboard() {
-    let exist = false;
-
-    const newScorer = { name: document.getElementById('usernameInput').value, score: score }
+    let exist = false
+    const newScorer = { name: getUsername(), score: score }
 
     scorers.forEach((scorer, index) => {
         if(scorer.name === newScorer.name) {
-            exist = true;
+            exist = true
             if(scorer.score < newScorer.score) {
                 scorers.splice(index, 1)
                 scorers.push(newScorer)
+                console.log(newScorer.name + " : " + newScorer.score)
+                submitScore(newScorer.name, newScorer.score)
             }
         }
     })
     if(!exist) {
         scorers.push(newScorer)
+        console.log(newScorer.name + " : " + newScorer.score)
+        submitScore(newScorer.name, newScorer.score)
     }
 }
 
@@ -345,34 +367,42 @@ startBtn.addEventListener('click', () => {
 leaderboardBtn.addEventListener('click', () => {
     // Load leaderboard
     scorers.sort((a, b) => b.score - a.score)
-    leaderboardList.innerHTML = '';
+    leaderboardList.innerHTML = ''
 
-    const headerItem = document.createElement('li');
-    headerItem.classList.add('header');
+    const headerItem = document.createElement('li')
+    headerItem.classList.add('header')
     headerItem.innerHTML = `
         <span>Rank</span>
         <span>Username</span>
         <span>Score</span>
-    `;
-    leaderboardList.appendChild(headerItem);
+    `
+    leaderboardList.appendChild(headerItem)
+    
+    let entries
+    if(scorers.length<10) {
+        entries = scorers.length
+    }
+    else {
+        entries = 10
+    }
 
-    scorers.forEach((scorer, index) => {
+    for(let i = 0; i < entries; i++) {
         const listItem = document.createElement('li')
         
         let rank =''
-        if (index < 3) {
-            rank = `<img src="${medals[index]}" alt="Medal" class="medal">`
+        if (i < 3) {
+            rank = `<img src="${medals[i]}" alt="Medal" class="medal">`
         }
         else {
-            rank = index + 1
+            rank = i+1 + '.'
         }
         listItem.innerHTML = `
         <span>${rank}</span>
-        <span>${scorer.name}</span>
-        <span>${scorer.score}</span>
+        <span>${scorers[i].name}</span>
+        <span>${scorers[i].score}</span>
         `
         leaderboardList.appendChild(listItem)
-    })
+    }
 
     leaderboardContainer.style.display = 'flex'
     menuContainer.style.display = 'none'
@@ -383,3 +413,46 @@ returnBtn.addEventListener('click', () => {
     menuContainer.style.display = 'flex'
     leaderboardContainer.style.display = 'none'
 })
+
+async function submitScore(playerName, playerScore) {
+    const scoreData = {
+        name: playerName,
+        score: playerScore
+    }
+
+    try {
+        const response = await fetch('http://localhost:3000/api/scores', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(scoreData)
+        })
+
+        const result = await response.json();
+        console.log(result.message)
+    } catch (error) {
+        console.error('Error submitting score: ',error)
+    }
+}
+
+async function fetchScores() {
+    try {
+        const response = await fetch('http://localhost:3000/api/scores', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if(!response.ok) {
+            throw new Error('Network response was not ok')
+        }
+
+        const scores = await response.json()
+        console.log(scores)
+        return scores;
+    } catch (error) {
+        console.error('Error fetching scores', error)
+    }
+}
