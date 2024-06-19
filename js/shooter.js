@@ -16,16 +16,6 @@ const endScore = document.querySelector('#endScore')
 const leaderboardContainer = document.querySelector('#leaderboardContainer')
 const leaderboardList = document.querySelector('#leaderboardList')
 
-// Elements leaderboard
-let scorers
-fetchScores().then(scores => {
-    scorers = scores.map(score => ({
-        name: score.name,
-        score: score.score
-    }))
-    console.log(scorers);
-})
-
 const medals = [
     './assets/shooter/gold_medal.png',
     './assets/shooter/silver_medal.png',
@@ -254,9 +244,9 @@ function animate() {
         const dist = Math.hypot(player.x - enemy.x, player.y - enemy.y)
         if(dist - player.radius - enemy.radius < 1) {
             cancelAnimationFrame(animationId)
+            updateScore()
             endScore.innerHTML = score
             menuContainer.style.display = 'flex'
-            refreshLeaderboard()
         }
         // Calcul de la distance entre les ennemis et les projectiles
         projectiles.forEach((projectile, indexP) => {
@@ -323,24 +313,24 @@ function getUsername() {
 }
 
 // Fonction gérant l'actualisation du leaderboard
-function refreshLeaderboard() {
+async function updateScore() {
     let exist = false
     const newScorer = { name: getUsername(), score: score }
-
+    const scorers = await fetchScores()
     scorers.forEach((scorer, index) => {
         if(scorer.name === newScorer.name) {
             exist = true
             if(scorer.score < newScorer.score) {
-                scorers.splice(index, 1)
-                scorers.push(newScorer)
                 console.log(newScorer.name + " : " + newScorer.score)
-                submitScore(newScorer.name, newScorer.score)
+                const newScore = {
+                    name: newScorer.name,
+                    score: newScorer.score
+                }
+                editScore(index, newScore)
             }
         }
     })
     if(!exist) {
-        scorers.push(newScorer)
-        console.log(newScorer.name + " : " + newScorer.score)
         submitScore(newScorer.name, newScorer.score)
     }
 }
@@ -366,44 +356,7 @@ startBtn.addEventListener('click', () => {
 
 leaderboardBtn.addEventListener('click', () => {
     // Load leaderboard
-    scorers.sort((a, b) => b.score - a.score)
-    leaderboardList.innerHTML = ''
-
-    const headerItem = document.createElement('li')
-    headerItem.classList.add('header')
-    headerItem.innerHTML = `
-        <span>Rank</span>
-        <span>Username</span>
-        <span>Score</span>
-    `
-    leaderboardList.appendChild(headerItem)
-    
-    let entries
-    if(scorers.length<10) {
-        entries = scorers.length
-    }
-    else {
-        entries = 10
-    }
-
-    for(let i = 0; i < entries; i++) {
-        const listItem = document.createElement('li')
-        
-        let rank =''
-        if (i < 3) {
-            rank = `<img src="${medals[i]}" alt="Medal" class="medal">`
-        }
-        else {
-            rank = i+1 + '.'
-        }
-        listItem.innerHTML = `
-        <span>${rank}</span>
-        <span>${scorers[i].name}</span>
-        <span>${scorers[i].score}</span>
-        `
-        leaderboardList.appendChild(listItem)
-    }
-
+    displayScores()
     leaderboardContainer.style.display = 'flex'
     menuContainer.style.display = 'none'
 })
@@ -450,9 +403,80 @@ async function fetchScores() {
         }
 
         const scores = await response.json()
-        console.log(scores)
         return scores;
     } catch (error) {
         console.error('Error fetching scores', error)
+    }
+}
+
+async function editScore(scoreIndex, playerScore) {
+    const url = `http://localhost:3000/api/scores/${scoreIndex}`
+    const options = {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(playerScore)
+    }
+
+    try {
+        const response = await fetch(url, options)
+        if (!response.ok) {
+            const errorMessage = await response.text()
+            throw new Error(`Erreur HTTP ${response.status}: ${errorMessage}`)
+        }
+
+        const data = await response.json()
+        console.log('Score successfully updated', data)
+        return data
+    } catch (error) {
+        console.error('Error updating score:', error.message)
+        throw error
+    }
+}
+
+async function displayScores() {
+    const scorers = await fetchScores()
+    renderScores(scorers)
+
+}
+
+function renderScores(scores) {
+    scores.sort((a, b) => b.score - a.score)
+    leaderboardList.innerHTML = ''
+
+    const headerItem = document.createElement('li')
+    headerItem.classList.add('header')
+    headerItem.innerHTML = `
+        <span>Rank</span>
+        <span>Username</span>
+        <span>Score</span>
+    `
+    leaderboardList.appendChild(headerItem)
+    
+    let entries
+    if(scores.length<10) {
+        entries = scores.length
+    }
+    else {
+        entries = 10
+    }
+
+    for(let i = 0; i < entries; i++) {
+        const listItem = document.createElement('li')
+        
+        let rank =''
+        if (i < 3) {
+            rank = `<img src="${medals[i]}" alt="Medal" class="medal">`
+        }
+        else {
+            rank = i+1 + '.'
+        }
+        listItem.innerHTML = `
+        <span>${rank}</span>
+        <span>${scores[i].name}</span>
+        <span>${scores[i].score}</span>
+        `
+        leaderboardList.appendChild(listItem)
     }
 }
