@@ -374,7 +374,7 @@ async function submitScore(playerName, playerScore) {
     }
 
     try {
-        const response = await fetch('http://localhost:3000/api/scores', {
+        const response = await fetch('https://oil-curvy-gooseberry.glitch.me/api/scores', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -391,7 +391,7 @@ async function submitScore(playerName, playerScore) {
 
 async function fetchScores() {
     try {
-        const response = await fetch('http://localhost:3000/api/scores', {
+        const response = await fetch('https://oil-curvy-gooseberry.glitch.me/api/scores', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -410,7 +410,7 @@ async function fetchScores() {
 }
 
 async function editScore(scoreIndex, playerScore) {
-    const url = `http://localhost:3000/api/scores/${scoreIndex}`
+    const url = `https://oil-curvy-gooseberry.glitch.me/api/scores${scoreIndex}`
     const options = {
         method: 'PUT',
         headers: {
