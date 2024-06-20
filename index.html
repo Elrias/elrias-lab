@@ -6,8 +6,6 @@
     <title>Elrias Lab</title>
     <link rel="stylesheet" href="./style/index.css">
 </head>
-<body>
-
     <header>
         <div class="logo">
             <p><span>Elrias</span>Lab</p>
@@ -15,10 +13,9 @@
         <ul class="menu">
             <li><a href="#home">Home</a></li>
             <li><a href="#projects">Projects</a></li>
-            <li><a href="#about">About me</a></li>
-            <li><a href="#contact">Contact me</a></li>
+            <li><a href="#about_me">About me</a></li>
         </ul>
-       <!--<div class="toggle_menu"></div>--> 
+       <div class="toggle_menu"></div>
     </header>
 
     <section id="home">
@@ -29,11 +26,82 @@
             Improved version of : <a href="https://www.youtube.com/@ChrisCourses" target="_blank" rel="noopener noreferrer">@ChrisCourses</a> "HTML5 Canvas and JS game"
             featuring scaling difficulty and leaderboards.
             </p>
+            <div id="techs">
+                <strong>Javascript</strong>
+                <strong>NodeJS</strong>
+                <strong>RESTfulAPI</strong>
+                <strong>HTML</strong>
+                <strong>CSS</strong>
+            </div>
             <button><a href="./shooter.html">Try it out!</a></button>
         </div>
         <div class="right">
             <img src="./assets/index/shooter.JPG">
         </div>
     </section>
+
+    <section id="projects">
+        <h4 class="mini_title">Projects</h4>
+        <h2 class="title">My other projects</h2>
+        <div class="projectList">
+            <div class="project">
+                <p>Coming soon</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about_me">
+        <h4 class="mini_title">About me</h4>
+        <h2 class="title">Who am I ?</h2>
+        <div class="about">
+            <div class="left">
+                <img src="assets/index/me.webp">
+            </div>
+            <div class="right">
+                <h3>Junior Web Developper</h3>
+                <p>My name is Alexandre HAMON, I am 26 and currently searching for a job as a junior web developper.</p><br>
+                <p>I have always been passionate about IT. From a young age I was spending all my free time on my dad's computer, playing a flight simulator or drawing stuff in microsoft paint.</p><br>
+                <p>After highschool I spend 5 years in IN'TECH Sud school learning about software engineering after which I spent another 2 years developping small video games to learn about game design and video game editing softwares.</p><br>
+                <p>I am satisfied of the current state of my personnal projects and would like to hone my skills in a more professional environment from now on. This website is a way for me to display my projects as well as show what I can do to potential employers.</p>
+                <button><a href="https://2024cvah.tiiny.site/" target="_blank" rel="noopener noreferrer">Curriculum Vitae</a></button>
+            </div>
+        </div>
+   </section>
+
+    <!-- footer -->
+    <footer>
+        <div class="services_list">
+            <div class="service">
+              <img src="assets/index/link-7-xxl.png" alt="">
+              <h2>Links</h2>
+              <p><a href="https://www.linkedin.com/in/alexandre-hamon-se/" target="_blank" rel="noopener noreferrer">Linkedin</a> - 
+                <a href="https://www.youtube.com/@alexandrehamon3640/videos" target="_blank" rel="noopener noreferrer">Youtube</a></p>
+            </div>
+            <div class="service">
+                <img src="assets/index/email.png" alt="">
+                <h2>Email</h2>
+                <p>ahamon47@gmail.com</p>
+            </div>
+            <div class="service">
+                <img src="assets/index/call.png" alt="">
+                <h2>Phone</h2>
+                <p>(+33) 06.23.96.56.13</p>
+            </div>
+              
+            <hr>
+        </div>
+            <p class="footer_text">Website made by <span>Alexandre HAMON</span></p>
+    </footer>
+
+    <script>
+        var small_menu = document.querySelector('.toggle_menu')
+        var menu = document.querySelector('.menu')
+
+        small_menu.onclick = function(){
+            small_menu.classList.toggle('active');
+            menu.classList.toggle('responsive');
+        }
+    </script>
+
 </body>
 </html>
