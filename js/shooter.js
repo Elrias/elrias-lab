@@ -410,7 +410,7 @@ async function fetchScores() {
 }
 
 async function editScore(scoreIndex, playerScore) {
-    const url = `https://oil-curvy-gooseberry.glitch.me/api/scores${scoreIndex}`
+    const url = `https://oil-curvy-gooseberry.glitch.me/api/scores/${scoreIndex}`
     const options = {
         method: 'PUT',
         headers: {
