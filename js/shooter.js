@@ -368,16 +368,28 @@ returnBtn.addEventListener('click', () => {
 })
 
 async function submitScore(playerName, playerScore) {
+    const token = localStorage.getItem('token')
+    
+    if(!token) {
+        console.error('No token found, please obtain the token first.')
+        return;
+    }
+
     const scoreData = {
         name: playerName,
         score: playerScore
     }
 
     try {
+        //Prod
         const response = await fetch('https://oil-curvy-gooseberry.glitch.me/api/scores', {
+        
+        //Local testing
+        //const response = await fetch('http://localhost:3000/api/scores', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(scoreData)
         })
@@ -391,7 +403,12 @@ async function submitScore(playerName, playerScore) {
 
 async function fetchScores() {
     try {
+        
+        //Prod
         const response = await fetch('https://oil-curvy-gooseberry.glitch.me/api/scores', {
+
+        //Local testing
+        //const response = await fetch('http://localhost:3000/api/scores', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -410,11 +427,23 @@ async function fetchScores() {
 }
 
 async function editScore(scoreIndex, playerScore) {
+    const token = localStorage.getItem('token')
+    
+    if(!token) {
+        console.error('No token found, please obtain the token first.')
+        return;
+    }
+    
+    //Prod
     const url = `https://oil-curvy-gooseberry.glitch.me/api/scores/${scoreIndex}`
+    
+    //Local testing
+    //const url = `http://localhost:3000/api/scores/${scoreIndex}`
     const options = {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(playerScore)
     }
@@ -480,3 +509,22 @@ function renderScores(scores) {
         leaderboardList.appendChild(listItem)
     }
 }
+
+async function getToken() {
+    try {
+        const response = await fetch('http://localhost:3000/api/token');
+        const data = await response.json();
+        if (response.ok) {
+            localStorage.setItem('token', data.token);
+            console.log('Token obtained successfully');
+        } else {
+            console.error('Failed to obtain token', data);
+        }
+    } catch (error) {
+        console.error('Error obtaining token:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    getToken();
+});
