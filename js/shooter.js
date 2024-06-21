@@ -312,8 +312,9 @@ function getUsername() {
     return safeInput
 }
 
-// Fonction gérant l'actualisation du leaderboard
+// Fonction gérant l'inscription du score en base de données
 async function updateScore() {
+    getToken();
     let exist = false
     const newScorer = { name: getUsername(), score: score }
     const scorers = await fetchScores()
@@ -527,7 +528,3 @@ async function getToken() {
         console.error('Error obtaining token:', error);
     }
 }
-
-document.addEventListener('DOMContentLoaded', (event) => {
-    getToken();
-});
