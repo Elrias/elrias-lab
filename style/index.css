@@ -124,7 +124,7 @@ header {
     background-color: #27ae60;
 }
 #home .left button:hover a{
-   letter-spacing: 1px;
+   letter-spacing: 2px;
 }
 
 #home .right {
@@ -168,6 +168,40 @@ strong{
     background-color: rgba(0,0,0,0.05);
     padding: 50px 10px;
 }
+#projects button {
+    margin-top: 20px;
+    width: fit-content;
+    padding: 5px 10px;
+    background-color: #000;
+    border: 0;
+    transition: 0.5s;
+    position: relative;
+    cursor: pointer;
+}
+#projects button  a {
+   text-decoration: 0;
+   color: #fff;
+   font-weight: bold;
+   text-transform: uppercase;
+   transition: 0.5s;
+}
+#projects button::before {
+   position: absolute;
+   left: 5px;
+   top: 5px;
+   content: "";
+   height: 100%;
+   width: 100%;
+   z-index: -1;
+   background-color: #27ae60;
+}
+#projects button:hover a{
+  letter-spacing: 2px;
+}
+#projects p {
+    text-align: center;
+    font-size: 18px;
+}
 .mini_title {
     margin-top: 25px;
     font-size: 16px;
@@ -202,7 +236,7 @@ strong{
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 
 }
-.projectList .project  img {
+.projectList .project img {
     width: 130px;
     height: 120px;
     margin-bottom: 15px;
