@@ -512,7 +512,10 @@ function renderScores(scores) {
 
 async function getToken() {
     try {
-        const response = await fetch('http://localhost:3000/api/token');
+        //Prod
+        const response = await fetch('https://oil-curvy-gooseberry.glitch.me/api/token');
+        //Local
+        //const response = await fetch('http://localhost:3000/api/token');
         const data = await response.json();
         if (response.ok) {
             localStorage.setItem('token', data.token);
