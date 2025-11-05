@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="./style/shooter.css">
+<div id="scoreDiv">
+    <span>Score : </span><span id="scoreElement">0</span>
+</div>
+
+<div id="menuContainer">
+    <div id="menuDiv">
+        <div id="endScoreDiv">
+            <h1 id="endScore">0</h1>
+            <p>Points</p>
+        </div>
+        <div id="usernameDiv">
+            <label for="usernameInput">Username :</label>
+            <input type="text" id="usernameInput">
+        </div>
+        <div>
+            <button id="startBtn">Start Game</button>
+            <button id="leaderboardBtn">Leaderboard</button>
+        </div>
+        <div id="backDiv">
+            <a href="index.html">&lt ElriasLab Home</a>
+        </div>
+    </div>
+</div>
+
+<div id="leaderboardContainer">
+    <div id="leaderboard">
+        <h2>Top 10 Players</h2>
+        <ul id="leaderboardList">
+            <!-- Les joueurs et leurs scores seront ajoutés ici par JavaScript -->
+        </ul>
+        <button id="returnBtn">Return</button>
+    </div>
+</div>
+
+<canvas></canvas>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.5.1/gsap.min.js" 
+integrity="sha512-IQLehpLoVS4fNzl7IfH8Iowfm5+RiMGtHykgZJl9AWMgqx0AmJ6cRWcB+GaGVtIsnC4voMfm8f2vwtY+6oPjpQ==" 
+crossorigin="anonymous" 
+referrerpolicy="no-referrer"></script>
+<script src="./js/shooter.js"></script>
