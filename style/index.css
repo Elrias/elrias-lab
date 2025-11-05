@@ -236,6 +236,12 @@ strong{
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 
 }
+.project img {
+    width: 100%;
+    height: auto; /* garde les proportions */
+    object-fit: cover; /* optionnel : recadrage si nécessaire */
+    border-radius: 6px; /* optionnel : même border-radius que la div */
+}
 .projectList .project img {
     width: 130px;
     height: 120px;
