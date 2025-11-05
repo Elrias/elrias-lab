@@ -12,5 +12,21 @@
     </head>
     <body style="background-color: black">
         <script type="text/javascript" src="js/main.js"></script>
+        <button id="fullscreenBtn" style="position:absolute;top:10px;right:10px;z-index:999;">Fullscreen</button>
+        <script>
+            function goFullscreen() {
+                const elem = document.documentElement; // plein écran sur toute la page
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) { // Safari
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { // IE11
+                    elem.msRequestFullscreen();
+                }
+            }
+
+            // Ajouter le listener au bouton
+            document.getElementById("fullscreenBtn").addEventListener("click", goFullscreen);
+        </script>
     </body>
 </html>
