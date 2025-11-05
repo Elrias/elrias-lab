@@ -12,43 +12,5 @@
     </head>
     <body style="background-color: black">
         <script type="text/javascript" src="js/main.js"></script>
-    <button id="fullscreenBtn" style="position:absolute;top:10px;right:10px;z-index:999; border:none; background:none; padding:0; cursor:pointer;">
-        <img src="./img/system/fullscreen_icon.png" alt="Fullscreen" style="width:40px; height:40px;">
-    </button>
-    <script>
-    const btn = document.getElementById("fullscreenBtn");
-
-    function goFullscreen() {
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) { // Safari
-            elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { // IE11
-            elem.msRequestFullscreen();
-        }
-    }
-
-    // Quand le bouton est cliqué, on demande le fullscreen
-    btn.addEventListener("click", goFullscreen);
-
-    // Événement déclenché à chaque changement de fullscreen
-    document.addEventListener("fullscreenchange", () => {
-        if (document.fullscreenElement) {
-            btn.style.display = "none"; // cacher le bouton
-        } else {
-            btn.style.display = "block"; // remettre le bouton si on sort du fullscreen
-        }
-    });
-
-    // Pour Safari
-    document.addEventListener("webkitfullscreenchange", () => {
-        if (document.webkitFullscreenElement) {
-            btn.style.display = "none";
-        } else {
-            btn.style.display = "block";
-        }
-    });
-    </script>
     </body>
 </html>
