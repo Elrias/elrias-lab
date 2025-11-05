@@ -4,8 +4,8 @@
     "chromium-args": "--force-color-profile=srgb --disable-devtools",
     "window": {
         "title": "Abyss Awakening",
-        "width": 1280,
-        "height": 720,
+        "width": 2400,
+        "height": 1080,
         "position": "center",
         "icon": "icon/icon.png"
     }
