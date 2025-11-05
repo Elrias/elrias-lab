@@ -222,25 +222,20 @@ strong{
     justify-content: space-around;
 }
 .projectList .project {
-    height: 280px;
     width: 30%;
     background-color: #fff;
-    padding: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    padding: 0; /* supprimer le padding qui réduit la largeur disponible */
     border-radius: 6px;
     margin-bottom: 35px;
     transition: 0.5s;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-
 }
+
 .project img {
-    width: 100%;
-    height: auto; /* garde les proportions */
-    object-fit: cover; /* optionnel : recadrage si nécessaire */
-    border-radius: 6px; /* optionnel : même border-radius que la div */
+    width: 100%;   /* prend toute la largeur de la div */
+    height: auto;  /* garde les proportions */
+    display: block; /* supprime l’espace en dessous de l’image */
+    border-radius: 6px; /* si tu veux arrondir les coins */
 }
 .projectList .project img {
     width: 130px;
