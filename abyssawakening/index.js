@@ -66,11 +66,10 @@ function onFsChange() {
   // cacher fullscreen button et menu toggle en fullscreen
   if (fsBtn) fsBtn.style.display = inFs ? "none" : "block";
   if (toggle) toggle.style.display = inFs ? "none" : "inline-flex";
-
+  if (discordBtn) discordBtn.style.display = inFs ? "none" : "flex";
   // si on entre en fullscreen, fermer le menu
   if (inFs) closeMenu();
 }
-if (discordBtn) discordBtn.style.display = inFs ? "none" : "flex";
 document.addEventListener("fullscreenchange", onFsChange);
 document.addEventListener("webkitfullscreenchange", onFsChange);
 window.addEventListener("resize", onFsChange);
