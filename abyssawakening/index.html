@@ -1,54 +1,109 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="user-scalable=no">
-        <link rel="icon" href="icon/icon.png" type="image/png">
-        <link rel="apple-touch-icon" href="icon/icon.png">
-        <link rel="stylesheet" type="text/css" href="css/game.css">
-        <title>Abyss Awakening</title>
-    </head>
-    <body style="background-color: black">
-        <script type="text/javascript" src="js/main.js"></script>
-    <button id="fullscreenBtn" style="position:absolute;top:10px;right:10px;z-index:999; border:none; background:none; padding:0; cursor:pointer;">
-        <img src="./img/system/fullscreen_icon.png" alt="Fullscreen" style="width:40px; height:40px;">
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0" />
+
+    <link rel="icon" href="icon/icon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="icon/icon.png" />
+
+    <!-- CSS du jeu (RPG Maker) -->
+    <link rel="stylesheet" href="css/game.css" />
+    <!-- CSS du site -->
+    <link rel="stylesheet" href="index.css" />
+
+    <title>Abyss Awakening</title>
+  </head>
+
+  <body>
+
+    <div id="backdrop" aria-hidden="true"></div>
+
+    <!-- Menu -->
+    <aside id="sidePanel" aria-label="Menu">
+      <div class="panelInner">
+        <!-- LOGIN -->
+        <div class="panelBlock">
+          <div class="panelHeader">
+            <h2>Login</h2>
+          </div>
+
+          <form id="authForm" class="authForm" autocomplete="on">
+            <div class="fieldRow">
+              <label for="authEmail">Email</label>
+              <input
+                id="authEmail"
+                type="email"
+                name="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+              />
+            </div>
+
+            <div class="fieldRow">
+              <label for="authPassword">Password</label>
+              <input
+                id="authPassword"
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                autocomplete="current-password"
+              />
+            </div>
+
+            <div class="authActions">
+              <button type="button" class="primaryBtn" id="authSubmitBtn">Login</button>
+            </div>
+
+            <div class="authLinks">
+              <button type="button" class="linkBtn" id="authToggleModeBtn">Register</button>
+              <button type="button" class="linkBtn" id="authForgotBtn">Forgot password?</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- GUIDES -->
+        <div class="panelBlock panelBlockGrow">
+          <h2>Guides</h2>
+            <div class="guidesList">
+                <a href="wiki/battle.html" target="_blank" class="guideLink">Battle</a>
+                <a href="wiki/characters.html" target="_blank" class="guideLink">Characters</a>
+                <a href="wiki/enemies.html" target="_blank" class="guideLink">Enemies</a>
+                <a href="wiki/stats.html" target="_blank" class="guideLink">Stats</a>
+                <a href="wiki/account.html" target="_blank" class="guideLink">Account</a>
+            </div>
+        </div>
+        <!-- VERSION -->
+        <div class="panelBlock panelFooter">
+          <h2>Abyss Awakening</h2>
+          <p class="muted">Demo v0.3.0</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Bouton Menu (toggle Menu/Close) -->
+    <button
+      id="menuToggle"
+      class="ui-btn"
+      type="button"
+      aria-expanded="false"
+      aria-controls="sidePanel"
+    >
+      <span id="menuIcon">☰</span>
+      <span id="menuLabel">Menu</span>
     </button>
-    <script>
-    const btn = document.getElementById("fullscreenBtn");
 
-    function goFullscreen() {
-        const elem = document.documentElement;
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.webkitRequestFullscreen) { // Safari
-            elem.webkitRequestFullscreen();
-        } else if (elem.msRequestFullscreen) { // IE11
-            elem.msRequestFullscreen();
-        }
-    }
+    <!-- Bouton Fullscreen -->
+    <button id="fullscreenBtn" type="button" aria-label="Plein écran">
+      <img src="./img/system/fullscreen_icon.png" alt="Fullscreen" />
+    </button>
 
-    // Quand le bouton est cliqué, on demande le fullscreen
-    btn.addEventListener("click", goFullscreen);
-
-    // Événement déclenché à chaque changement de fullscreen
-    document.addEventListener("fullscreenchange", () => {
-        if (document.fullscreenElement) {
-            btn.style.display = "none"; // cacher le bouton
-        } else {
-            btn.style.display = "block"; // remettre le bouton si on sort du fullscreen
-        }
-    });
-
-    // Pour Safari
-    document.addEventListener("webkitfullscreenchange", () => {
-        if (document.webkitFullscreenElement) {
-            btn.style.display = "none";
-        } else {
-            btn.style.display = "block";
-        }
-    });
-    </script>
-    </body>
+    <!-- Le jeu -->
+    <script src="js/main.js"></script>
+    <!-- JS du site -->
+    <script src="index.js"></script>
+  </body>
 </html>

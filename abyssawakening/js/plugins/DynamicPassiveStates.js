@@ -24,9 +24,8 @@
   //==============================
   // CONFIGURATION
   //==============================
-  // NOTE: Tu peux ajouter "MODE: 'add' | 'mult'" sur chaque entrée pour forcer le mode.
-  console.log("[DynamicPassiveStates] Initialisation…");
-
+  // NOTE: Ajouter "MODE: 'add' | 'mult'" sur chaque entrée pour forcer le mode.
+  
   const PASSIVE_BUFFS_CONFIG = [
     // --- Iron Heart ---
     { STATE_ID: 63, BONUS_PER_TURN: 0.05, MAX_BONUS: 1.00, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
