@@ -300,3 +300,40 @@ body.overlay-menu #sidePanel {
   width: 86vw;
   max-width: 360px;
 }
+
+/* ---- Discord Floating Button ---- */
+#discordBtn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  background: rgba(88, 101, 242, 0.15);
+  border: 1px solid rgba(88, 101, 242, 0.35);
+
+  color: #cfd3ff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  transition: 0.2s ease;
+}
+
+#discordBtn:hover {
+  background: rgba(88, 101, 242, 0.25);
+  transform: translateY(-2px);
+}
+
+.discordIcon {
+  font-size: 16px;
+}

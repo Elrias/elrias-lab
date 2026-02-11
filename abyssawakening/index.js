@@ -2,6 +2,7 @@
 const panel = document.getElementById("sidePanel");
 const toggle = document.getElementById("menuToggle");
 const menuIcon = document.getElementById("menuIcon");
+const discordBtn = document.getElementById("discordBtn");
 const menuLabel = document.getElementById("menuLabel");
 
 const fsBtn = document.getElementById("fullscreenBtn");
@@ -69,7 +70,7 @@ function onFsChange() {
   // si on entre en fullscreen, fermer le menu
   if (inFs) closeMenu();
 }
-
+if (discordBtn) discordBtn.style.display = inFs ? "none" : "flex";
 document.addEventListener("fullscreenchange", onFsChange);
 document.addEventListener("webkitfullscreenchange", onFsChange);
 window.addEventListener("resize", onFsChange);
