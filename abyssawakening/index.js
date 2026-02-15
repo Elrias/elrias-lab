@@ -125,6 +125,49 @@ function isLoggedIn() {
   return !!getToken();
 }
 
+function setAuthStatus(msg, kind = "") {
+  if (!authStatus) return;
+  authStatus.textContent = msg || "";
+  authStatus.className = "authStatus" + (kind ? " " + kind : "");
+}
+
+function setLoading(isLoading) {
+  if (!authForm) return;
+  authForm.classList.toggle("is-loading", isLoading);
+
+  // disable/enable buttons
+  if (submitBtn) submitBtn.disabled = isLoading;
+  if (toggleModeBtn) toggleModeBtn.disabled = isLoading;
+  if (forgotBtn) forgotBtn.disabled = isLoading;
+  if (logoutBtn) logoutBtn.disabled = isLoading;
+
+  // disable inputs too
+  if (emailEl) emailEl.disabled = isLoading;
+  if (passEl) passEl.disabled = isLoading;
+}
+
+// Decode JWT payload to get email (no extra API call)
+function getEmailFromToken() {
+  const t = getToken();
+  if (!t) return "";
+  const parts = t.split(".");
+  if (parts.length !== 3) return "";
+
+  try {
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+    const payload = JSON.parse(json);
+    return payload.email || "";
+  } catch {
+    return "";
+  }
+}
+
 async function api(path, { method = "GET", body = null } = {}) {
   const headers = { "Content-Type": "application/json" };
   const token = getToken();
@@ -144,27 +187,54 @@ async function api(path, { method = "GET", body = null } = {}) {
 // ---------------- Auth UI logic ----------------
 let mode = "login"; // "login" | "register"
 
+// extra elements (add at top with other query selectors)
+const authFields = document.getElementById("authFields");
+const authLoggedMsg = document.getElementById("authLoggedMsg");
+const authStatus = document.getElementById("authStatus");
+
 function setMode(m) {
   mode = m;
   if (isLoggedIn()) return;
 
   if (authTitle) authTitle.textContent = mode === "login" ? "Login" : "Register";
-  if (submitBtn) submitBtn.textContent = mode === "login" ? "Login" : "Create account";
-  if (toggleModeBtn) toggleModeBtn.textContent = mode === "login" ? "Register" : "Login instead";
+  if (submitBtn) submitBtn.querySelector(".btnText").textContent =
+    mode === "login" ? "Login" : "Create account";
+  if (toggleModeBtn) toggleModeBtn.textContent =
+    mode === "login" ? "Register" : "Login instead";
+
+  // reset status
+  setAuthStatus("");
 }
 
 function updateAuthUI() {
   const logged = isLoggedIn();
 
-  if (authTitle) authTitle.textContent = logged ? "Account" : (mode === "login" ? "Login" : "Register");
-  if (submitBtn) submitBtn.style.display = logged ? "none" : "inline-flex";
-  if (logoutBtn) logoutBtn.style.display = logged ? "inline-flex" : "none";
-  if (authLinksRow) authLinksRow.style.display = logged ? "none" : "flex";
-
   if (logged) {
-    if (emailEl) emailEl.value = "";
-    if (passEl) passEl.value = "";
+    const email = getEmailFromToken();
+    if (authTitle) authTitle.textContent = "Account";
+
+    // hide fields + links, show logged message + logout
+    if (authFields) authFields.style.display = "none";
+    if (authLinksRow) authLinksRow.style.display = "none";
+    if (submitBtn) submitBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-flex";
+
+    if (authLoggedMsg) {
+      authLoggedMsg.style.display = "block";
+      authLoggedMsg.textContent = `You are successfully logged into the account for ${email || "your email"}.`;
+    }
+
+    setAuthStatus("");
+    return;
   }
+
+  // not logged
+  if (authTitle) authTitle.textContent = mode === "login" ? "Login" : "Register";
+  if (authFields) authFields.style.display = "block";
+  if (authLoggedMsg) authLoggedMsg.style.display = "none";
+  if (authLinksRow) authLinksRow.style.display = "flex";
+  if (submitBtn) submitBtn.style.display = "inline-flex";
+  if (logoutBtn) logoutBtn.style.display = "none";
 }
 
 toggleModeBtn?.addEventListener("click", () => {
@@ -173,27 +243,57 @@ toggleModeBtn?.addEventListener("click", () => {
 });
 
 forgotBtn?.addEventListener("click", () => {
-  alert("V1: Forgot password is not implemented yet.");
+  setAuthStatus("V1: Forgot password is not implemented yet.", "");
 });
 
-submitBtn?.addEventListener("click", async () => {
-  const email = (emailEl?.value || "").trim().toLowerCase();
-  const password = (passEl?.value || "").trim();
+// Handle submit (click OR Enter)
+authForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (isLoggedIn()) return;
 
-  if (!email || !password) {
-    alert("Please enter email and password.");
+  // HTML validation first
+  if (!authForm.checkValidity()) {
+    authForm.reportValidity();
+    setAuthStatus("Please fix the highlighted fields before continuing.", "error");
     return;
   }
+
+  // JS validation (extra)
+  const email = (emailEl?.value || "").trim().toLowerCase();
+  const password = (passEl?.value || "");
+
+  if (password.length < 8) {
+    setAuthStatus("Password must be at least 8 characters.", "error");
+    passEl?.focus();
+    return;
+  }
+
+  setLoading(true);
+  setAuthStatus("Contacting server…", "");
 
   try {
     const route = mode === "login" ? "/auth/login" : "/auth/register";
     const data = await api(route, { method: "POST", body: { email, password } });
 
     localStorage.setItem(TOKEN_KEY, data.token);
-    flash("Logged in. Syncing cloud saves and restarting the game…");
+
+    // (On garde ton flow reload)
+    sessionStorage.setItem(FLASH_KEY, "Logged in. Syncing cloud saves and restarting the game…");
     location.reload();
   } catch (err) {
-    alert("Authentication failed: " + (err?.message || "unknown_error"));
+    const code = err?.message || "unknown_error";
+
+    if (code === "bad_input") {
+      setAuthStatus("Please enter a valid email and a password of at least 8 characters.", "error");
+    } else if (code === "email_taken") {
+      setAuthStatus("This email is already registered. Try logging in instead.", "error");
+    } else if (code === "invalid_credentials") {
+      setAuthStatus("Invalid email or password.", "error");
+    } else {
+      setAuthStatus("Authentication failed: " + code, "error");
+    }
+  } finally {
+    setLoading(false);
   }
 });
 
@@ -204,7 +304,7 @@ logoutBtn?.addEventListener("click", () => {
   if (!ok) return;
 
   localStorage.removeItem(TOKEN_KEY);
-  flash("Logged out. Guest mode enabled.");
+  sessionStorage.setItem(FLASH_KEY, "Logged out. Guest mode enabled.");
   location.reload();
 });
 

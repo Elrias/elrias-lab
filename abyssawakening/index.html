@@ -28,48 +28,62 @@
             <h2 id="authTitle">Login</h2>
           </div>
 
-          <form id="authForm" class="authForm" autocomplete="on">
-            <div class="fieldRow">
-              <label for="authEmail">Email</label>
-              <input
-                id="authEmail"
-                type="email"
-                name="email"
-                placeholder="you@example.com"
-                autocomplete="email"
-              />
-            </div>
+      <form id="authForm" class="authForm" autocomplete="on" novalidate>
+        <!-- Zone qui contient les champs (on la cache quand logged) -->
+        <div id="authFields">
+          <div class="fieldRow">
+            <label for="authEmail">Email</label>
+            <input
+              id="authEmail"
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+            />
+          </div>
 
-            <div class="fieldRow">
-              <label for="authPassword">Password</label>
-              <input
-                id="authPassword"
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                autocomplete="current-password"
-              />
-            </div>
+          <div class="fieldRow">
+            <label for="authPassword">Password</label>
+            <input
+              id="authPassword"
+              type="password"
+              name="password"
+              placeholder="••••••••"
+              autocomplete="current-password"
+              required
+              minlength="8"
+            />
+          </div>
+        </div>
 
-            <div class="authActions">
-              <button type="button" class="primaryBtn" id="authSubmitBtn">Login</button>
+        <!-- Message quand logged -->
+        <div id="authLoggedMsg" class="authLoggedMsg" style="display:none;" aria-live="polite"></div>
 
-              <!-- Logout (affiché seulement quand connecté) -->
-              <button
-                type="button"
-                class="primaryBtn secondaryBtn"
-                id="authLogoutBtn"
-                style="display:none;"
-              >
-                Logout
-              </button>
-            </div>
+        <!-- Zone message (erreurs/info) -->
+        <div id="authStatus" class="authStatus" aria-live="polite"></div>
 
-            <div class="authLinks" id="authLinksRow">
-              <button type="button" class="linkBtn" id="authToggleModeBtn">Register</button>
-              <button type="button" class="linkBtn" id="authForgotBtn">Forgot password?</button>
-            </div>
-          </form>
+        <div class="authActions">
+          <button type="submit" class="primaryBtn" id="authSubmitBtn">
+            <span class="btnText">Login</span>
+            <span class="spinner" aria-hidden="true"></span>
+          </button>
+
+          <button
+            type="button"
+            class="primaryBtn secondaryBtn"
+            id="authLogoutBtn"
+            style="display:none;"
+          >
+            Logout
+          </button>
+        </div>
+
+        <div class="authLinks" id="authLinksRow">
+          <button type="button" class="linkBtn" id="authToggleModeBtn">Register</button>
+          <button type="button" class="linkBtn" id="authForgotBtn">Forgot password?</button>
+        </div>
+      </form>
         </div>
 
         <!-- GUIDES -->

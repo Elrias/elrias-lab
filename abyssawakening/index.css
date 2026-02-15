@@ -351,3 +351,49 @@ body.overlay-menu #sidePanel {
 .secondaryBtn:hover {
   background: rgba(255,255,255,0.08);
 }
+
+/* --- Auth status + spinner + disabled --- */
+.authStatus {
+  min-height: 18px;
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.authStatus.error { color: rgba(255, 120, 120, 0.95); }
+.authStatus.ok { color: rgba(140, 255, 170, 0.95); }
+
+.authLoggedMsg {
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.9;
+  padding: 6px 2px;
+}
+
+.primaryBtn[disabled],
+.linkBtn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.primaryBtn .spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: rgba(255,255,255,0.9);
+  animation: spin 0.8s linear infinite;
+}
+
+.authForm.is-loading .primaryBtn .spinner {
+  display: inline-block;
+}
+
+.authForm.is-loading .primaryBtn .btnText {
+  opacity: 0.85;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
