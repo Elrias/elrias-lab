@@ -75,31 +75,48 @@
     }
   }
 
+function pad2(n) { return String(n).padStart(2, "0"); }
+
+function formatPlaytimeFromSeconds(sec) {
+  sec = Math.max(0, Math.floor(sec || 0));
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const s = sec % 60;
+  return `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+}
+
 async function buildSavefileInfoFromFile(slotId) {
   try {
-    // Charge l'objet complet (fileX) depuis StorageManager
     const contents = await StorageManager.loadObject(`file${slotId}`);
     if (!contents) return null;
 
-    // Met DataManager dans un état cohérent pour makeSavefileInfo()
-    DataManager._lastAccessedId = slotId;
+    const system = contents.system || {};
+    const party = contents.party || {};
 
-    // MZ: makeSavefileInfo() lit $gameSystem/$gameParty/etc, mais on n'a pas ces instances.
-    // Donc on fabrique un "info" minimal à partir du contenu chargé (qui contient des champs utiles).
-    const info = {
+    // Playtime string (must be a STRING)
+    let playtime = "";
+    if (typeof system.playtimeText === "string") {
+      playtime = system.playtimeText;
+    } else if (typeof system.playtime === "number") {
+      // playtime in frames in MZ (60 fps)
+      playtime = formatPlaytimeFromSeconds(system.playtime / 60);
+    } else {
+      playtime = "00:00:00";
+    }
+
+    return {
       globalId: DataManager._globalId || "RPG Maker",
-      title: document.title,
-      characters: contents?.party?.characters || [],
-      faces: contents?.party?.faces || [],
-      playtime: contents?.system?.playtimeText || "",
-      timestamp: Date.now()
+      title: $dataSystem ? $dataSystem.gameTitle : document.title,
+      characters: Array.isArray(party.characters) ? party.characters : [],
+      faces: Array.isArray(party.faces) ? party.faces : [],
+      playtime,              // <-- string
+      timestamp: system.saveCount ? Date.now() : Date.now()
     };
-
-    return info;
   } catch (e) {
     return null;
   }
 }
+
 
 async function rebuildGlobalInfoFromLocal() {
   const max = DataManager.maxSavefiles ? DataManager.maxSavefiles() : 20;
