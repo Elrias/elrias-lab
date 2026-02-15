@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc Cloud Sync on Boot (imports cloud global + saves, rebuilds global info for Title)
+ * @plugindesc Cloud Sync on Boot (imports cloud global + saves before Title; uses cloud globalInfo as source of truth)
  *
  * @param ApiBaseUrl
  * @type string
@@ -24,6 +24,7 @@
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; }
   }
+
   function setSyncing(v) {
     try { sessionStorage.setItem(SYNC_FLAG, v ? "1" : "0"); } catch {}
   }
@@ -38,6 +39,21 @@
     return data;
   }
 
+  function extractGlobalInfoObject(obj) {
+    if (!obj) return null;
+
+    // Standard MZ: Array indexé (1..maxSavefiles)
+    if (Array.isArray(obj)) return obj;
+
+    // Certains plugins peuvent encapsuler
+    if (obj.globalInfo && Array.isArray(obj.globalInfo)) return obj.globalInfo;
+    if (obj.data && Array.isArray(obj.data)) return obj.data;
+
+    return null;
+  }
+
+  let importedGlobalInfo = null;
+
   async function importCloudToLocal() {
     const t = token();
     if (!t || !API) {
@@ -50,16 +66,25 @@
 
     setSyncing(true);
     try {
-      // global first (slot 0)
+      // 1) Import GLOBAL (slot 0) en premier
       if (saves.some(s => Number(s.slot) === 0)) {
         const g = await apiGet(`/saves/0?game_id=${encodeURIComponent(GAME_ID)}`);
         if (g?.payload) {
-          await StorageManager.saveObject("global", JSON.parse(g.payload));
-          console.log("[CloudSync] Global imported");
+          const globalObj = JSON.parse(g.payload);
+
+          // Sauvegarde locale du global tel quel
+          await StorageManager.saveObject("global", globalObj);
+
+          // Extraire globalInfo du format exact du jeu (important pour l'UI)
+          importedGlobalInfo = extractGlobalInfoObject(globalObj);
+
+          console.log("[CloudSync] Global imported (and extracted globalInfo)");
         }
+      } else {
+        console.log("[CloudSync] No global found in cloud.");
       }
 
-      // then file slots
+      // 2) Import des slots fileX
       for (const s of saves) {
         const slot = Number(s.slot);
         if (!Number.isInteger(slot) || slot <= 0) continue;
@@ -75,69 +100,7 @@
     }
   }
 
-function pad2(n) { return String(n).padStart(2, "0"); }
-
-function formatPlaytimeFromSeconds(sec) {
-  sec = Math.max(0, Math.floor(sec || 0));
-  const h = Math.floor(sec / 3600);
-  const m = Math.floor((sec % 3600) / 60);
-  const s = sec % 60;
-  return `${pad2(h)}:${pad2(m)}:${pad2(s)}`;
-}
-
-async function buildSavefileInfoFromFile(slotId) {
-  try {
-    const contents = await StorageManager.loadObject(`file${slotId}`);
-    if (!contents) return null;
-
-    const system = contents.system || {};
-    const party = contents.party || {};
-
-    // Playtime string (must be a STRING)
-    let playtime = "";
-    if (typeof system.playtimeText === "string") {
-      playtime = system.playtimeText;
-    } else if (typeof system.playtime === "number") {
-      // playtime in frames in MZ (60 fps)
-      playtime = formatPlaytimeFromSeconds(system.playtime / 60);
-    } else {
-      playtime = "00:00:00";
-    }
-
-    return {
-      globalId: DataManager._globalId || "RPG Maker",
-      title: $dataSystem ? $dataSystem.gameTitle : document.title,
-      characters: Array.isArray(party.characters) ? party.characters : [],
-      faces: Array.isArray(party.faces) ? party.faces : [],
-      playtime,              // <-- string
-      timestamp: system.saveCount ? Date.now() : Date.now()
-    };
-  } catch (e) {
-    return null;
-  }
-}
-
-
-async function rebuildGlobalInfoFromLocal() {
-  const max = DataManager.maxSavefiles ? DataManager.maxSavefiles() : 20;
-  const info = [];
-  info.length = max + 1;
-
-  for (let i = 1; i <= max; i++) {
-    const sfi = await buildSavefileInfoFromFile(i);
-    if (sfi) info[i] = sfi;
-  }
-
-  DataManager._globalInfo = info;
-
-  // Écrit aussi "global" pour que tout soit cohérent côté moteur
-  try {
-    await StorageManager.saveObject("global", info);
-  } catch {}
-
-  console.log("[CloudSync] GlobalInfo rebuilt from file contents");
-}
-
+  // Bloquer le boot tant que la sync n'est pas finie
   const _isReady = Scene_Boot.prototype.isReady;
   Scene_Boot.prototype.isReady = function() {
     if (!this._cloudSyncPromise) {
@@ -145,7 +108,14 @@ async function rebuildGlobalInfoFromLocal() {
       this._cloudSyncPromise = (async () => {
         try {
           await importCloudToLocal();
-          await rebuildGlobalInfoFromLocal();
+
+          // Appliquer le globalInfo cloud à DataManager pour que Continue/Load affichent correctement
+          if (importedGlobalInfo) {
+            DataManager._globalInfo = importedGlobalInfo;
+            console.log("[CloudSync] DataManager._globalInfo set from cloud global");
+          } else {
+            console.warn("[CloudSync] No globalInfo extracted; UI may not reflect saves correctly.");
+          }
         } catch (e) {
           console.warn("[CloudSync] Sync failed:", e);
         } finally {
@@ -156,12 +126,5 @@ async function rebuildGlobalInfoFromLocal() {
     return _isReady.call(this) && this._cloudSyncDone;
   };
 
-    // Force le Title à re-checker les saves au moment où il démarre
-  const _Scene_Title_create = Scene_Title.prototype.create;
-  Scene_Title.prototype.create = function() {
-    _Scene_Title_create.call(this);
-    // Re-check globalInfo (Continue button)
-    this._commandWindow?.refresh?.();
-  };
   console.log("[CloudSync] Plugin loaded.");
 })();
