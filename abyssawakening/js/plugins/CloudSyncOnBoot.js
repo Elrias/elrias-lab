@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc Cloud Sync on Boot (imports cloud global + saves to local before Title)
+ * @plugindesc Cloud Sync on Boot (imports cloud global + saves, rebuilds global info for Title)
  *
  * @param ApiBaseUrl
  * @type string
@@ -38,29 +38,28 @@
     return data;
   }
 
-  async function syncCloudToLocal() {
+  async function importCloudToLocal() {
     const t = token();
-    if (!t || !API) return;
+    if (!t || !API) {
+      console.log("[CloudSync] No token or API, skipping.");
+      return;
+    }
 
     const list = await apiGet(`/saves?game_id=${encodeURIComponent(GAME_ID)}`);
     const saves = Array.isArray(list.saves) ? list.saves : [];
 
-    // IMPORTANT: éviter que CloudUpload ré-uploade ce qu'on écrit pendant la sync
     setSyncing(true);
-
     try {
-      // 1) Télécharger global (slot 0) en premier si présent
-      const hasGlobal = saves.some(s => Number(s.slot) === 0);
-      if (hasGlobal) {
+      // global first (slot 0)
+      if (saves.some(s => Number(s.slot) === 0)) {
         const g = await apiGet(`/saves/0?game_id=${encodeURIComponent(GAME_ID)}`);
         if (g?.payload) {
-          const obj = JSON.parse(g.payload);
-          await StorageManager.saveObject("global", obj);
+          await StorageManager.saveObject("global", JSON.parse(g.payload));
           console.log("[CloudSync] Global imported");
         }
       }
 
-      // 2) Télécharger les slots fileX
+      // then file slots
       for (const s of saves) {
         const slot = Number(s.slot);
         if (!Number.isInteger(slot) || slot <= 0) continue;
@@ -68,8 +67,7 @@
         const r = await apiGet(`/saves/${slot}?game_id=${encodeURIComponent(GAME_ID)}`);
         if (!r?.payload) continue;
 
-        const obj = JSON.parse(r.payload);
-        await StorageManager.saveObject(`file${slot}`, obj);
+        await StorageManager.saveObject(`file${slot}`, JSON.parse(r.payload));
         console.log(`[CloudSync] Slot ${slot} imported`);
       }
     } finally {
@@ -77,14 +75,35 @@
     }
   }
 
-  // Bloquer le boot tant que la sync n'est pas finie
+  async function rebuildGlobalInfoFromLocal() {
+    // Rebuild DataManager._globalInfo so Title/Continue sees the saves
+    const max = DataManager.maxSavefiles ? DataManager.maxSavefiles() : 20;
+    const info = [];
+    info.length = max + 1; // index 0 unused
+
+    for (let i = 1; i <= max; i++) {
+      try {
+        // loads the SavefileInfo from local storage (does not load full save)
+        // in MZ, this is async.
+        const sfi = await DataManager.loadSavefileInfo(i);
+        if (sfi) info[i] = sfi;
+      } catch (_) {
+        // ignore per-slot errors
+      }
+    }
+
+    DataManager._globalInfo = info;
+    console.log("[CloudSync] GlobalInfo rebuilt from local slots");
+  }
+
   const _isReady = Scene_Boot.prototype.isReady;
   Scene_Boot.prototype.isReady = function() {
     if (!this._cloudSyncPromise) {
       this._cloudSyncDone = false;
       this._cloudSyncPromise = (async () => {
         try {
-          await syncCloudToLocal();
+          await importCloudToLocal();
+          await rebuildGlobalInfoFromLocal();
         } catch (e) {
           console.warn("[CloudSync] Sync failed:", e);
         } finally {
