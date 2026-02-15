@@ -127,25 +127,6 @@ html, body {
 }
 .panelHeader h2 { margin: 0; }
 
-/* Petit bouton X dans le login */
-.miniBtn {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.9);
-  cursor: pointer;
-  font-weight: 900;
-  line-height: 1;
-}
-.miniBtn:hover { background: rgba(255, 255, 255, 0.10); }
-.miniBtn:focus,
-.miniBtn:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
 /* -------- LOGIN (refined) -------- */
 .authForm {
   display: flex;
@@ -180,7 +161,6 @@ html, body {
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
-
 }
 
 .fieldRow input::placeholder {
@@ -196,6 +176,7 @@ html, body {
 .authActions {
   display: flex;
   justify-content: flex-start;
+  gap: 10px;
 }
 
 /* Bouton principal */
@@ -220,6 +201,16 @@ html, body {
 .primaryBtn:focus-visible {
   outline: none !important;
   box-shadow: none !important;
+}
+
+/* Bouton secondaire (Logout) */
+.secondaryBtn {
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.14);
+}
+.secondaryBtn:hover {
+  background: rgba(255,255,255,0.08);
 }
 
 /* Liens secondaires */
@@ -251,13 +242,18 @@ html, body {
   box-shadow: none !important;
 }
 
+.muted {
+  opacity: 0.8;
+}
+.tiny {
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 /* --- Guides layout: prend l'espace vertical dispo --- */
 .panelBlockGrow {
   flex: 1;
   min-height: 160px;
-}
-.guidesEmpty {
-  height: 100%;
 }
 
 .guidesList {
@@ -301,7 +297,7 @@ body.overlay-menu #sidePanel {
   max-width: 360px;
 }
 
-/* ---------------- Discord Floating Button (hard override) ---------------- */
+/* ---------------- Discord Floating Button ---------------- */
 #discordBtn.floatingDiscord {
   position: fixed !important;
   right: 14px !important;
