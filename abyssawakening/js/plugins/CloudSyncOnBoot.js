@@ -75,26 +75,51 @@
     }
   }
 
-  async function rebuildGlobalInfoFromLocal() {
-    // Rebuild DataManager._globalInfo so Title/Continue sees the saves
-    const max = DataManager.maxSavefiles ? DataManager.maxSavefiles() : 20;
-    const info = [];
-    info.length = max + 1; // index 0 unused
+async function buildSavefileInfoFromFile(slotId) {
+  try {
+    // Charge l'objet complet (fileX) depuis StorageManager
+    const contents = await StorageManager.loadObject(`file${slotId}`);
+    if (!contents) return null;
 
-    for (let i = 1; i <= max; i++) {
-      try {
-        // loads the SavefileInfo from local storage (does not load full save)
-        // in MZ, this is async.
-        const sfi = await DataManager.loadSavefileInfo(i);
-        if (sfi) info[i] = sfi;
-      } catch (_) {
-        // ignore per-slot errors
-      }
-    }
+    // Met DataManager dans un état cohérent pour makeSavefileInfo()
+    DataManager._lastAccessedId = slotId;
 
-    DataManager._globalInfo = info;
-    console.log("[CloudSync] GlobalInfo rebuilt from local slots");
+    // MZ: makeSavefileInfo() lit $gameSystem/$gameParty/etc, mais on n'a pas ces instances.
+    // Donc on fabrique un "info" minimal à partir du contenu chargé (qui contient des champs utiles).
+    const info = {
+      globalId: DataManager._globalId || "RPG Maker",
+      title: document.title,
+      characters: contents?.party?.characters || [],
+      faces: contents?.party?.faces || [],
+      playtime: contents?.system?.playtimeText || "",
+      timestamp: Date.now()
+    };
+
+    return info;
+  } catch (e) {
+    return null;
   }
+}
+
+async function rebuildGlobalInfoFromLocal() {
+  const max = DataManager.maxSavefiles ? DataManager.maxSavefiles() : 20;
+  const info = [];
+  info.length = max + 1;
+
+  for (let i = 1; i <= max; i++) {
+    const sfi = await buildSavefileInfoFromFile(i);
+    if (sfi) info[i] = sfi;
+  }
+
+  DataManager._globalInfo = info;
+
+  // Écrit aussi "global" pour que tout soit cohérent côté moteur
+  try {
+    await StorageManager.saveObject("global", info);
+  } catch {}
+
+  console.log("[CloudSync] GlobalInfo rebuilt from file contents");
+}
 
   const _isReady = Scene_Boot.prototype.isReady;
   Scene_Boot.prototype.isReady = function() {
@@ -114,5 +139,12 @@
     return _isReady.call(this) && this._cloudSyncDone;
   };
 
+    // Force le Title à re-checker les saves au moment où il démarre
+  const _Scene_Title_create = Scene_Title.prototype.create;
+  Scene_Title.prototype.create = function() {
+    _Scene_Title_create.call(this);
+    // Re-check globalInfo (Continue button)
+    this._commandWindow?.refresh?.();
+  };
   console.log("[CloudSync] Plugin loaded.");
 })();
