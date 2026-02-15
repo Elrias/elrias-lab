@@ -342,3 +342,12 @@ body.overlay-menu #sidePanel {
 #discordBtn .discordLabel {
   letter-spacing: 0.02em;
 }
+
+.secondaryBtn {
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.14);
+}
+.secondaryBtn:hover {
+  background: rgba(255,255,255,0.08);
+}
