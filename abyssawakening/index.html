@@ -10,9 +10,7 @@
     <link rel="icon" href="icon/icon.png" type="image/png" />
     <link rel="apple-touch-icon" href="icon/icon.png" />
 
-    <!-- CSS du jeu (RPG Maker) -->
     <link rel="stylesheet" href="css/game.css" />
-    <!-- CSS du site -->
     <link rel="stylesheet" href="index.css" />
 
     <title>Abyss Awakening</title>
@@ -24,7 +22,7 @@
     <!-- Menu -->
     <aside id="sidePanel" aria-label="Menu">
       <div class="panelInner">
-        <!-- LOGIN / ACCOUNT -->
+        <!-- LOGIN -->
         <div class="panelBlock">
           <div class="panelHeader">
             <h2 id="authTitle">Login</h2>
@@ -55,21 +53,22 @@
 
             <div class="authActions">
               <button type="button" class="primaryBtn" id="authSubmitBtn">Login</button>
-              <button type="button" class="primaryBtn secondaryBtn" id="authLogoutBtn" style="display:none;">
+
+              <!-- Logout (affiché seulement quand connecté) -->
+              <button
+                type="button"
+                class="primaryBtn secondaryBtn"
+                id="authLogoutBtn"
+                style="display:none;"
+              >
                 Logout
               </button>
             </div>
 
             <div class="authLinks" id="authLinksRow">
               <button type="button" class="linkBtn" id="authToggleModeBtn">Register</button>
-              <button type="button" class="linkBtn" id="authForgotBtn" title="V1: not implemented yet">
-                Forgot password?
-              </button>
+              <button type="button" class="linkBtn" id="authForgotBtn">Forgot password?</button>
             </div>
-
-            <p class="muted tiny" id="authHint" style="margin:8px 0 0;">
-              Guest mode uses local saves. Logged-in mode syncs saves to your account.
-            </p>
           </form>
         </div>
 
@@ -95,7 +94,7 @@
       </div>
     </aside>
 
-    <!-- Bouton Menu (toggle Menu/Close) -->
+    <!-- Bouton Menu -->
     <button
       id="menuToggle"
       class="ui-btn"
@@ -114,6 +113,7 @@
 
     <!-- Le jeu -->
     <script src="js/main.js"></script>
+
     <!-- JS du site -->
     <script src="index.js"></script>
 
@@ -125,7 +125,6 @@
       target="_blank"
       rel="noopener"
       aria-label="Rejoindre le Discord"
-      title="Discord"
     >
       <span class="discordDot" aria-hidden="true"></span>
       <span class="discordLabel">Discord</span>

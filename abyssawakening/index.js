@@ -1,9 +1,9 @@
-// -------- Constants --------
-const API_BASE = "https://abyssawakening-backend.onrender.com";
+// ---------------- Config ----------------
+const API_BASE = "https://abyssawakening-backend.onrender.com"; // <-- TON URL Render
 const TOKEN_KEY = "cloudsave_token";
 const FLASH_KEY = "flash_message";
 
-// -------- Elements --------
+// ---------------- Elements ----------------
 const panel = document.getElementById("sidePanel");
 const toggle = document.getElementById("menuToggle");
 const menuIcon = document.getElementById("menuIcon");
@@ -12,9 +12,9 @@ const discordBtn = document.getElementById("discordBtn");
 
 const fsBtn = document.getElementById("fullscreenBtn");
 
-// Auth UI
-const authTitle = document.getElementById("authTitle");
+// Auth
 const authForm = document.getElementById("authForm");
+const authTitle = document.getElementById("authTitle");
 const emailEl = document.getElementById("authEmail");
 const passEl = document.getElementById("authPassword");
 const submitBtn = document.getElementById("authSubmitBtn");
@@ -23,52 +23,46 @@ const toggleModeBtn = document.getElementById("authToggleModeBtn");
 const forgotBtn = document.getElementById("authForgotBtn");
 const authLinksRow = document.getElementById("authLinksRow");
 
-// Retirer le focus après clic (évite contours via clavier ensuite)
+// éviter submit (Enter)
+authForm?.addEventListener("submit", (e) => e.preventDefault());
+
+// Retirer focus après clic
 toggle?.addEventListener("pointerdown", () => toggle.blur());
 fsBtn?.addEventListener("pointerdown", () => fsBtn.blur());
 
-// Empêche le form de submit (Enter) => on gère nous-même
-authForm?.addEventListener("submit", (e) => e.preventDefault());
-
-// -------- Flash message after reload --------
+// ---------------- Flash message after reload ----------------
 (function showFlash() {
   const msg = sessionStorage.getItem(FLASH_KEY);
   if (!msg) return;
   sessionStorage.removeItem(FLASH_KEY);
   alert(msg);
 })();
-
 function flash(msg) {
   sessionStorage.setItem(FLASH_KEY, msg);
 }
 
-// -------- Menu toggle state --------
+// ---------------- Menu ----------------
 function setToggleState(isOpen) {
   if (!toggle) return;
   toggle.setAttribute("aria-expanded", String(isOpen));
   if (menuIcon) menuIcon.textContent = isOpen ? "✕" : "☰";
   if (menuLabel) menuLabel.textContent = isOpen ? "Close" : "Menu";
 }
-
 function closeMenu() {
   panel?.classList.remove("open");
   setToggleState(false);
 }
-
 function openMenu() {
   panel?.classList.add("open");
   setToggleState(true);
 }
-
 toggle?.addEventListener("click", () => {
   if (!panel) return;
   panel.classList.contains("open") ? closeMenu() : openMenu();
 });
-
-// état initial
 setToggleState(false);
 
-// -------- Fullscreen --------
+// ---------------- Fullscreen ----------------
 function goFullscreen() {
   const elem = document.documentElement;
   if (elem.requestFullscreen) elem.requestFullscreen();
@@ -81,27 +75,25 @@ function isFullscreen() {
   return !!(
     document.fullscreenElement ||
     document.webkitFullscreenElement ||
-    // F11 : souvent détectable via la taille de la fenêtre
-    (window.innerHeight === screen.height && window.innerWidth === screen.width)
+    (window.innerHeight === screen.height && window.innerWidth === screen.width) // F11 approximation
   );
 }
 
 function onFsChange() {
   const inFs = isFullscreen();
 
-  // cacher fullscreen button et menu toggle en fullscreen
   if (fsBtn) fsBtn.style.display = inFs ? "none" : "block";
   if (toggle) toggle.style.display = inFs ? "none" : "inline-flex";
   if (discordBtn) discordBtn.style.display = inFs ? "none" : "inline-flex";
 
-  // si on entre en fullscreen, fermer le menu
   if (inFs) closeMenu();
 }
 document.addEventListener("fullscreenchange", onFsChange);
 document.addEventListener("webkitfullscreenchange", onFsChange);
 window.addEventListener("resize", onFsChange);
+onFsChange();
 
-// -------- Calcul des bandes noires --------
+// ---------------- Side black bars calc ----------------
 function computeSideSpace() {
   const canvas = document.querySelector("canvas");
   if (!canvas) return;
@@ -116,7 +108,6 @@ function computeSideSpace() {
   else document.body.classList.remove("overlay-menu");
 }
 
-// attendre que le canvas existe (créé après main.js)
 const waitCanvas = setInterval(() => {
   const canvas = document.querySelector("canvas");
   if (canvas) {
@@ -126,10 +117,7 @@ const waitCanvas = setInterval(() => {
   }
 }, 100);
 
-// appliquer l'état fullscreen au chargement
-onFsChange();
-
-// -------- Auth helpers --------
+// ---------------- Auth helpers ----------------
 function getToken() {
   return localStorage.getItem(TOKEN_KEY) || "";
 }
@@ -153,14 +141,12 @@ async function api(path, { method = "GET", body = null } = {}) {
   return data;
 }
 
-// -------- Auth UI state --------
+// ---------------- Auth UI logic ----------------
 let mode = "login"; // "login" | "register"
 
-function setMode(nextMode) {
-  mode = nextMode;
-
-  const logged = isLoggedIn();
-  if (logged) return; // mode inutile si connecté
+function setMode(m) {
+  mode = m;
+  if (isLoggedIn()) return;
 
   if (authTitle) authTitle.textContent = mode === "login" ? "Login" : "Register";
   if (submitBtn) submitBtn.textContent = mode === "login" ? "Login" : "Create account";
@@ -173,29 +159,23 @@ function updateAuthUI() {
   if (authTitle) authTitle.textContent = logged ? "Account" : (mode === "login" ? "Login" : "Register");
   if (submitBtn) submitBtn.style.display = logged ? "none" : "inline-flex";
   if (logoutBtn) logoutBtn.style.display = logged ? "inline-flex" : "none";
-
-  // cache les liens register/forgot quand connecté
   if (authLinksRow) authLinksRow.style.display = logged ? "none" : "flex";
 
-  // petit confort: si connecté, on vide les champs
   if (logged) {
     if (emailEl) emailEl.value = "";
     if (passEl) passEl.value = "";
   }
 }
 
-// Toggle mode login/register
 toggleModeBtn?.addEventListener("click", () => {
   if (isLoggedIn()) return;
   setMode(mode === "login" ? "register" : "login");
 });
 
-// Forgot password (V1: non implémenté)
 forgotBtn?.addEventListener("click", () => {
   alert("V1: Forgot password is not implemented yet.");
 });
 
-// Login/Register submit
 submitBtn?.addEventListener("click", async () => {
   const email = (emailEl?.value || "").trim().toLowerCase();
   const password = (passEl?.value || "").trim();
@@ -210,17 +190,13 @@ submitBtn?.addEventListener("click", async () => {
     const data = await api(route, { method: "POST", body: { email, password } });
 
     localStorage.setItem(TOKEN_KEY, data.token);
-
     flash("Logged in. Syncing cloud saves and restarting the game…");
     location.reload();
   } catch (err) {
-    const msg = (err && err.message) ? err.message : "unknown_error";
-    // messages possibles: email_taken, invalid_credentials, bad_input...
-    alert("Authentication failed: " + msg);
+    alert("Authentication failed: " + (err?.message || "unknown_error"));
   }
 });
 
-// Logout
 logoutBtn?.addEventListener("click", () => {
   const ok = confirm(
     "Logging out will restart the game.\nAny unsaved progress will be lost.\n\nContinue?"
@@ -232,6 +208,6 @@ logoutBtn?.addEventListener("click", () => {
   location.reload();
 });
 
-// Initial auth UI
+// init
 setMode("login");
 updateAuthUI();
