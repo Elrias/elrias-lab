@@ -14,6 +14,7 @@
     const ICON_X_OFFSET = 32; // Décalage X par rapport au côté droit de la fenêtre
     const ICON_Y_OFFSET = -22; // Décalage Y par rapport au bas de la fenêtre
     const ICON_SPACING = 33; // Espacement fixe entre les icônes en pixels
+    const HUD_SHIFT_X = -40; // Décalage UI
 
     // Surcharge de la méthode drawItem pour ajouter l'affichage des compétences
     const _Window_BattleStatus_drawItem = Window_BattleStatus.prototype.drawItem;
@@ -28,7 +29,7 @@
         // Filtrer les compétences pour n'inclure que celles de type 1
         const skills = actor.skills().filter(skill => skill.stypeId === 1);
         const rect = this.itemRectWithPadding(index);
-        const iconX = rect.x + ICON_SPACING + ICON_X_OFFSET;
+        const iconX = rect.x + ICON_SPACING + ICON_X_OFFSET + HUD_SHIFT_X;
         let iconY = rect.y + rect.height + ICON_Y_OFFSET;
         
         skills.forEach((skill, i) => {
@@ -52,7 +53,7 @@
         const actor = $gameParty.battleMembers()[index];
         const skills = actor.skills().filter(skill => skill.stypeId === 1);
         const rect = this.itemRectWithPadding(index);
-        const iconX = rect.x + ICON_SPACING + ICON_X_OFFSET;
+        const iconX = rect.x + ICON_SPACING + ICON_X_OFFSET + HUD_SHIFT_X;
         let iconY = rect.y + rect.height + ICON_Y_OFFSET;
 
         skills.forEach((skill, i) => {

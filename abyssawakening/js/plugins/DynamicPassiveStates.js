@@ -24,36 +24,36 @@
   //==============================
   // CONFIGURATION
   //==============================
-  // NOTE: Ajouter "MODE: 'add' | 'mult'" sur chaque entrée pour forcer le mode.
-  
+  // NOTE: Tu peux ajouter "MODE: 'add' | 'mult'" sur chaque entrée pour forcer le mode.
+
   const PASSIVE_BUFFS_CONFIG = [
     // --- Iron Heart ---
-    { STATE_ID: 63, BONUS_PER_TURN: 0.05, MAX_BONUS: 1.00, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 63, BONUS_PER_TURN: 0.05, MAX_BONUS: 1.00, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 63, BONUS_PER_TURN: 0.025, MAX_BONUS: 0.50, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 63, BONUS_PER_TURN: 0.025, MAX_BONUS: 0.50, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
 
     // --- Scaling I~V : ATK/MAT / turn ---
-    { STATE_ID: 215, BONUS_PER_TURN: 0.020, MAX_BONUS: 0.20, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 215, BONUS_PER_TURN: 0.020, MAX_BONUS: 0.20, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 216, BONUS_PER_TURN: 0.025, MAX_BONUS: 0.25, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 216, BONUS_PER_TURN: 0.025, MAX_BONUS: 0.25, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 217, BONUS_PER_TURN: 0.030, MAX_BONUS: 0.30, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 217, BONUS_PER_TURN: 0.030, MAX_BONUS: 0.30, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 218, BONUS_PER_TURN: 0.035, MAX_BONUS: 0.35, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 218, BONUS_PER_TURN: 0.035, MAX_BONUS: 0.35, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 219, BONUS_PER_TURN: 0.040, MAX_BONUS: 0.40, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
-    { STATE_ID: 219, BONUS_PER_TURN: 0.040, MAX_BONUS: 0.40, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 215, BONUS_PER_TURN: 0.010, MAX_BONUS: 0.10, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 215, BONUS_PER_TURN: 0.010, MAX_BONUS: 0.10, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 216, BONUS_PER_TURN: 0.015, MAX_BONUS: 0.15, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 216, BONUS_PER_TURN: 0.015, MAX_BONUS: 0.15, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 217, BONUS_PER_TURN: 0.020, MAX_BONUS: 0.20, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 217, BONUS_PER_TURN: 0.020, MAX_BONUS: 0.20, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 218, BONUS_PER_TURN: 0.025, MAX_BONUS: 0.25, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 218, BONUS_PER_TURN: 0.025, MAX_BONUS: 0.25, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 219, BONUS_PER_TURN: 0.030, MAX_BONUS: 0.30, PARAM_ID: 2, TYPE: "turns", TURN_OFFSET: 1 },
+    { STATE_ID: 219, BONUS_PER_TURN: 0.030, MAX_BONUS: 0.30, PARAM_ID: 4, TYPE: "turns", TURN_OFFSET: 1 },
 
     // --- Bursting I~V : ATK/MAT / -turn ---
-    { STATE_ID: 220, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.15, BONUS_PER_TURN: -0.05 },
-    { STATE_ID: 220, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.15, BONUS_PER_TURN: -0.05 },
-    { STATE_ID: 221, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.21, BONUS_PER_TURN: -0.07 },
-    { STATE_ID: 221, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.21, BONUS_PER_TURN: -0.07 },
-    { STATE_ID: 222, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.27, BONUS_PER_TURN: -0.09 },
-    { STATE_ID: 222, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.27, BONUS_PER_TURN: -0.09 },
-    { STATE_ID: 223, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.33, BONUS_PER_TURN: -0.11 },
-    { STATE_ID: 223, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.33, BONUS_PER_TURN: -0.11 },
-    { STATE_ID: 224, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.39, BONUS_PER_TURN: -0.13 },
-    { STATE_ID: 224, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.39, BONUS_PER_TURN: -0.13 },
+    { STATE_ID: 220, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.18, BONUS_PER_TURN: -0.06 },
+    { STATE_ID: 220, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.18, BONUS_PER_TURN: -0.06 },
+    { STATE_ID: 221, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.24, BONUS_PER_TURN: -0.08 },
+    { STATE_ID: 221, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.24, BONUS_PER_TURN: -0.08 },
+    { STATE_ID: 222, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.30, BONUS_PER_TURN: -0.10 },
+    { STATE_ID: 222, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.30, BONUS_PER_TURN: -0.10 },
+    { STATE_ID: 223, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.36, BONUS_PER_TURN: -0.12 },
+    { STATE_ID: 223, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.36, BONUS_PER_TURN: -0.12 },
+    { STATE_ID: 224, PARAM_ID: 2, TYPE: "turns-", MAX_BONUS: 0.42, BONUS_PER_TURN: -0.14 },
+    { STATE_ID: 224, PARAM_ID: 4, TYPE: "turns-", MAX_BONUS: 0.42, BONUS_PER_TURN: -0.14 },
 
     // --- Last stand I~V : DEF/MDF selon PV manquants ---
     { STATE_ID: 64, BONUS_PER_TURN: 0, MAX_BONUS: 0.20, PARAM_ID: 3, TYPE: "hp_low" },
@@ -68,28 +68,28 @@
     { STATE_ID: 68, BONUS_PER_TURN: 0, MAX_BONUS: 1.00, PARAM_ID: 5, TYPE: "hp_low" },
 
     // --- Avenger I~V : ATK/MAT selon PV manquants ---
-    { STATE_ID: 69, BONUS_PER_TURN: 0, MAX_BONUS: 0.25, PARAM_ID: 2, TYPE: "hp_low" },
-    { STATE_ID: 69, BONUS_PER_TURN: 0, MAX_BONUS: 0.25, PARAM_ID: 4, TYPE: "hp_low" },
-    { STATE_ID: 70, BONUS_PER_TURN: 0, MAX_BONUS: 0.40, PARAM_ID: 2, TYPE: "hp_low" },
-    { STATE_ID: 70, BONUS_PER_TURN: 0, MAX_BONUS: 0.40, PARAM_ID: 4, TYPE: "hp_low" },
-    { STATE_ID: 71, BONUS_PER_TURN: 0, MAX_BONUS: 0.55, PARAM_ID: 2, TYPE: "hp_low" },
-    { STATE_ID: 71, BONUS_PER_TURN: 0, MAX_BONUS: 0.55, PARAM_ID: 4, TYPE: "hp_low" },
-    { STATE_ID: 72, BONUS_PER_TURN: 0, MAX_BONUS: 0.70, PARAM_ID: 2, TYPE: "hp_low" },
-    { STATE_ID: 72, BONUS_PER_TURN: 0, MAX_BONUS: 0.70, PARAM_ID: 4, TYPE: "hp_low" },
-    { STATE_ID: 73, BONUS_PER_TURN: 0, MAX_BONUS: 0.85, PARAM_ID: 2, TYPE: "hp_low" },
-    { STATE_ID: 73, BONUS_PER_TURN: 0, MAX_BONUS: 0.85, PARAM_ID: 4, TYPE: "hp_low" },
+    { STATE_ID: 69, BONUS_PER_TURN: 0, MAX_BONUS: 0.15, PARAM_ID: 2, TYPE: "hp_low" },
+    { STATE_ID: 69, BONUS_PER_TURN: 0, MAX_BONUS: 0.15, PARAM_ID: 4, TYPE: "hp_low" },
+    { STATE_ID: 70, BONUS_PER_TURN: 0, MAX_BONUS: 0.20, PARAM_ID: 2, TYPE: "hp_low" },
+    { STATE_ID: 70, BONUS_PER_TURN: 0, MAX_BONUS: 0.20, PARAM_ID: 4, TYPE: "hp_low" },
+    { STATE_ID: 71, BONUS_PER_TURN: 0, MAX_BONUS: 0.25, PARAM_ID: 2, TYPE: "hp_low" },
+    { STATE_ID: 71, BONUS_PER_TURN: 0, MAX_BONUS: 0.25, PARAM_ID: 4, TYPE: "hp_low" },
+    { STATE_ID: 72, BONUS_PER_TURN: 0, MAX_BONUS: 0.30, PARAM_ID: 2, TYPE: "hp_low" },
+    { STATE_ID: 72, BONUS_PER_TURN: 0, MAX_BONUS: 0.30, PARAM_ID: 4, TYPE: "hp_low" },
+    { STATE_ID: 73, BONUS_PER_TURN: 0, MAX_BONUS: 0.35, PARAM_ID: 2, TYPE: "hp_low" },
+    { STATE_ID: 73, BONUS_PER_TURN: 0, MAX_BONUS: 0.35, PARAM_ID: 4, TYPE: "hp_low" },
 
     // --- Boaster I~V : ATK/MAT selon PV élevés ---
     { STATE_ID: 74, BONUS_PER_TURN: 0, MAX_BONUS: 0.15, PARAM_ID: 2, TYPE: "hp_high" },
     { STATE_ID: 74, BONUS_PER_TURN: 0, MAX_BONUS: 0.15, PARAM_ID: 4, TYPE: "hp_high" },
-    { STATE_ID: 75, BONUS_PER_TURN: 0, MAX_BONUS: 0.25, PARAM_ID: 2, TYPE: "hp_high" },
-    { STATE_ID: 75, BONUS_PER_TURN: 0, MAX_BONUS: 0.25, PARAM_ID: 4, TYPE: "hp_high" },
-    { STATE_ID: 76, BONUS_PER_TURN: 0, MAX_BONUS: 0.35, PARAM_ID: 2, TYPE: "hp_high" },
-    { STATE_ID: 76, BONUS_PER_TURN: 0, MAX_BONUS: 0.35, PARAM_ID: 4, TYPE: "hp_high" },
-    { STATE_ID: 77, BONUS_PER_TURN: 0, MAX_BONUS: 0.45, PARAM_ID: 2, TYPE: "hp_high" },
-    { STATE_ID: 77, BONUS_PER_TURN: 0, MAX_BONUS: 0.45, PARAM_ID: 4, TYPE: "hp_high" },
-    { STATE_ID: 78, BONUS_PER_TURN: 0, MAX_BONUS: 0.55, PARAM_ID: 2, TYPE: "hp_high" },
-    { STATE_ID: 78, BONUS_PER_TURN: 0, MAX_BONUS: 0.55, PARAM_ID: 4, TYPE: "hp_high" },
+    { STATE_ID: 75, BONUS_PER_TURN: 0, MAX_BONUS: 0.20, PARAM_ID: 2, TYPE: "hp_high" },
+    { STATE_ID: 75, BONUS_PER_TURN: 0, MAX_BONUS: 0.20, PARAM_ID: 4, TYPE: "hp_high" },
+    { STATE_ID: 76, BONUS_PER_TURN: 0, MAX_BONUS: 0.25, PARAM_ID: 2, TYPE: "hp_high" },
+    { STATE_ID: 76, BONUS_PER_TURN: 0, MAX_BONUS: 0.25, PARAM_ID: 4, TYPE: "hp_high" },
+    { STATE_ID: 77, BONUS_PER_TURN: 0, MAX_BONUS: 0.30, PARAM_ID: 2, TYPE: "hp_high" },
+    { STATE_ID: 77, BONUS_PER_TURN: 0, MAX_BONUS: 0.30, PARAM_ID: 4, TYPE: "hp_high" },
+    { STATE_ID: 78, BONUS_PER_TURN: 0, MAX_BONUS: 0.35, PARAM_ID: 2, TYPE: "hp_high" },
+    { STATE_ID: 78, BONUS_PER_TURN: 0, MAX_BONUS: 0.35, PARAM_ID: 4, TYPE: "hp_high" },
 
     // --- Berserker : ATK selon PV manquants ---
     { STATE_ID: 106, BONUS_PER_TURN: 0, MAX_BONUS: 0.50, PARAM_ID: 2, TYPE: "hp_low" },
