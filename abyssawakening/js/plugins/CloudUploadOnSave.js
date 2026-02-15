@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc Cloud Upload on Save (uploads the saved slot to backend after saving)
+ * @plugindesc Cloud Upload on Save (robust: hooks StorageManager.saveObject)
  *
  * @param ApiBaseUrl
  * @type string
@@ -24,11 +24,17 @@
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; }
   }
 
-  async function uploadSlot(slotId) {
+  async function uploadSlot(slotId, obj) {
     const t = token();
-    if (!t) return;
+    if (!t) {
+      console.warn("[CloudUpload] No token found, skipping upload.");
+      return;
+    }
+    if (!API) {
+      console.warn("[CloudUpload] ApiBaseUrl is empty, skipping upload.");
+      return;
+    }
 
-    const obj = await StorageManager.loadObject(`file${slotId}`);
     const payload = JSON.stringify(obj);
 
     const res = await fetch(`${API}/saves/${slotId}`, {
@@ -46,10 +52,33 @@
     }
   }
 
-  const _saveGame = DataManager.saveGame;
-  DataManager.saveGame = async function(savefileId) {
-    const ok = await _saveGame.call(this, savefileId);
-    if (ok) uploadSlot(savefileId).catch(e => console.warn("Cloud upload failed:", e));
-    return ok;
+  // Anti-spam: évite d’uploader 2 fois le même slot en rafale
+  const lastUploadAt = new Map();
+  function shouldUpload(slotId) {
+    const now = Date.now();
+    const last = lastUploadAt.get(slotId) || 0;
+    if (now - last < 500) return false;
+    lastUploadAt.set(slotId, now);
+    return true;
+  }
+
+  const _saveObject = StorageManager.saveObject;
+  StorageManager.saveObject = async function(saveName, object) {
+    const result = await _saveObject.call(this, saveName, object);
+
+    // Les saves MZ sont sous "file1", "file2", etc.
+    const m = /^file(\d+)$/.exec(saveName);
+    if (m) {
+      const slotId = Number(m[1]);
+      if (Number.isInteger(slotId) && slotId > 0 && shouldUpload(slotId)) {
+        uploadSlot(slotId, object)
+          .then(() => console.log(`[CloudUpload] Uploaded slot ${slotId}`))
+          .catch((e) => console.warn(`[CloudUpload] Upload failed for slot ${slotId}:`, e));
+      }
+    }
+
+    return result;
   };
+
+  console.log("[CloudUpload] Plugin loaded (StorageManager hook).");
 })();
