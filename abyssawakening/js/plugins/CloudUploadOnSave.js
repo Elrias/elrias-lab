@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc Cloud Upload on Save (robust: hooks StorageManager.saveObject)
+ * @plugindesc Cloud Upload on Save (robust: hooks StorageManager.saveObject, uploads global + fileX)
  *
  * @param ApiBaseUrl
  * @type string
@@ -19,24 +19,20 @@
   const API = String(p.ApiBaseUrl || "").replace(/\/$/, "");
   const GAME_ID = String(p.GameId || "abyssawakening");
   const TOKEN_KEY = String(p.TokenKey || "cloudsave_token");
+  const SYNC_FLAG = "cloudsync_in_progress";
 
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; }
   }
+  function syncing() {
+    try { return sessionStorage.getItem(SYNC_FLAG) === "1"; } catch { return false; }
+  }
 
-  async function uploadSlot(slotId, obj) {
+  async function putSave(slotId, obj) {
     const t = token();
-    if (!t) {
-      console.warn("[CloudUpload] No token found, skipping upload.");
-      return;
-    }
-    if (!API) {
-      console.warn("[CloudUpload] ApiBaseUrl is empty, skipping upload.");
-      return;
-    }
+    if (!t || !API) return;
 
     const payload = JSON.stringify(obj);
-
     const res = await fetch(`${API}/saves/${slotId}`, {
       method: "PUT",
       headers: {
@@ -52,13 +48,13 @@
     }
   }
 
-  // Anti-spam: évite d’uploader 2 fois le même slot en rafale
-  const lastUploadAt = new Map();
-  function shouldUpload(slotId) {
+  // anti double-upload rapide
+  const lastAt = new Map();
+  function shouldUpload(key) {
     const now = Date.now();
-    const last = lastUploadAt.get(slotId) || 0;
-    if (now - last < 500) return false;
-    lastUploadAt.set(slotId, now);
+    const last = lastAt.get(key) || 0;
+    if (now - last < 400) return false;
+    lastAt.set(key, now);
     return true;
   }
 
@@ -66,14 +62,27 @@
   StorageManager.saveObject = async function(saveName, object) {
     const result = await _saveObject.call(this, saveName, object);
 
-    // Les saves MZ sont sous "file1", "file2", etc.
+    // Ne pas uploader pendant la sync cloud->local
+    if (syncing()) return result;
+
+    // global -> slot 0
+    if (saveName === "global") {
+      if (shouldUpload("global")) {
+        putSave(0, object)
+          .then(() => console.log("[CloudUpload] Uploaded global"))
+          .catch(e => console.warn("[CloudUpload] Global upload failed:", e));
+      }
+      return result;
+    }
+
+    // fileX -> slot X
     const m = /^file(\d+)$/.exec(saveName);
     if (m) {
       const slotId = Number(m[1]);
       if (Number.isInteger(slotId) && slotId > 0 && shouldUpload(slotId)) {
-        uploadSlot(slotId, object)
+        putSave(slotId, object)
           .then(() => console.log(`[CloudUpload] Uploaded slot ${slotId}`))
-          .catch((e) => console.warn(`[CloudUpload] Upload failed for slot ${slotId}:`, e));
+          .catch(e => console.warn(`[CloudUpload] Upload failed slot ${slotId}:`, e));
       }
     }
 
