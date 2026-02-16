@@ -351,9 +351,10 @@
   }
 
   class Window_GlyphListSimple extends Window_Selectable {
-    initialize(rect, typeLetter) {
+    initialize(rect, typeLetter, title) {
       super.initialize(rect);
       this._type = typeLetter;
+      this._title = title;
       this._data = [];
       this.refresh();
       this.select(0);
@@ -373,6 +374,22 @@
     maxItems() { return this._data.length; }
     item() { return this._data[this.index()]; }
 
+    drawAllItems() {
+      this.contents.clear();
+      this.changeTextColor(ColorManager.systemColor());
+      this.drawText(this._title, 0, 0, this.innerWidth, "center");
+      this.resetTextColor();
+
+      this._topPad = this.lineHeight() + 6;
+      for (let i = 0; i < this.maxItems(); i++) this.drawItem(i);
+    }
+
+    itemRect(index) {
+      const rect = super.itemRect(index);
+      rect.y += (this._topPad || 0);
+      return rect;
+    }
+
     drawItem(index) {
       const item = this._data[index];
       if (!item) return;
@@ -386,22 +403,6 @@
         this.activate();
       }
       super.processTouch();
-    }
-  }
-
-  // A small fixed header window for each column title
-  class Window_GlyphColumnTitle extends Window_Base {
-    initialize(rect, title) {
-      super.initialize(rect);
-      this._title = String(title || "");
-      this.refresh();
-    }
-
-    refresh() {
-      this.contents.clear();
-      this.changeTextColor(ColorManager.systemColor());
-      this.drawText(this._title, 0, 0, this.innerWidth, "center");
-      this.resetTextColor();
     }
   }
 
@@ -470,26 +471,12 @@
       this._preview = new Window_GlyphPreview(new Rectangle(0, 0, w, previewH));
       this.addWindow(this._preview);
 
-      // Column title height (kept separate so it doesn't scroll and never overlaps items)
-      const titleH = this._preview.fittingHeight(1);
-
       const colW = Math.floor(w / 3);
       const colW3 = w - colW * 2;
 
-      // Title windows (fixed)
-      this._titleA = new Window_GlyphColumnTitle(new Rectangle(0, listY, colW, titleH), "A — Condition");
-      this._titleB = new Window_GlyphColumnTitle(new Rectangle(colW, listY, colW, titleH), "B — Count");
-      this._titleC = new Window_GlyphColumnTitle(new Rectangle(colW * 2, listY, colW3, titleH), "C — Skill");
-      this.addWindow(this._titleA);
-      this.addWindow(this._titleB);
-      this.addWindow(this._titleC);
-
-      // List windows (scroll area starts below the fixed titles)
-      const listY2 = listY + titleH;
-      const listH2 = Math.max(1, listH - titleH);
-      this._listA = new Window_GlyphListSimple(new Rectangle(0, listY2, colW, listH2), "A");
-      this._listB = new Window_GlyphListSimple(new Rectangle(colW, listY2, colW, listH2), "B");
-      this._listC = new Window_GlyphListSimple(new Rectangle(colW * 2, listY2, colW3, listH2), "C");
+      this._listA = new Window_GlyphListSimple(new Rectangle(0, listY, colW, listH), "A", "A — Condition");
+      this._listB = new Window_GlyphListSimple(new Rectangle(colW, listY, colW, listH), "B", "B — Count");
+      this._listC = new Window_GlyphListSimple(new Rectangle(colW * 2, listY, colW3, listH), "C", "C — Skill");
 
       this._listA.setHandler("ok", () => this.onPick("A"));
       this._listB.setHandler("ok", () => this.onPick("B"));
