@@ -88,7 +88,7 @@ null,
 {"id":86,"expanded":false,"name":"Dungeon2-3","order":120,"parentId":51,"scrollX":0,"scrollY":0,"quick":false},
 {"id":87,"expanded":false,"name":"Dungeon2-Miniboss1","order":101,"parentId":51,"scrollX":659.3333333333334,"scrollY":461.6666666666667,"quick":false},
 {"id":88,"expanded":false,"name":"Dungeon2-Miniboss2","order":119,"parentId":51,"scrollX":720.8888888888889,"scrollY":410.22222222222223,"quick":false},
-{"id":89,"expanded":false,"name":"Dungeon2-Boss","order":137,"parentId":51,"scrollX":811,"scrollY":461.5,"quick":false},
+{"id":89,"expanded":false,"name":"Dungeon2-Boss","order":137,"parentId":51,"scrollX":627,"scrollY":462,"quick":false},
 {"id":90,"expanded":false,"name":"<Cell: ◌ >","order":85,"parentId":9,"scrollX":0,"scrollY":0},
 {"id":91,"expanded":false,"name":"<Cell: ↓ >","order":86,"parentId":9,"scrollX":0,"scrollY":0},
 {"id":92,"expanded":false,"name":"<Cell: ← >","order":87,"parentId":9,"scrollX":0,"scrollY":0},
@@ -137,5 +137,5 @@ null,
 {"id":135,"expanded":false,"name":"<Cell: ↓←↑ >","order":133,"parentId":86,"scrollX":0,"scrollY":0},
 {"id":136,"expanded":false,"name":"<Cell: ↓→↑ >","order":134,"parentId":86,"scrollX":0,"scrollY":0},
 {"id":137,"expanded":false,"name":"<Cell: ←→↑ >","order":135,"parentId":86,"scrollX":0,"scrollY":0},
-{"id":138,"expanded":false,"name":"<Cell: ↓←→↑ >","order":136,"parentId":86,"scrollX":0,"scrollY":0}
+{"id":138,"expanded":false,"name":"<Cell: ↓←→↑ >","order":136,"parentId":86,"scrollX":619,"scrollY":350}
 ]
