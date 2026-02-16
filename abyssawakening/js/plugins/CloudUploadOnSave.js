@@ -21,6 +21,8 @@
   const TOKEN_KEY = String(p.TokenKey || "cloudsave_token");
   const SYNC_FLAG = "cloudsync_in_progress";
 
+  let pendingUploads = 0;
+
   function token() {
     try { return localStorage.getItem(TOKEN_KEY) || ""; } catch { return ""; }
   }
@@ -28,11 +30,15 @@
     try { return sessionStorage.getItem(SYNC_FLAG) === "1"; } catch { return false; }
   }
 
-  async function putSave(slotId, obj) {
-    const t = token();
-    if (!t || !API) return;
+async function putSave(slotId, obj) {
+  const t = token();
+  if (!t || !API) return;
 
+  pendingUploads++;
+
+  try {
     const payload = JSON.stringify(obj);
+
     const res = await fetch(`${API}/saves/${slotId}`, {
       method: "PUT",
       headers: {
@@ -46,7 +52,10 @@
       const data = await res.json().catch(() => ({}));
       throw new Error(data?.error || "save_upload_failed");
     }
+  } finally {
+    pendingUploads--;
   }
+}
 
   // anti double-upload rapide
   const lastAt = new Map();
@@ -90,4 +99,13 @@
   };
 
   console.log("[CloudUpload] Plugin loaded (StorageManager hook).");
+  
+  window.addEventListener("beforeunload", function (e) {
+    if (pendingUploads > 0) {
+      e.preventDefault();
+      e.returnValue = "";
+      return "";
+    }
+  });
+
 })();

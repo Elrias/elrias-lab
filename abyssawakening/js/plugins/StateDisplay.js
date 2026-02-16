@@ -81,14 +81,12 @@
 
   // ------------------------------------------------------------
   // 1) Désactiver l'icône alternée (Sprite_StateIcon) pour ACTEURS
-  //    => laisse les ennemis inchangés.
   // ------------------------------------------------------------
   const _SSI_update = Sprite_StateIcon.prototype.update;
   Sprite_StateIcon.prototype.update = function() {
     _SSI_update.call(this);
     const battler = this._battler;
     if (battler && battler.isActor && battler.isActor()) {
-      // Cache l'icône alternée sur les panels acteurs (VisuStella)
       this.visible = false;
     }
   };
@@ -108,15 +106,15 @@
     }
 
     setActor(actor) {
+      // ✅ FIX: ne reset que si l'acteur change réellement
+      if (this._actor === actor) return;
       this._actor = actor;
       this._lastKey = "";
       this.refresh();
     }
 
-    // clé simple pour refresh seulement si changement
     _makeKey() {
       if (!this._actor) return "";
-      // allIcons() retourne des indexes; on stringify
       const arr = this._actor.allIcons();
       return arr.join(",");
     }
@@ -124,10 +122,24 @@
     refresh() {
       if (!this._actor) return;
       const key = this._makeKey();
+
+      // ✅ FIX: si key vide, on veut quand même pouvoir nettoyer quand on passe de non-vide à vide.
+      // Ici, la logique de cache est OK tant qu'on ne reset pas _lastKey à "" à tort (corrigé par setActor()).
       if (key === this._lastKey) return;
       this._lastKey = key;
 
       this._icons = this._actor.allIcons().slice();
+
+      // ✅ Sécurité: si plus aucune icône, on enlève tout et on cache overflow
+      if (this._icons.length <= 0) {
+        while (this._iconSprites.length > 0) {
+          const s = this._iconSprites.pop();
+          this.removeChild(s);
+        }
+        if (this._overflowSprite) this._overflowSprite.visible = false;
+        return;
+      }
+
       this._ensureSprites();
       this._applyFrames();
       this._applyOverflow();
@@ -151,7 +163,7 @@
     _applyFrames() {
       const w = ImageManager.iconWidth;
       const h = ImageManager.iconHeight;
-      const cols = 16; // IconSet standard
+      const cols = 16;
 
       const shown = Math.min(MAX_VISIBLE, this._icons.length);
       for (let i = 0; i < shown; i++) {
@@ -182,7 +194,6 @@
       }
 
       if (!this._overflowSprite) {
-        // petit texte via Bitmap
         const b = new Bitmap(ICON_SIZE, 18);
         const s = new Sprite(b);
         this._overflowSprite = s;
@@ -206,8 +217,7 @@
   }
 
   // ------------------------------------------------------------
-  // 3) Décaler le contenu du panneau acteur (comme avant)
-  //    + Attacher nos sprites au Window_BattleStatus
+  // 3) Décaler le contenu du panneau acteur + Attacher nos sprites
   // ------------------------------------------------------------
   const _itemRect = Window_BattleStatus.prototype.itemRect;
   const _itemRectWithPadding = Window_BattleStatus.prototype.itemRectWithPadding;
@@ -234,12 +244,10 @@
     return rect;
   };
 
-  // Crée / met à jour les sprites icônes pour chaque actor slot
   Window_BattleStatus.prototype._vsStack_ensureIconSprites = function() {
     if (this._vsStack_iconSprites) return;
     this._vsStack_iconSprites = [];
 
-    // addInnerChild existe en MZ : ajoute dans la zone client (avec padding)
     const add = this.addInnerChild ? this.addInnerChild.bind(this) : this.addChild.bind(this);
 
     for (let i = 0; i < this.maxItems(); i++) {
@@ -260,17 +268,19 @@
         spr.visible = false;
         continue;
       }
+
       const r = this._vsStack_baseItemRectWithPadding(i);
       const blockW = (COLS * ICON_SIZE) + ((COLS - 1) * COL_GAP);
       spr.x = r.x + r.width - blockW - ICON_OX;
       spr.y = r.y + ICON_OY;
       spr.visible = true;
+
+      // ✅ FIX: ne pas reset _lastKey si même actor
       spr.setActor(actor);
       spr.refresh();
     }
   };
 
-  // Hook drawItem: laisse VisuStella dessiner (shift ON), puis update nos sprites
   const _drawItem = Window_BattleStatus.prototype.drawItem;
   Window_BattleStatus.prototype.drawItem = function(index) {
     this._vsStack_shiftActive = true;
@@ -279,11 +289,59 @@
     this._vsStack_updateIconSprites();
   };
 
-  // sécurité : update régulier (si states changent sans refresh complet)
   const _WB_update = Window_BattleStatus.prototype.update;
   Window_BattleStatus.prototype.update = function() {
     _WB_update.call(this);
     if (this.visible) this._vsStack_updateIconSprites();
   };
 
+  // ------------------------------------------------------------
+  // 4) Force redraw du slot acteur quand state/buff/debuff change
+  // ------------------------------------------------------------
+  function _vsStack_requestActorRedraw(battler) {
+    const scene = SceneManager._scene;
+    const win = scene && scene._statusWindow;
+    if (!win || !win.redrawItem) return;
+
+    if (battler && battler.isActor && battler.isActor()) {
+      const index = battler.index();
+      if (index >= 0) win.redrawItem(index);
+    }
+  }
+
+  const _GBB_addState = Game_BattlerBase.prototype.addState;
+  Game_BattlerBase.prototype.addState = function(stateId) {
+    _GBB_addState.call(this, stateId);
+    _vsStack_requestActorRedraw(this);
+  };
+
+  const _GBB_removeState = Game_BattlerBase.prototype.removeState;
+  Game_BattlerBase.prototype.removeState = function(stateId) {
+    _GBB_removeState.call(this, stateId);
+    _vsStack_requestActorRedraw(this);
+  };
+
+  const _GBB_eraseState = Game_BattlerBase.prototype.eraseState;
+  Game_BattlerBase.prototype.eraseState = function(stateId) {
+    _GBB_eraseState.call(this, stateId);
+    _vsStack_requestActorRedraw(this);
+  };
+
+  const _GBB_addBuff = Game_BattlerBase.prototype.addBuff;
+  Game_BattlerBase.prototype.addBuff = function(paramId, turns) {
+    _GBB_addBuff.call(this, paramId, turns);
+    _vsStack_requestActorRedraw(this);
+  };
+
+  const _GBB_removeBuff = Game_BattlerBase.prototype.removeBuff;
+  Game_BattlerBase.prototype.removeBuff = function(paramId) {
+    _GBB_removeBuff.call(this, paramId);
+    _vsStack_requestActorRedraw(this);
+  };
+
+  const _GBB_eraseBuff = Game_BattlerBase.prototype.eraseBuff;
+  Game_BattlerBase.prototype.eraseBuff = function(paramId) {
+    _GBB_eraseBuff.call(this, paramId);
+    _vsStack_requestActorRedraw(this);
+  };
 })();
