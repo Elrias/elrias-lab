@@ -122,9 +122,6 @@
     refresh() {
       if (!this._actor) return;
       const key = this._makeKey();
-
-      // ✅ FIX: si key vide, on veut quand même pouvoir nettoyer quand on passe de non-vide à vide.
-      // Ici, la logique de cache est OK tant qu'on ne reset pas _lastKey à "" à tort (corrigé par setActor()).
       if (key === this._lastKey) return;
       this._lastKey = key;
 
@@ -275,7 +272,6 @@
       spr.y = r.y + ICON_OY;
       spr.visible = true;
 
-      // ✅ FIX: ne pas reset _lastKey si même actor
       spr.setActor(actor);
       spr.refresh();
     }
@@ -297,16 +293,26 @@
 
   // ------------------------------------------------------------
   // 4) Force redraw du slot acteur quand state/buff/debuff change
+  //    ✅ FIX: utiliser l'index DANS battleMembers, ignorer les réservistes
   // ------------------------------------------------------------
   function _vsStack_requestActorRedraw(battler) {
     const scene = SceneManager._scene;
     const win = scene && scene._statusWindow;
     if (!win || !win.redrawItem) return;
 
-    if (battler && battler.isActor && battler.isActor()) {
-      const index = battler.index();
-      if (index >= 0) win.redrawItem(index);
-    }
+    if (!battler || !battler.isActor || !battler.isActor()) return;
+
+    // ✅ Après combat, removeBattleStates peut toucher aussi les réservistes.
+    // On n'update le HUD BattleStatus que pour les battle members.
+    if (!battler.isBattleMember || !battler.isBattleMember()) return;
+
+    const index = $gameParty.battleMembers().indexOf(battler);
+    if (index < 0) return;
+
+    // Guard additionnel : si l'API actor(i) existe, vérifie que ça retourne bien quelque chose.
+    if (win.actor && !win.actor(index)) return;
+
+    win.redrawItem(index);
   }
 
   const _GBB_addState = Game_BattlerBase.prototype.addState;
