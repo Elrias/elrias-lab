@@ -1,99 +1,146 @@
 /*:
- * @plugindesc Show if skills are ready for each actor below TP
+ * @plugindesc Skill Ready Spheres (pixel perfect, anchored to TP gauge; compatible StateDisplay)
  * @target MZ
- * @help SkillReady.js
- * 
- * Show if skills are ready for each actor below TP
+ * @help
+ * Affiche des sphères (ready / notReady) sous la jauge TP de chaque acteur.
+ * L'ancrage se fait sur la position réelle de la jauge TP (placeGauge),
+ * donc stable même si un autre plugin décale/modifie itemRect/itemRectWithPadding.
  */
-//=============================================================================
-// RPG Maker MZ - Display Skills in Battle Status Window
-//=============================================================================
 
 (() => {
-    // Constantes de position pour les icônes
-    const ICON_X_OFFSET = 32; // Décalage X par rapport au côté droit de la fenêtre
-    const ICON_Y_OFFSET = -22; // Décalage Y par rapport au bas de la fenêtre
-    const ICON_SPACING = 33; // Espacement fixe entre les icônes en pixels
-    const HUD_SHIFT_X = -40; // Décalage UI
+  // --------------------------------------------------------------------------
+  // CONFIG
+  // --------------------------------------------------------------------------
+  const MAX_SKILLS = 4;          // max skills affichés
+  const ICON_SPACING = 33;       // espacement entre sphères (dans un même groupe)
+  const ICON_Y_FROM_TP = 30;     // distance verticale sous la jauge TP (px)
 
-    // Surcharge de la méthode drawItem pour ajouter l'affichage des compétences
-    const _Window_BattleStatus_drawItem = Window_BattleStatus.prototype.drawItem;
-    Window_BattleStatus.prototype.drawItem = function(index) {
-        _Window_BattleStatus_drawItem.call(this, index); // Appel de la méthode originale
-        this.drawSkills(index); // Ajout de l'affichage des compétences
-    };
+  // "left"  = commence sous le début de la jauge TP
+  // "center"= centre le groupe sous la jauge TP
+  const ANCHOR_MODE = "left";    // "left" | "center"
 
-    // Méthode pour dessiner les icônes des compétences
-    Window_BattleStatus.prototype.drawSkills = function(index) {
-        const actor = $gameParty.battleMembers()[index];
-        // Filtrer les compétences pour n'inclure que celles de type 1
-        const skills = actor.skills().filter(skill => skill.stypeId === 1);
-        const rect = this.itemRectWithPadding(index);
-        const iconX = rect.x + ICON_SPACING + ICON_X_OFFSET + HUD_SHIFT_X;
-        let iconY = rect.y + rect.height + ICON_Y_OFFSET;
-        
-        skills.forEach((skill, i) => {
-            // Charger l'image appropriée en fonction de la disponibilité de la compétence
-            const iconBitmap = ImageManager.loadSystem(actor.canUse(skill) ? 'skillReady' : 'skillNotReady');
-            const iconIndex = i;
-            // Dessiner l'icône de la compétence
-            this.contents.blt(iconBitmap, 0, 0, iconBitmap.width, iconBitmap.height, iconX + iconIndex * ICON_SPACING, iconY);
-        });
-    };
+  // micro ajustements globaux (si tu veux peaufiner au pixel)
+  const FINE_X = 5;
+  const FINE_Y = 0;
 
-    // Méthode pour rafraîchir les icônes de compétences pour tous les acteurs
-    Window_BattleStatus.prototype.refreshSkills = function() {
-        for (let i = 0; i < this.maxItems(); i++) {
-            this.refreshSkillIcons(i);
-        }
-    };
+  // --------------------------------------------------------------------------
+  // INTERNAL: store TP gauge positions by actorId
+  // --------------------------------------------------------------------------
+  const _tpGaugePosByActorId = new Map();
 
-    // Méthode pour rafraîchir les icônes de compétences pour un acteur spécifique
-    Window_BattleStatus.prototype.refreshSkillIcons = function(index) {
-        const actor = $gameParty.battleMembers()[index];
-        const skills = actor.skills().filter(skill => skill.stypeId === 1);
-        const rect = this.itemRectWithPadding(index);
-        const iconX = rect.x + ICON_SPACING + ICON_X_OFFSET + HUD_SHIFT_X;
-        let iconY = rect.y + rect.height + ICON_Y_OFFSET;
+  // --------------------------------------------------------------------------
+  // Capture TP gauge position
+  // Many HUDs / MZ uses placeGauge(actor, "tp", x, y)
+  // --------------------------------------------------------------------------
+  const _Window_StatusBase_placeGauge = Window_StatusBase.prototype.placeGauge;
+  Window_StatusBase.prototype.placeGauge = function(actor, type, x, y) {
+    if (this instanceof Window_BattleStatus && actor && type === "tp") {
+      const gaugeW = (this.gaugeLineWidth && this.gaugeLineWidth()) ? this.gaugeLineWidth() : 128;
+      _tpGaugePosByActorId.set(actor.actorId(), { x, y, w: gaugeW });
+    }
+    return _Window_StatusBase_placeGauge.call(this, actor, type, x, y);
+  };
 
-        skills.forEach((skill, i) => {
-            // Charger l'image appropriée en fonction de la disponibilité de la compétence
-            const iconBitmap = ImageManager.loadSystem(actor.canUse(skill) ? 'skillReady' : 'skillNotReady');
-            const iconIndex = i;
-            // Effacer l'icône précédente et dessiner la nouvelle
-            this.contents.clearRect(iconX + iconIndex * ICON_SPACING, iconY, iconBitmap.width, iconBitmap.height);
-            this.contents.blt(iconBitmap, 0, 0, iconBitmap.width, iconBitmap.height, iconX + iconIndex * ICON_SPACING, iconY);
-        });
-    };
+  // --------------------------------------------------------------------------
+  // drawItem alias: draw spheres after default slot draw
+  // (stable during redrawItem / target selection)
+  // --------------------------------------------------------------------------
+  const _Window_BattleStatus_drawItem = Window_BattleStatus.prototype.drawItem;
+  Window_BattleStatus.prototype.drawItem = function(index) {
+    _Window_BattleStatus_drawItem.call(this, index);
+    this.drawSkillSpheres(index);
+  };
 
-    // Surcharge de la méthode startTurn de BattleManager pour rafraîchir les icônes au début de chaque tour
-    const _BattleManager_startTurn = BattleManager.startTurn;
-    BattleManager.startTurn = function() {
-        _BattleManager_startTurn.call(this); // Appel de la méthode originale
-        SceneManager._scene._statusWindow.refreshSkills(); // Rafraîchir les icônes des compétences
-    };
+  // --------------------------------------------------------------------------
+  // Draw spheres
+  // --------------------------------------------------------------------------
+  Window_BattleStatus.prototype.drawSkillSpheres = function(index) {
+    const actor = this.actor(index);
+    if (!actor) return;
 
-    // Surcharge de la méthode endAction de BattleManager pour rafraîchir les icônes après chaque action
-    const _BattleManager_endAction = BattleManager.endAction;
-    BattleManager.endAction = function() {
-        _BattleManager_endAction.call(this); // Appel de la méthode originale
-        SceneManager._scene._statusWindow.refreshSkills(); // Rafraîchir les icônes des compétences après chaque action
-    };
+    const tp = _tpGaugePosByActorId.get(actor.actorId());
+    if (!tp) return; // TP gauge not placed yet
 
-    // Surcharge de la méthode apply de Game_Action pour rafraîchir les icônes après l'utilisation d'une compétence de type 1
-    const _Game_Action_apply = Game_Action.prototype.apply;
-    Game_Action.prototype.apply = function(target) {
-        _Game_Action_apply.call(this, target); // Appel de la méthode originale
-        if (this.isSkill() && this.item().stypeId === 1) { // Vérifier si l'action est une compétence de type 1
-            SceneManager._scene._statusWindow.refreshSkillIcons(this.subject().index()); // Rafraîchir les icônes pour l'acteur
-        }
-    };
+    const skills = actor
+      .skills()
+      .filter(s => s.stypeId === 1)
+      .slice(0, MAX_SKILLS);
 
-    // Surcharge de la méthode update de Game_Battler pour vérifier et rafraîchir les compétences après chaque mise à jour
-    const _Game_Battler_updateCooldowns = Game_Battler.prototype.updateCooldowns;
+    const sample = ImageManager.loadSystem("skillReady");
+    const iconW = sample.width;
+    const iconH = sample.height;
+
+    const count = skills.length;
+    const totalW = count > 0 ? (iconW + (count - 1) * ICON_SPACING) : 0;
+
+    // X anchored to TP gauge
+    let startX;
+    if (ANCHOR_MODE === "center") {
+      startX = Math.round(tp.x + (tp.w - totalW) / 2);
+    } else {
+      startX = tp.x;
+    }
+    startX += FINE_X;
+
+    // Y under TP gauge
+    const y = tp.y + ICON_Y_FROM_TP + FINE_Y;
+
+    // Clear band where spheres are drawn (slightly wider than gauge)
+    this.contents.clearRect(tp.x - 6, y, tp.w + 12, iconH);
+
+    // Draw each sphere
+    for (let i = 0; i < count; i++) {
+      const skill = skills[i];
+      const ready = actor.canUse(skill);
+      const bmp = ImageManager.loadSystem(ready ? "skillReady" : "skillNotReady");
+      this.contents.blt(bmp, 0, 0, iconW, iconH, startX + i * ICON_SPACING, y);
+    }
+  };
+
+  // --------------------------------------------------------------------------
+  // Refresh helpers (always use redrawItem to keep things consistent)
+  // --------------------------------------------------------------------------
+  Window_BattleStatus.prototype.refreshSkillIcons = function(index) {
+    this.redrawItem(index);
+  };
+
+  Window_BattleStatus.prototype.refreshSkills = function() {
+    for (let i = 0; i < this.maxItems(); i++) this.redrawItem(i);
+  };
+
+  // --------------------------------------------------------------------------
+  // Hooks to trigger refresh (optional but useful)
+  // --------------------------------------------------------------------------
+  const _BattleManager_startTurn = BattleManager.startTurn;
+  BattleManager.startTurn = function() {
+    _BattleManager_startTurn.call(this);
+    const w = SceneManager._scene?._statusWindow;
+    if (w) w.refreshSkills();
+  };
+
+  const _BattleManager_endAction = BattleManager.endAction;
+  BattleManager.endAction = function() {
+    _BattleManager_endAction.call(this);
+    const w = SceneManager._scene?._statusWindow;
+    if (w) w.refreshSkills();
+  };
+
+  const _Game_Action_apply = Game_Action.prototype.apply;
+  Game_Action.prototype.apply = function(target) {
+    _Game_Action_apply.call(this, target);
+    if (this.isSkill() && this.item().stypeId === 1) {
+      const w = SceneManager._scene?._statusWindow;
+      if (w) w.refreshSkillIcons(this.subject().index());
+    }
+  };
+
+  // If a cooldown plugin adds updateCooldowns, refresh periodically
+  const _Game_Battler_updateCooldowns = Game_Battler.prototype.updateCooldowns;
+  if (_Game_Battler_updateCooldowns) {
     Game_Battler.prototype.updateCooldowns = function() {
-        _Game_Battler_updateCooldowns.call(this); // Appel de la méthode originale
-        SceneManager._scene._statusWindow.refreshSkills(); // Rafraîchir les icônes des compétences après mise à jour des temps de rechargement
+      _Game_Battler_updateCooldowns.call(this);
+      const w = SceneManager._scene?._statusWindow;
+      if (w) w.refreshSkills();
     };
-
+  }
 })();
