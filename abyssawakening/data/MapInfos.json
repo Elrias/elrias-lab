@@ -1,6 +1,6 @@
 [
 null,
-{"id":1,"expanded":true,"name":"X - Camp","order":22,"parentId":0,"scrollX":821,"scrollY":450},
+{"id":1,"expanded":true,"name":"X - Camp","order":22,"parentId":0,"scrollX":813,"scrollY":450},
 {"id":2,"expanded":true,"name":"DUNGEON-1","order":28,"parentId":6,"scrollX":540.6666666666666,"scrollY":316.3333333333333,"quick":false},
 {"id":3,"expanded":false,"name":"HQ","order":23,"parentId":1,"scrollX":869,"scrollY":673,"quick":false},
 {"id":4,"expanded":false,"name":"Shop","order":24,"parentId":1,"scrollX":811,"scrollY":759,"quick":false},

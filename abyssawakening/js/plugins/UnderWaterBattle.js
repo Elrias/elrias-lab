@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc Underwater rules (Breath via states 239-249, Agitation 255) - Activation via Plugin Command - Breath + immediately on heal (max +2 per turn, includes lifesteal/regen via gainHp)
+ * @plugindesc Underwater rules (Breath via states 239-249, Agitation 255) - Activation via Plugin Command - Breath + immediately on heal (max +1 per turn, includes lifesteal/regen via gainHp) + Drown DoT once per turn
  * @author You
  *
  * @param stypeId1
@@ -24,7 +24,7 @@
  * @text Breath gain cap per turn
  * @type number
  * @min 0
- * @default 2
+ * @default 1
  * @desc Nombre maximum de +Breath par tour via gains de HP (soins/regen/lifesteal).
  *
  * @command Enable
@@ -46,12 +46,12 @@
  * Breath :
  * - Breath baisse en fin de tour (voir règles plus bas)
  * - Breath augmente IMMEDIATEMENT à chaque gain de HP (heal/lifesteal/regen),
- *   limité à +2 par tour et par acteur (param breathGainCapPerTurn).
+ *   limité à +N par tour et par acteur (param breathGainCapPerTurn).
  *
  * Fin de tour :
  * - Breath -1 sauf si Guard utilisé ce tour
  * - -1 supplémentaire si Agitation
- * - Si Breath == 0 : DoT % max HP
+ * - Si Breath == 0 : DoT % max HP (verrouillé à 1 fois par tour)
  *
  * Agitation :
  * - 2+ skills Type 1 dans le même tour => Agitation (dès la 2e)
@@ -69,7 +69,7 @@
   const STYPE_1 = Number(P.stypeId1 || 1);
   const STYPE_2 = Number(P.stypeId2 || 2);
   const DOT_PERCENT = Number(P.dotPercentAtBreath0 || 25);
-  const HEAL_BREATH_CAP = Number(P.breathGainCapPerTurn || 2);
+  const HEAL_BREATH_CAP = Number(P.breathGainCapPerTurn || 1);
 
   // === TES IDS ===
   const STATE_AGITATION = 255;
@@ -101,10 +101,6 @@
 
   function stateToBreathValue(stateId) {
     return BREATH_STATE_0 - stateId;
-  }
-
-  function isBreathState(stateId) {
-    return stateId >= BREATH_STATE_10 && stateId <= BREATH_STATE_0;
   }
 
   function actorHasBreath(actor) {
@@ -166,7 +162,7 @@
   const _BM_startTurn = BattleManager.startTurn;
   BattleManager.startTurn = function() {
     _BM_startTurn.call(this);
-    this._uwInitTurnData(); // reset cap +2 / tour
+    this._uwInitTurnData(); // reset cap / tour
   };
 
   const _BM_endBattle = BattleManager.endBattle;
@@ -226,7 +222,7 @@
 
   // -----------------------------
   // IMMEDIATE Breath gain on ANY HP gain (heal/lifesteal/regen/scripts...)
-  // Limited to +2 per actor per turn
+  // Limited to +N per actor per turn (default 1)
   // -----------------------------
   const _GB_gainHp = Game_Battler.prototype.gainHp;
   Game_Battler.prototype.gainHp = function(value) {
@@ -239,7 +235,6 @@
     const actor = this;
     if (!actorHasBreath(actor)) return;     // only after Breath is applied by the boss
 
-    // Ensure turn data exists
     if (!BattleManager._uw) BattleManager._uwInitTurnData?.call(BattleManager);
 
     const id = actor.actorId();
@@ -252,7 +247,7 @@
 
   // -----------------------------
   // End turn: Breath decreases + DoT at Breath 0
-  // NOTE: Breath increase from healing is handled immediately in gainHp()
+  // DoT is LOCKED to once per troop turn per actor (prevents multi-proc under STB)
   // -----------------------------
   const _BM_endTurn = BattleManager.endTurn;
   BattleManager.endTurn = function() {
@@ -261,6 +256,8 @@
     _BM_endTurn.call(this);
 
     if (underwater) {
+      const currentTurn = ($gameTroop && $gameTroop.turnCount) ? $gameTroop.turnCount() : 0;
+
       $gameParty.battleMembers().forEach(actor => {
         if (!actorHasBreath(actor)) return;
 
@@ -271,10 +268,16 @@
 
         const b = getBreath(actor);
         if (b !== null && b <= 0 && DOT_PERCENT > 0) {
-          const dmg = Math.floor(actor.mhp * DOT_PERCENT / 100);
-          if (dmg > 0) {
-            actor.gainHp(-dmg);
-            actor.onDamage(dmg);
+          // Anti multi-proc : 1 fois par "turnCount" de troop
+          actor._uwLastDrownTurn = actor._uwLastDrownTurn ?? -999999;
+          if (actor._uwLastDrownTurn !== currentTurn) {
+            actor._uwLastDrownTurn = currentTurn;
+
+            const dmg = Math.floor(actor.mhp * DOT_PERCENT / 100);
+            if (dmg > 0) {
+              actor.gainHp(-dmg);
+              actor.onDamage(dmg);
+            }
           }
         }
       });
