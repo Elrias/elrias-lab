@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc Underwater rules (Breath via states 239-249, Agitation 255) - Activation via Plugin Command - Breath + immediately on heal (max +1 per turn, includes lifesteal/regen via gainHp) + Drown DoT once per turn
+ * @plugindesc Underwater rules (Breath via states 239-249, Agitation 255) - Activation via Plugin Command - Breath + immediately on heal (max +1 per turn, includes lifesteal/regen via gainHp) + Drown DoT once per turn + stype count via startAction (VisuStella-safe)
  * @author You
  *
  * @param stypeId1
@@ -92,7 +92,6 @@
 
   // -----------------------------
   // Breath mapping helpers
-  // value 10 -> 239 ; value 0 -> 249
   // -----------------------------
   function breathValueToState(value) {
     const v = Math.max(0, Math.min(BREATH_MAX, Math.floor(value)));
@@ -162,7 +161,7 @@
   const _BM_startTurn = BattleManager.startTurn;
   BattleManager.startTurn = function() {
     _BM_startTurn.call(this);
-    this._uwInitTurnData(); // reset cap / tour
+    this._uwInitTurnData(); // reset cap / tour + compteurs
   };
 
   const _BM_endBattle = BattleManager.endBattle;
@@ -182,36 +181,44 @@
   };
 
   // -----------------------------
-  // Track actions: guard / stype usage
-  // IMPORTANT: apply() is called per target; we count skills once per action.
+  // FIX: Count Type1/Type2 + detect Guard in startAction
+  // This is VisuStella-safe (works even if apply() isn't used normally)
   // -----------------------------
-  const _GA_apply = Game_Action.prototype.apply;
-  Game_Action.prototype.apply = function(target) {
-    _GA_apply.call(this, target);
+  const _BM_startAction = BattleManager.startAction;
+  BattleManager.startAction = function() {
+    _BM_startAction.call(this);
 
-    if (!BattleManager.isUnderwater()) return;
+    if (!this.isUnderwater()) return;
 
-    const subject = this.subject();
+    const subject = this._subject;
     if (!subject || !subject.isActor || !subject.isActor()) return;
 
-    if (this.isGuard && this.isGuard()) {
-      BattleManager._uw.guarded.add(subject.actorId());
+    // current action
+    const action = subject.currentAction ? subject.currentAction() : null;
+    if (!action) return;
+
+    if (!this._uw) this._uwInitTurnData();
+
+    // Guard used this turn
+    if (action.isGuard && action.isGuard()) {
+      this._uw.guarded.add(subject.actorId());
+      return; // pas de stype à compter pour Guard
     }
 
-    const item = this.item();
-    if (!DataManager.isSkill(item)) return;
+    const item = action.item ? action.item() : null;
+    if (!item || !DataManager.isSkill(item)) return;
 
-    // Count only once per action (multi-target / repeats won't double count)
-    if (this._uwCounted) return;
-    this._uwCounted = true;
+    // Count only once per action
+    if (action._uwCounted) return;
+    action._uwCounted = true;
 
     const stypeId = item.stypeId;
 
     if (stypeId === STYPE_1) {
       const id = subject.actorId();
-      const prev = BattleManager._uw.stype1Count.get(id) || 0;
+      const prev = this._uw.stype1Count.get(id) || 0;
       const next = prev + 1;
-      BattleManager._uw.stype1Count.set(id, next);
+      this._uw.stype1Count.set(id, next);
       if (next >= 2) subject.addState(STATE_AGITATION);
     }
 
@@ -219,6 +226,12 @@
       subject.addState(STATE_AGITATION);
     }
   };
+
+  // -----------------------------
+  // Keep Game_Action.apply hook ONLY if you still need something there.
+  // Here we leave it untouched (no stype counting) to avoid double count.
+  // -----------------------------
+  // (No override needed)
 
   // -----------------------------
   // IMMEDIATE Breath gain on ANY HP gain (heal/lifesteal/regen/scripts...)
