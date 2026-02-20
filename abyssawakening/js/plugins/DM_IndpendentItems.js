@@ -200,6 +200,26 @@ Game_Independents.prototype.coreShopPluginCheck = function() {
     }
 };
 
+Dungeonmind.II.refreshClonedDatabaseObject = function(obj) {
+  if (!obj) return;
+  try {
+    // MZ: onLoad() appelle extractMetadata() et peut être hooké par d'autres plugins (VisuStella)
+    if (DataManager && typeof DataManager.onLoad === "function") {
+      DataManager.onLoad(obj);
+      return;
+    }
+  } catch (e) {
+    console.warn("DM_IndependentItems: DataManager.onLoad failed, fallback to extractMetadata", e);
+  }
+  try {
+    if (DataManager && typeof DataManager.extractMetadata === "function") {
+      DataManager.extractMetadata(obj);
+    }
+  } catch (e) {
+    console.warn("DM_IndependentItems: extractMetadata failed", e);
+  }
+};
+
 Game_Independents.prototype.gainIndependentItem = function(oldItem, value) {
     itemId = oldItem.id;
     //*items
@@ -210,6 +230,7 @@ Game_Independents.prototype.gainIndependentItem = function(oldItem, value) {
         obj.originalId = $dataItems[itemId].id;
         $gameIndependents._independentItems[$gameIndependents._independentId-1] = obj;
         $dataItems[$gameIndependents._independentId-1] = obj;
+        Dungeonmind.II.refreshClonedDatabaseObject(obj);
         $gameParty.gainItem($gameIndependents._independentItems[$gameIndependents._independentId-1], value);
     }
     //*weapons
@@ -220,6 +241,7 @@ Game_Independents.prototype.gainIndependentItem = function(oldItem, value) {
         obj.originalId = $dataWeapons[itemId].id;
         $gameIndependents._independentWeapons[$gameIndependents._independentId-1] = obj;
         $dataWeapons[$gameIndependents._independentId-1] = obj;
+        Dungeonmind.II.refreshClonedDatabaseObject(obj);
         $gameParty.gainItem($gameIndependents._independentWeapons[$gameIndependents._independentId-1], value);
     }
     //*armors
@@ -230,6 +252,7 @@ Game_Independents.prototype.gainIndependentItem = function(oldItem, value) {
         obj.originalId = $dataArmors[itemId].id;
         $gameIndependents._independentArmors[$gameIndependents._independentId-1] = obj;
         $dataArmors[$gameIndependents._independentId-1] = obj;
+        Dungeonmind.II.refreshClonedDatabaseObject(obj);
         $gameParty.gainItem($gameIndependents._independentArmors[$gameIndependents._independentId-1], value);
     }
 };
@@ -345,51 +368,37 @@ Scene_Map.prototype.start = function() {
 Dungeonmind.II.ALIAS_SceneShop_doBuy = Scene_Shop.prototype.doBuy;
 
 Scene_Shop.prototype.doBuy = function(number) {
-    if(this._item.meta.independentItem) {
-        //*items
-        if(this._item.etypeId === undefined) {
-            $gameParty.loseGold(number * this.buyingPrice());
-            while(number > 0) {
-                obj = {};
-                obj = JsonEx.makeDeepCopy($dataItems[this._item.id]);
-                obj.id = $gameIndependents._independentId++;
-                obj.originalId = this._item.id;
-                $gameIndependents._independentItems[$gameIndependents._independentId-1]
-                $dataItems[$gameIndependents._independentId-1] = obj;
-                $gameParty.gainItem($gameIndependents._independentItems[$gameIndependents._independentId-1], 1);
-                number--;
-            }
+    const item = this._item;
+
+    // Si pas indépendant, comportement normal
+    if (!item || !item.meta || !item.meta.independentItem) {
+        return Dungeonmind.II.ALIAS_SceneShop_doBuy.call(this, number);
+    }
+
+    // 1) Laisse la boutique (y compris VisuStella currency items) gérer l'achat + le paiement
+    // -> elle ajoute l'item DB dans l'inventaire, et consomme la monnaie (items ou gold)
+    Dungeonmind.II.ALIAS_SceneShop_doBuy.call(this, number);
+
+    // 2) Swap: remplace les copies DB gagnées par des copies indépendantes
+    // Sécurité: si pas de $gameIndependents, on ne fait rien
+    if (!window.$gameIndependents || typeof $gameIndependents.gainIndependentItem !== "function") return;
+
+    // Empêche les doubles conversions récursives si d'autres hooks existent
+    if ($gameParty._dmShopSwapLock) return;
+    $gameParty._dmShopSwapLock = true;
+    try {
+        for (let i = 0; i < number; i++) {
+            // Si la boutique n'a pas réellement donné l'objet (ex: manque de monnaie), on stop
+            if ($gameParty.numItems(item) <= 0) break;
+
+            // Retire une copie DB...
+            $gameParty.loseItem(item, 1, false);
+
+            // ...et donne une copie indépendante à la place (sans repayer)
+            $gameIndependents.gainIndependentItem(item, 1);
         }
-        //*weapons
-        if(this._item.etypeId === 1) {
-            $gameParty.loseGold(number * this.buyingPrice());
-            while(number > 0) {
-                obj = {};
-                obj = JsonEx.makeDeepCopy($dataWeapons[this._item.id]);
-                obj.id = $gameIndependents._independentId++;
-                obj.originalId = this._item.id;
-                $gameIndependents._independentWeapons[$gameIndependents._independentId-1]
-                $dataWeapons[$gameIndependents._independentId-1] = obj;
-                $gameParty.gainItem($gameIndependents._independentWeapons[$gameIndependents._independentId-1], 1);
-                number--;
-            }
-        }
-        //*armors
-        if(this._item.etypeId > 1) {
-            $gameParty.loseGold(number * this.buyingPrice());
-            while(number > 0) {
-                obj = {};
-                obj = JsonEx.makeDeepCopy($dataArmors[this._item.id]);
-                obj.id = $gameIndependents._independentId++;
-                obj.originalId = this._item.id;
-                $gameIndependents._independentArmors[$gameIndependents._independentId-1]
-                $dataArmors[$gameIndependents._independentId-1] = obj;
-                $gameParty.gainItem($gameIndependents._independentArmors[$gameIndependents._independentId-1], 1);
-                number--;
-            }
-        }
-    } else {
-        Dungeonmind.II.ALIAS_SceneShop_doBuy.call(this, number);
+    } finally {
+        $gameParty._dmShopSwapLock = false;
     }
 };
 

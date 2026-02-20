@@ -16,10 +16,10 @@
  * @help
  * Cette version applique une formule d'EXP par tranche :
  * - Niv 1 à 19  : 50 * niveau
- * - Niv 20 à 34 : 200 * niveau
- * - Niv 35 à 49 : 800 * niveau
- * - Niv 50 à 74 : 3200 * niveau
- * - Niv 75 à 97 : 12800 * niveau
+ * - Niv 20 à 34 : 500 * niveau
+ * - Niv 35 à 49 : 1500 * niveau
+ * - Niv 50 à 74 : 7500 * niveau
+ * - Niv 75 à 97 : 20000 * niveau
  * - Niv 98 à 99 : 50000 * niveau
  */
 
@@ -29,11 +29,15 @@
 
     // Fonction pour déterminer le coût d’un niveau donné
     const expFor = (lvl) => {
-      if (lvl <= 19) return 50 * lvl;
-      if (lvl <= 34) return 200 * lvl;
-      if (lvl <= 49) return 800 * lvl;
-      if (lvl <= 74) return 3200 * lvl;
-      if (lvl <= 97) return 12800 * lvl;
+      if (lvl <= 10) return 50 * lvl;
+      if (lvl <= 20) return 100 * lvl;
+      if (lvl <= 30) return 250 * lvl;
+      if (lvl <= 40) return 500 * lvl;
+      if (lvl <= 50) return 1500 * lvl;
+      if (lvl <= 60) return 3000 * lvl;
+      if (lvl <= 70) return 6000 * lvl;
+      if (lvl <= 80) return 12000 * lvl;
+      if (lvl <= 97) return 20000 * lvl;
       return 50000 * lvl;
     };
 

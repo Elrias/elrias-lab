@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc Glyph Craft UI (Pro v4) - Bigger multi-line Preview + weight + skill description, lists smaller (scroll), crafts DM_IndependentItems armor, exits on success.
+ * @plugindesc Glyph Craft UI (Pro v6) - Single vertical menu (A/B/C + Confirm + Cancel) + popup list. Keyboard-friendly. Crafts DM_IndependentItems armor, exits on success.
  * @author You
  *
  * @param TemplateArmorId
@@ -44,7 +44,7 @@
   const USE_CUSTOM_NAME_PATCH = String(params.UseCustomNamePatch || "true") === "true";
 
   // -----------------------------
-  // Meta helpers (trim)
+  // Meta helpers
   // -----------------------------
   function metaOf(item) { return item?.meta || {}; }
   function mstr(item, key) { return String(metaOf(item)[key] ?? "").trim(); }
@@ -76,9 +76,10 @@
   }
 
   // -----------------------------
-  // UI helpers (highlight)
+  // UI helpers
   // -----------------------------
   function highlightColor() { return ColorManager.textColor(2); } // red-ish
+
   function drawInlineColored(win, x, y, parts) {
     let dx = x;
     for (const p of parts) {
@@ -91,7 +92,6 @@
     win.resetTextColor();
   }
 
-  // split long text into wrapped lines based on window width
   function wrapText(win, text, maxWidth) {
     const words = String(text || "").split(/\s+/);
     const lines = [];
@@ -103,7 +103,6 @@
         line = test;
       } else {
         if (line) lines.push(line);
-        // if a single word is too long, hard cut
         if (win.textWidth(w) > maxWidth) {
           let chunk = "";
           for (const ch of w) {
@@ -126,7 +125,6 @@
 
   // -----------------------------
   // Condition phrasing (REACTS)
-  // Only returns the "when/if ..." clause
   // -----------------------------
   function titleCase(s) {
     return String(s || "")
@@ -155,7 +153,10 @@
       case "end_tp_at_least": return arg ? `if the bearer ends the turn with at least ${arg} TP` : "if the bearer ends the turn with enough TP";
       case "end_hp_below": return arg ? `if the bearer ends the turn below ${arg}% HP` : "if the bearer ends the turn below a HP threshold";
       case "end_hp_above": return arg ? `if the bearer ends the turn above ${arg}% HP` : "if the bearer ends the turn above a HP threshold";
-      case "skill_type_use": if (arg === "1") return "when the bearer uses a skill"; if (arg === "2") return "when the bearer uses an EX"; return "when the bearer uses a skill";
+      case "skill_type_use":
+        if (arg === "1") return "when the bearer uses a skill";
+        if (arg === "2") return "when the bearer uses an EX";
+        return "when the bearer uses a skill";
       case "damage_taken_skill_type": return arg ? `when the bearer takes damage from special attacks` : "when the bearer takes damage from a given skill type";
       case "damage_dealt_this_turn": return arg ? `if the bearer deals at least ${arg} hit(s) of damage this turn` : "if the bearer deals enough hits of damage this turn";
       default: return `when the bearer: ${titleCase(raw.replace(/_/g, " "))}`;
@@ -215,12 +216,16 @@
     return { ok: true, armor };
   }
 
-  // -----------------------------
+  // =========================================================
   // Windows
-  // -----------------------------
+  // =========================================================
+
   class Window_GlyphPreview extends Window_Base {
     initialize(rect) {
       super.initialize(rect);
+      this.opacity = 255;
+      this.backOpacity = 255;
+
       this._a = null; this._b = null; this._c = null;
       this._weight = 0;
       this.refresh();
@@ -232,7 +237,6 @@
       this.refresh();
     }
 
-    // Build preview as colored parts
     _previewParts() {
       const clause = this._a ? reactClauseFromConditionRaw(glyphCondition(this._a)) : "when the bearer ...";
       const cntTxt = this._b ? `${glyphCount(this._b)} time(s)` : "X time(s)";
@@ -249,12 +253,10 @@
       ];
     }
 
-    // Convert colored parts to wrapped lines, keeping color per segment
     _wrapColoredParts(parts, maxWidth) {
-      // We'll wrap by words while preserving colors by splitting parts into tokens.
       const tokens = [];
       for (const p of parts) {
-        const pieces = String(p.text || "").split(/(\s+)/); // keep spaces
+        const pieces = String(p.text || "").split(/(\s+)/);
         for (const t of pieces) {
           if (t === "") continue;
           tokens.push({ text: t, color: p.color || null });
@@ -265,15 +267,12 @@
       let current = [];
       let width = 0;
 
-      const tokenWidth = (t) => this.textWidth(t.text);
-
       for (const tok of tokens) {
-        const w = tokenWidth(tok);
+        const w = this.textWidth(tok.text);
         if (width + w <= maxWidth || current.length === 0) {
           current.push(tok);
           width += w;
         } else {
-          // new line
           lines.push(current);
           current = [tok];
           width = w;
@@ -281,7 +280,6 @@
       }
       if (current.length) lines.push(current);
 
-      // trim leading spaces per line
       for (const line of lines) {
         while (line.length && /^\s+$/.test(line[0].text)) line.shift();
       }
@@ -292,59 +290,60 @@
       this.contents.clear();
       const lh = this.lineHeight();
       const iw = this.innerWidth;
+      const ih = this.innerHeight;
 
-      // --- Preview multi-line
+      // Reserve bottom line for Weight
+      const weightY = Math.max(0, ih - lh);
+      const maxTextY = Math.max(0, weightY - 6);
+
+      // Preview (clamped)
       const parts = this._previewParts();
       const lines = this._wrapColoredParts(parts, iw);
 
       let y = 0;
       for (const lineParts of lines) {
+        if (y + lh > maxTextY) break;
         drawInlineColored(this, 0, y, lineParts);
         y += lh;
       }
       y += 6;
 
-      // --- Skill description line(s) under preview
-      if (this._c) {
+      // Skill effect (clamped)
+      if (this._c && y + lh <= maxTextY) {
         const id = glyphSkillId(this._c);
         const desc = skillDesc(id);
         if (desc) {
-          this.changeTextColor(ColorManager.systemColor());
-          this.drawText("Skill effect:", 0, y, iw);
-          this.resetTextColor();
-          y += lh;
+          if (y + lh <= maxTextY) {
+            this.changeTextColor(ColorManager.systemColor());
+            this.drawText("Skill effect:", 0, y, iw);
+            this.resetTextColor();
+            y += lh;
+          }
 
-          const descLines = wrapText(this, desc, iw);
-          // show up to 2 lines to keep UI clean
-          const show = descLines.slice(0, 2);
-          for (const dl of show) {
+          const descLines = wrapText(this, desc, iw).slice(0, 2);
+          for (const dl of descLines) {
+            if (y + lh > maxTextY) break;
             this.drawText(dl, 0, y, iw);
             y += lh;
           }
-          if (descLines.length > 2) {
-            this.changeTextColor(ColorManager.systemColor());
-            this.drawText("…", 0, y - lh / 2, iw);
-            this.resetTextColor();
-          }
-          y += 6;
         }
       }
 
-      // --- Weight
+      // Weight always visible
       const over = this._weight > MAX_WEIGHT;
 
       this.changeTextColor(ColorManager.systemColor());
-      this.drawText("Weight:", 0, y, 120);
+      this.drawText("Weight:", 0, weightY, 120);
       this.resetTextColor();
 
-      drawInlineColored(this, 120, y, [
+      drawInlineColored(this, 120, weightY, [
         { text: `${this._weight}`, color: over ? highlightColor() : null },
         { text: `/${MAX_WEIGHT}`, color: null },
       ]);
 
       if (over) {
         this.changeTextColor(highlightColor());
-        this.drawText("Overweight (craft disabled)", 260, y, iw - 260, "left");
+        this.drawText("Overweight (craft disabled)", 260, weightY, iw - 260, "left");
         this.resetTextColor();
       }
     }
@@ -389,49 +388,128 @@
     }
   }
 
-  // A small fixed header window for each column title
-  class Window_GlyphColumnTitle extends Window_Base {
-    initialize(rect, title) {
-      super.initialize(rect);
-      this._title = String(title || "");
-      this.refresh();
-    }
-
-    refresh() {
-      this.contents.clear();
-      this.changeTextColor(ColorManager.systemColor());
-      this.drawText(this._title, 0, 0, this.innerWidth, "center");
-      this.resetTextColor();
-    }
-  }
-
-  class Window_GlyphActions extends Window_HorzCommand {
+  class Window_GlyphListPopup extends Window_GlyphListSimple {
     initialize(rect) {
-      super.initialize(rect);
-      this._canConfirm = false;
+      super.initialize(rect, "A");
+      this.openness = 0;
+      this.deactivate();
+      this.opacity = 255;
+      this.backOpacity = 255;
+    }
+
+    openForType(typeLetter) {
+      this._type = typeLetter;
       this.refresh();
       this.select(0);
+      this.open();
+      this.activate();
     }
-    maxCols() { return 2; }
-    makeCommandList() {
-      this.addCommand("Cancel", "cancel", true);
-      this.addCommand("Confirm craft", "confirm", this._canConfirm);
-    }
-    setCanConfirm(b) {
-      this._canConfirm = !!b;
-      this.refresh();
-    }
-    processTouch() {
-      if (this.isOpen() && this.visible && TouchInput.isTriggered() && this.isTouchedInsideFrame()) {
-        this.activate();
-      }
-      super.processTouch();
+
+    closePopup() {
+      this.deactivate();
+      this.close();
     }
   }
 
   // -----------------------------
-  // Scene
+  // Single menu: A/B/C + Confirm + Cancel
   // -----------------------------
+  class Window_GlyphRecipeMenu extends Window_Selectable {
+    initialize(rect) {
+      super.initialize(rect);
+      this.opacity = 255;
+      this.backOpacity = 255;
+
+      this._selA = null;
+      this._selB = null;
+      this._selC = null;
+      this._canConfirm = false;
+
+      this.refresh();
+      this.select(0);
+      this.activate();
+    }
+
+    maxItems() { return 5; }
+    itemHeight() { return this.lineHeight() + 10; }
+
+    setSelections(a, b, c, canConfirm) {
+      this._selA = a; this._selB = b; this._selC = c;
+      this._canConfirm = !!canConfirm;
+      this.refresh();
+    }
+
+    isConfirmIndex() { return this.index() === 3; }
+    isCancelIndex() { return this.index() === 4; }
+
+    currentSlotLetter() {
+      if (this.index() === 0) return "A";
+      if (this.index() === 1) return "B";
+      if (this.index() === 2) return "C";
+      return "";
+    }
+
+    isCurrentItemEnabled() {
+      if (this.index() === 3) return this._canConfirm; // Confirm
+      return true;
+    }
+
+    drawItem(index) {
+      const rect = this.itemRectWithPadding(index);
+      const iw = rect.width;
+      const system = ColorManager.systemColor();
+      const empty = ColorManager.textColor(7);
+
+      // Columns
+      const labelW = 180;
+      const valueX = rect.x + labelW;
+      const valueW = iw - labelW;
+
+      // Row content
+      if (index <= 2) {
+        let label = "";
+        let value = "";
+        let isSet = false;
+
+        if (index === 0) { label = "Condition"; isSet = !!this._selA; value = this._selA ? this._selA.name : "— Choose (A) —"; }
+        if (index === 1) { label = "Count";     isSet = !!this._selB; value = this._selB ? this._selB.name : "— Choose (B) —"; }
+        if (index === 2) { label = "Skill";     isSet = !!this._selC; value = this._selC ? this._selC.name : "— Choose (C) —"; }
+
+        this.changeTextColor(system);
+        this.drawText(label + " :", rect.x, rect.y, labelW);
+        this.resetTextColor();
+
+        if (!isSet) this.changeTextColor(empty);
+        this.drawText(value, valueX, rect.y, valueW, "left");
+        this.resetTextColor();
+
+        // subtle chevron hint (optional but nice)
+        this.changeTextColor(system);
+        this.drawText("▶", rect.x, rect.y, iw, "right");
+        this.resetTextColor();
+        return;
+      }
+
+      // Confirm / Cancel rows
+      if (index === 3) {
+        const enabled = this._canConfirm;
+        if (!enabled) this.changeTextColor(ColorManager.textColor(8)); // disabled-ish
+        this.drawText("Confirm craft", rect.x, rect.y, iw, "center");
+        this.resetTextColor();
+        return;
+      }
+
+      if (index === 4) {
+        this.changeTextColor(system);
+        this.drawText("Cancel", rect.x, rect.y, iw, "center");
+        this.resetTextColor();
+      }
+    }
+  }
+
+  // =========================================================
+  // Scene
+  // =========================================================
   class Scene_GlyphCraft extends Scene_Base {
     create() {
       super.create();
@@ -445,10 +523,8 @@
       this.createWindows();
       this.refreshAll();
 
-      // Initial focus: only list A cursor
-      this.focusList(this._listA);
-      this._listB.select(-1);
-      this._listC.select(-1);
+      this._menu.activate();
+      this._menu.select(0);
     }
 
     createBackground() {
@@ -461,58 +537,34 @@
       const w = Graphics.boxWidth;
       const h = Graphics.boxHeight;
 
-      // --- More space for Preview, less for lists
-      const previewH = Math.floor(h * 0.35); // ~35% of screen height
-      const actionsH = 72;
-      const listY = previewH;
-      const listH = h - previewH - actionsH;
+      const previewH = Math.floor(h * 0.34);
+      const menuY = previewH;
+      const menuH = h - previewH;
 
       this._preview = new Window_GlyphPreview(new Rectangle(0, 0, w, previewH));
       this.addWindow(this._preview);
 
-      // Column title height (kept separate so it doesn't scroll and never overlaps items)
-      const titleH = this._preview.fittingHeight(1);
+      this._menu = new Window_GlyphRecipeMenu(new Rectangle(0, menuY, w, menuH));
+      this._menu.setHandler("ok", () => this.onMenuOk());
+      this._menu.setHandler("cancel", () => this.onCancel());
+      this.addWindow(this._menu);
 
-      const colW = Math.floor(w / 3);
-      const colW3 = w - colW * 2;
+      // Popup centered
+      const popW = Math.floor(w * 0.80);
+      const popH = Math.floor(h * 0.55);
+      const popX = Math.floor((w - popW) / 2);
+      const popY = Math.floor((h - popH) / 2);
 
-      // Title windows (fixed)
-      this._titleA = new Window_GlyphColumnTitle(new Rectangle(0, listY, colW, titleH), "A — Condition");
-      this._titleB = new Window_GlyphColumnTitle(new Rectangle(colW, listY, colW, titleH), "B — Count");
-      this._titleC = new Window_GlyphColumnTitle(new Rectangle(colW * 2, listY, colW3, titleH), "C — Skill");
-      this.addWindow(this._titleA);
-      this.addWindow(this._titleB);
-      this.addWindow(this._titleC);
-
-      // List windows (scroll area starts below the fixed titles)
-      const listY2 = listY + titleH;
-      const listH2 = Math.max(1, listH - titleH);
-      this._listA = new Window_GlyphListSimple(new Rectangle(0, listY2, colW, listH2), "A");
-      this._listB = new Window_GlyphListSimple(new Rectangle(colW, listY2, colW, listH2), "B");
-      this._listC = new Window_GlyphListSimple(new Rectangle(colW * 2, listY2, colW3, listH2), "C");
-
-      this._listA.setHandler("ok", () => this.onPick("A"));
-      this._listB.setHandler("ok", () => this.onPick("B"));
-      this._listC.setHandler("ok", () => this.onPick("C"));
-
-      this._listA.setHandler("cancel", () => this.popScene());
-      this._listB.setHandler("cancel", () => this.popScene());
-      this._listC.setHandler("cancel", () => this.popScene());
-
-      this.addWindow(this._listA);
-      this.addWindow(this._listB);
-      this.addWindow(this._listC);
-
-      this._actions = new Window_GlyphActions(new Rectangle(0, h - actionsH, w, actionsH));
-      this._actions.setHandler("cancel", () => this.popScene());
-      this._actions.setHandler("confirm", () => this.onConfirm());
-      this.addWindow(this._actions);
+      this._popup = new Window_GlyphListPopup(new Rectangle(popX, popY, popW, popH));
+      this._popup.setHandler("ok", () => this.onPopupPick());
+      this._popup.setHandler("cancel", () => this.onPopupCancel());
+      this.addWindow(this._popup);
     }
 
     totalWeight() {
       return (this._selA ? glyphWeight(this._selA) : 0)
-           + (this._selB ? glyphWeight(this._selB) : 0)
-           + (this._selC ? glyphWeight(this._selC) : 0);
+        + (this._selB ? glyphWeight(this._selB) : 0)
+        + (this._selC ? glyphWeight(this._selC) : 0);
     }
 
     canConfirm() {
@@ -522,57 +574,35 @@
     }
 
     refreshAll() {
-      this._listA.refresh();
-      this._listB.refresh();
-      this._listC.refresh();
-
       this._preview.setSelections(this._selA, this._selB, this._selC, this.totalWeight());
-      this._actions.setCanConfirm(this.canConfirm());
+      this._menu.setSelections(this._selA, this._selB, this._selC, this.canConfirm());
     }
 
-    focusList(listWin) {
-      for (const w of [this._listA, this._listB, this._listC]) {
-        if (w === listWin) continue;
-        w.deactivate();
-        w.select(-1);
-      }
-      this._actions.deactivate();
+    // --- Menu actions ---
+    onMenuOk() {
+      const i = this._menu.index();
 
-      listWin.activate();
-      if (listWin.index() < 0) listWin.select(0);
-    }
-
-    onPick(letter) {
-      const win = letter === "A" ? this._listA : letter === "B" ? this._listB : this._listC;
-      const item = win.item();
-      if (!item) return SoundManager.playBuzzer();
-
-      if (letter === "A") this._selA = item;
-      if (letter === "B") this._selB = item;
-      if (letter === "C") this._selC = item;
-
-      SoundManager.playOk();
-      this.refreshAll();
-
-      if (!this._selA) return this.focusList(this._listA);
-      if (!this._selB) return this.focusList(this._listB);
-      if (!this._selC) return this.focusList(this._listC);
-
-      // ready -> actions
-      this._listA.deactivate(); this._listA.select(-1);
-      this._listB.deactivate(); this._listB.select(-1);
-      this._listC.deactivate(); this._listC.select(-1);
-
-      this._actions.activate();
-      this._actions.select(this.canConfirm() ? 1 : 0);
-    }
-
-    onConfirm() {
-      if (!this.canConfirm()) {
-        SoundManager.playBuzzer();
+      // A/B/C selection opens popup
+      if (i <= 2) {
+        const letter = this._menu.currentSlotLetter();
+        this._popup.openForType(letter);
+        this._menu.deactivate();
         return;
       }
 
+      // Confirm
+      if (i === 3) {
+        if (!this.canConfirm()) return SoundManager.playBuzzer();
+        return this.onConfirm();
+      }
+
+      // Cancel
+      if (i === 4) {
+        return this.popScene();
+      }
+    }
+
+    onConfirm() {
       const res = craft(this._selA, this._selB, this._selC);
       if (!res.ok) {
         SoundManager.playBuzzer();
@@ -583,30 +613,51 @@
 
       SoundManager.playOk();
       $gameMessage.add(`Crafted: ${res.armor._customName || res.armor.name}`);
-      AudioManager.playSe({
-        name: "success", 
-        volume: 90,
-        pitch: 100,
-        pan: 0
-      });
+      AudioManager.playSe({ name: "success", volume: 90, pitch: 100, pan: 0 });
+      this.popScene();
+    }
+
+    // --- Popup flow ---
+    onPopupPick() {
+      const item = this._popup.item();
+      if (!item) return SoundManager.playBuzzer();
+
+      const type = this._popup._type;
+      if (type === "A") this._selA = item;
+      if (type === "B") this._selB = item;
+      if (type === "C") this._selC = item;
+
+      SoundManager.playOk();
+      this._popup.closePopup();
+      this._menu.activate();
+      this.refreshAll();
+
+      // comfort: move down but stop before Confirm/Cancel
+      const idx = this._menu.index();
+      if (idx < 2) this._menu.select(idx + 1);
+    }
+
+    onPopupCancel() {
+      SoundManager.playCancel();
+      this._popup.closePopup();
+      this._menu.activate();
+    }
+
+    onCancel() {
+      // If popup is open => close it first
+      if (this._popup.isOpen() && this._popup.active) {
+        return this.onPopupCancel();
+      }
       this.popScene();
     }
 
     update() {
       super.update();
 
-      if (Input.isTriggered("cancel")) {
-        if (!this._actions.active) this.popScene();
-      }
-
-      if (this._listA.active || this._listB.active || this._listC.active) {
-        if (Input.isTriggered("right")) {
-          if (this._listA.active) this.focusList(this._listB);
-          else if (this._listB.active) this.focusList(this._listC);
-        } else if (Input.isTriggered("left")) {
-          if (this._listC.active) this.focusList(this._listB);
-          else if (this._listB.active) this.focusList(this._listA);
-        }
+      // Bonus keyboard: SHIFT crafts directly (if ready), only when popup is closed
+      if (Input.isTriggered("shift") && !this._popup.active) {
+        if (this.canConfirm()) this.onConfirm();
+        else SoundManager.playBuzzer();
       }
     }
   }

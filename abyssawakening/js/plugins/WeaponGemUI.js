@@ -1,19 +1,3 @@
-/*
-RPG Maker MZ — Patch Workspace (Canvas)
-
-COMMENT L'UTILISER
-1) Colle ici le code complet du plugin (ou le snippet) juste en dessous de ce bloc de commentaires.
-2) Dans le chat à gauche, décris en UNE phrase ce que tu veux changer.
-3) Je te renverrai un patch (diff) + une version modifiée ici même.
-
-CONSEILS
-- Supprime/masque toute clé API ou donnée sensible avant de coller.
-- Précise versions/ordre des plugins (notamment VisuStella) si la compatibilité est en jeu.
-- Si le fichier est très long, tu peux coller en plusieurs fois (Partie 1/2/3).
-
-Tu peux commencer à coller juste après cette ligne ↓
-*/
-
 /*:
  * @target MZ
  * @plugindesc v2.6-skin — Gem socketing UI (inventory-only). Même apparence que ta v2.6. Utilise WeaponUpg.* (Core) pour insérer et afficher les totaux.
@@ -90,7 +74,7 @@ Tu peux commencer à coller juste après cette ligne ↓
  *
  * @param UIStrings
  * @type struct<UIStrings>
- * @default {"titleChoose":"Gems — Choose a weapon","instructionChoose":"Choose the weapon to socket a gem.","noEligible":"You have no weapons with unlocked gem slots in your inventory.","btnReturn":"Return","titleBonuses":"Total Gem bonuses:","labelGemSlots":"Gem Slots:","labelGemInventory":"Gem Inventory:","labelLocked":"Locked","labelRequires":"Requires +%1","labelEmpty":"Empty","btnInsert":"Insert","btnBack":"Back","toastInsert":"Gem socketed!","toastReplace":"Gem replaced.","errLocked":"Slot is locked. Unlocks at +%1.","errNoUnlocked":"No unlocked gem slots on this weapon.","errNoGems":"No compatible gems."}
+ * @default {"titleChoose":"Gems — Choose a weapon","instructionChoose":"Choose the weapon to socket a gem.","noEligible":"You have no weapons with unlocked gem slots in your inventory.","btnReturn":"Return","titleBonuses":"Total Gem bonuses:","labelGemSlots":"Gem Slots:","labelGemInventory":"Gem Inventory:","labelLocked":"Locked","labelRequires":"Requires +%1","labelEmpty":"Empty","btnInsert":"Insert","btnBack":"Back","toastInsert":"Gem socketed!","toastReplace":"Gem replaced.","errLocked":"Slot is locked. Unlocks at +%1.","errNoUnlocked":"No unlocked gem slots on this weapon.","errNoGems":"No compatible gems.","confirmReplace":"Replace \"%1\"\\nwith \"%2\"?","confirmYes":"Yes","confirmNo":"No"}
  */
 /*~struct~UIStrings:
  * @param titleChoose @default Gems — Choose a weapon
@@ -110,6 +94,9 @@ Tu peux commencer à coller juste après cette ligne ↓
  * @param errLocked @default Slot is locked. Unlocks at +%1.
  * @param errNoUnlocked @default No unlocked gem slots on this weapon.
  * @param errNoGems @default No compatible gems.
+ * @param confirmReplace @default Replace "%1"\nwith "%2"?
+ * @param confirmYes @default Yes
+ * @param confirmNo @default No
  */
 
 (()=>{ 'use strict';
@@ -158,7 +145,12 @@ Tu peux commencer à coller juste après cette ligne ↓
       toastReplace:r.toastReplace||'Gem replaced.',
       errLocked:r.errLocked||'Slot is locked. Unlocks at +%1.',
       errNoUnlocked:r.errNoUnlocked||'No unlocked gem slots on this weapon.',
-      errNoGems:r.errNoGems||'No compatible gems.'
+      errNoGems:r.errNoGems||'No compatible gems.',
+
+      // ✅ NEW (English)
+      confirmReplace: r.confirmReplace || 'Replace "%1"\nwith "%2"?',
+      confirmYes: r.confirmYes || 'Yes',
+      confirmNo: r.confirmNo || 'No',
     };
   })();
 
@@ -307,6 +299,40 @@ Tu peux commencer à coller juste après cette ligne ↓
   function Scene_GemDetail(){ this.initialize(...arguments); }
   Scene_GemDetail.prototype = Object.create(Scene_MenuBase.prototype);
   Scene_GemDetail.prototype.constructor = Scene_GemDetail;
+
+  // ✅ NEW: confirm handlers + helper apply
+  Scene_GemDetail.prototype.applyGemNow = function(idx, gem, wasReplace){
+    const res = applyGemTo(this._weapon, idx, gem.id);
+    if(!res || !res.ok){ SoundManager.playBuzzer(); this._gems.activate(); return; }
+
+    // consume after success
+    $gameParty.loseItem(gem, 1, false);
+
+    SoundManager.playOk();
+    this.showToast(wasReplace ? UI.toastReplace : UI.toastInsert);
+
+    const gi = this._gems.index();
+    this._slots.refresh(); this._tot.refresh(); this._gems.refresh();
+    this._gems.activate();
+    this._gems.select(Math.min(gi, this._gems.maxItems()-1));
+  };
+
+  Scene_GemDetail.prototype.onConfirmYes = function(){
+    const p = this._pendingReplace;
+    this._pendingReplace = null;
+    this._confirm.close();
+    this._confirm.deactivate();
+    if(!p){ this._gems.activate(); return; }
+    this.applyGemNow(p.idx, p.gem, true);
+  };
+
+  Scene_GemDetail.prototype.onConfirmNo = function(){
+    this._pendingReplace = null;
+    this._confirm.close();
+    this._confirm.deactivate();
+    this._gems.activate();
+  };
+
   Scene_GemDetail.prototype.create = function(){
     Scene_MenuBase.prototype.create.call(this);
     this._weapon = Scene_GemDetail._weapon;
@@ -338,12 +364,11 @@ Tu peux commencer à coller juste après cette ligne ↓
 
     const listHeaderH = this.calcWindowHeight(1,true);
     this._gemsHeader = new Window_Base(new Rectangle(x, botY, listW, listHeaderH));
-this.addWindow(this._gemsHeader);
-this._gemsHeader.contents.clear();
-// Header uses the same color as the Return button
-this._gemsHeader.changeTextColor(ColorManager.textColor(RETURN_COL));
-this._gemsHeader.drawText(UI.labelGemInventory, 0, 0, this._gemsHeader.contentsWidth());
-this._gemsHeader.resetTextColor();
+    this.addWindow(this._gemsHeader);
+    this._gemsHeader.contents.clear();
+    this._gemsHeader.changeTextColor(ColorManager.textColor(RETURN_COL));
+    this._gemsHeader.drawText(UI.labelGemInventory, 0, 0, this._gemsHeader.contentsWidth());
+    this._gemsHeader.resetTextColor();
 
     const listY = botY + listHeaderH;
     const listH = botH - listHeaderH;
@@ -355,16 +380,30 @@ this._gemsHeader.resetTextColor();
     this._tot = new Window_GemTotals(new Rectangle(x+listW, botY, totW, botH), this._weapon);
     this.addWindow(this._tot);
 
+    // ✅ NEW: confirm window (centered, hidden)
+    const confirmW = Math.min(520, cw);
+    const confirmH = this.calcWindowHeight(4, true); // message (2 lines) + 2 commands
+    const confirmX = x + Math.floor((cw - confirmW) / 2);
+    const confirmY = Math.floor((Graphics.boxHeight - confirmH) / 2);
+    this._confirm = new Window_GemConfirm(new Rectangle(confirmX, confirmY, confirmW, confirmH));
+    this._confirm.setHandler('yes', this.onConfirmYes.bind(this));
+    this._confirm.setHandler('no', this.onConfirmNo.bind(this));
+    this._confirm.setHandler('cancel', this.onConfirmNo.bind(this));
+    this.addWindow(this._confirm);
+    this._pendingReplace = null;
+
     this.refreshAll();
     this._top.activate();
   };
+
   Scene_GemDetail.prototype.refreshAll = function(){ this._help.setText(''); this._slots.refresh(); this._gems.refresh(); this._tot.refresh(); this._top.refresh(); };
   Scene_GemDetail.prototype.showToast = function(t){ this._help.setText(t||''); };
+
   Scene_GemDetail.prototype.onGemOk = function(){
     if(this._gems.currentIsReturn()){
-      this._gems.deselect();      // hide green bar on Return
-      this._gems.deactivate();    // ensure inventory is not active
-      this._slots.select(-1);     // deselect current slot
+      this._gems.deselect();
+      this._gems.deactivate();
+      this._slots.select(-1);
       this._top.activate();
       return;
     }
@@ -380,19 +419,58 @@ this._gemsHeader.resetTextColor();
     if(!gem){ SoundManager.playBuzzer(); this._gems.activate(); return; }
     if($gameParty.numItems(gem)<=0){ this.showToast(UI.errNoGems); SoundManager.playBuzzer(); this._gems.activate(); return; }
 
-    const res = applyGemTo(this._weapon, idx, gem.id);
-    if(!res || !res.ok){ SoundManager.playBuzzer(); this._gems.activate(); return; }
+    // ✅ NEW: confirm if slot already has a gem
+    const ss = slotsOf(this._weapon);
+    const curSlot = ss && ss[idx];
+    if(curSlot && curSlot.itemId){
+      const oldIt = $dataItems[curSlot.itemId];
+      const oldName = oldIt ? oldIt.name : 'Gem';
+      const newName = gem ? gem.name : 'Gem';
 
-    // Consommation après succès
-    $gameParty.loseItem(gem, 1, false);
+      this._pendingReplace = { idx, gem };
+      this._confirm.setMessage(UI.confirmReplace.format(oldName, newName));
+      this._confirm.open();
+      this._confirm.activate();
+      this._confirm.select(0);
+      return;
+    }
 
-    SoundManager.playOk();
-    this.showToast(UI.toastInsert);
-    const gi = this._gems.index();
-    this._slots.refresh(); this._tot.refresh(); this._gems.refresh();
-    // Keep focus on Gem Inventory so the player can insert multiple gems quickly
-    this._gems.activate();
-    this._gems.select(Math.min(gi, this._gems.maxItems()-1));
+    // slot empty -> normal insert
+    this.applyGemNow(idx, gem, false);
+  };
+
+  // ---------- NEW WINDOW: Confirm Replace ----------
+  function Window_GemConfirm(){ this.initialize(...arguments); }
+  Window_GemConfirm.prototype = Object.create(Window_Command.prototype);
+  Window_GemConfirm.prototype.constructor = Window_GemConfirm;
+
+  Window_GemConfirm.prototype.initialize = function(rect){
+    this._msg = ""; // ✅ important: set before super (prevents undefined.match crashes)
+    Window_Command.prototype.initialize.call(this, rect);
+    this.openness = 0;
+  };
+
+  Window_GemConfirm.prototype.makeCommandList = function(){
+    this.addCommand(UI.confirmYes, 'yes');
+    this.addCommand(UI.confirmNo, 'no');
+  };
+
+  Window_GemConfirm.prototype.setMessage = function(text){
+    this._msg = String(text || "");
+    this.refresh();
+  };
+
+  Window_GemConfirm.prototype.itemRect = function(index){
+    const r = Window_Command.prototype.itemRect.call(this, index);
+    // leave room for 2 lines of message above
+    r.y += this.lineHeight() * 2;
+    return r;
+  };
+
+  Window_GemConfirm.prototype.refresh = function(){
+    Window_Command.prototype.refresh.call(this);
+    this.resetTextColor();
+    this.drawTextEx(String(this._msg || ""), 0, 0, this.contentsWidth());
   };
 
   // ---------- Windows ----------
@@ -405,15 +483,15 @@ this._gemsHeader.resetTextColor();
   Window_GemTop.prototype.maxCols      = function(){ return 2; };
   Window_GemTop.prototype.makeCommandList = function(){ this.addCommand(UI.btnInsert,'insert'); this.addCommand(UI.btnBack,'cancel'); };
   Window_GemTop.prototype.drawItem = function(index){
-  const rect = this.itemLineRect(index);
-  const align = this.itemTextAlign();
-  const s = this.commandSymbol(index);
-  this.resetTextColor();
-  if (s === 'cancel' || s === 'insert') this.changeTextColor(ColorManager.textColor(RETURN_COL));
-  this.changePaintOpacity(this.isCommandEnabled(index));
-  this.drawText(this.commandName(index), rect.x, rect.y, rect.width, align);
-  this.resetTextColor();
-};
+    const rect = this.itemLineRect(index);
+    const align = this.itemTextAlign();
+    const s = this.commandSymbol(index);
+    this.resetTextColor();
+    if (s === 'cancel' || s === 'insert') this.changeTextColor(ColorManager.textColor(RETURN_COL));
+    this.changePaintOpacity(this.isCommandEnabled(index));
+    this.drawText(this.commandName(index), rect.x, rect.y, rect.width, align);
+    this.resetTextColor();
+  };
 
   function Window_GemSlotsIcons(){ this.initialize(...arguments); }
   Window_GemSlotsIcons.prototype = Object.create(Window_Selectable.prototype);
@@ -441,66 +519,64 @@ this._gemsHeader.resetTextColor();
   }
 
   Window_GemSlotsIcons.prototype.refresh = function(){
-  this.createContents();
-  this.contents.clear();
-  this.drawAllItems();
-};
+    this.createContents();
+    this.contents.clear();
+    this.drawAllItems();
+  };
   Window_GemSlotsIcons.prototype.drawItem = function(index){
-  const rect=this.itemRectWithPadding(index);
-  const lvl=currentLevelOf(this._weapon), unlocked=slotsAtLevel(lvl), ss=slotsOf(this._weapon);
-  const cx = rect.x + rect.width/2;
-  const padTop=0; const iconCY = rect.y + padTop + (ImageManager.iconHeight*SLOT_SCALE)/2;
-  const y0 = rect.y + padTop + Math.round(ImageManager.iconHeight*SLOT_SCALE) + 4;
+    const rect=this.itemRectWithPadding(index);
+    const lvl=currentLevelOf(this._weapon), unlocked=slotsAtLevel(lvl), ss=slotsOf(this._weapon);
+    const cx = rect.x + rect.width/2;
+    const padTop=0; const iconCY = rect.y + padTop + (ImageManager.iconHeight*SLOT_SCALE)/2;
+    const y0 = rect.y + padTop + Math.round(ImageManager.iconHeight*SLOT_SCALE) + 4;
 
-  if(index>=unlocked){
-    const req=UNLOCK[index]||'?'; drawScaledIcon(this, ICON_LOCKED, cx, iconCY, SLOT_SCALE);
-    this.changePaintOpacity(false);
-    this.drawText(UI.labelLocked, rect.x, y0, rect.width, 'center');
-    this.drawText(UI.labelRequires.format(String(req)), rect.x, y0+this.lineHeight()*0.8, rect.width, 'center');
-    this.changePaintOpacity(true); return;
-  }
+    if(index>=unlocked){
+      const req=UNLOCK[index]||'?'; drawScaledIcon(this, ICON_LOCKED, cx, iconCY, SLOT_SCALE);
+      this.changePaintOpacity(false);
+      this.drawText(UI.labelLocked, rect.x, y0, rect.width, 'center');
+      this.drawText(UI.labelRequires.format(String(req)), rect.x, y0+this.lineHeight()*0.8, rect.width, 'center');
+      this.changePaintOpacity(true); return;
+    }
 
-  const s = ss[index];
-  if(!s || !s.itemId){
-    drawScaledIcon(this, ICON_EMPTY, cx, iconCY, SLOT_SCALE);
-    this.drawText(UI.labelEmpty, rect.x, y0, rect.width, 'center');
-    return;
-  }
+    const s = ss[index];
+    if(!s || !s.itemId){
+      drawScaledIcon(this, ICON_EMPTY, cx, iconCY, SLOT_SCALE);
+      this.drawText(UI.labelEmpty, rect.x, y0, rect.width, 'center');
+      return;
+    }
 
-  const it = $dataItems[s.itemId];
-  drawScaledIcon(this, (it&&it.iconIndex)||0, cx, iconCY, SLOT_SCALE);
-  const prevFS = this.contents.fontSize;
-  // Gem name (blue), then a configurable gap, then up to N param lines
-  this.contents.fontSize = SLOT_NAME_FS;
-  const nameY = y0 - 2; // slightly closer to icon
-  if (it) { this.changeTextColor(ColorManager.textColor(RETURN_COL)); this.drawText(it.name, rect.x, nameY, rect.width, 'center'); this.resetTextColor(); }
-  else { this.drawText('Gem', rect.x, nameY, rect.width, 'center'); }
+    const it = $dataItems[s.itemId];
+    drawScaledIcon(this, (it&&it.iconIndex)||0, cx, iconCY, SLOT_SCALE);
+    const prevFS = this.contents.fontSize;
+    this.contents.fontSize = SLOT_NAME_FS;
+    const nameY = y0 - 2;
+    if (it) { this.changeTextColor(ColorManager.textColor(RETURN_COL)); this.drawText(it.name, rect.x, nameY, rect.width, 'center'); this.resetTextColor(); }
+    else { this.drawText('Gem', rect.x, nameY, rect.width, 'center'); }
 
-  const lines = paramLinesFromSlot(s, SLOT_BONUS_LINES);
-  if (lines.length){
-    this.contents.fontSize = SLOT_PARAM_FS;
-    let y = nameY + SLOT_NAME_GAP + Math.floor(SLOT_PARAM_FS * 0.1);
-    const step = Math.floor(SLOT_PARAM_FS * 1.0) + 2;
-    for (const ln of lines){ this.drawText(ln, rect.x, y, rect.width, 'center'); y += step; }
-  }
-  this.contents.fontSize = prevFS;
-};
+    const lines = paramLinesFromSlot(s, SLOT_BONUS_LINES);
+    if (lines.length){
+      this.contents.fontSize = SLOT_PARAM_FS;
+      let y = nameY + SLOT_NAME_GAP + Math.floor(SLOT_PARAM_FS * 0.1);
+      const step = Math.floor(SLOT_PARAM_FS * 1.0) + 2;
+      for (const ln of lines){ this.drawText(ln, rect.x, y, rect.width, 'center'); y += step; }
+    }
+    this.contents.fontSize = prevFS;
+  };
 
   function Window_GemTotals(){ this.initialize(...arguments); }
   Window_GemTotals.prototype = Object.create(Window_Base.prototype);
   Window_GemTotals.prototype.constructor = Window_GemTotals;
   Window_GemTotals.prototype.initialize = function(rect, weapon){ Window_Base.prototype.initialize.call(this,rect); this._weapon=weapon; };
   Window_GemTotals.prototype.refresh = function(){
-  this.contents.clear(); const cw = this.contentsWidth();
-  // Title uses the same color as the Return button
-  this.changeTextColor(ColorManager.textColor(RETURN_COL));
-  this.drawText(UI.titleBonuses, 0, 0, cw);
-  this.resetTextColor();
-  const lines = linesFromTotals(totalsOf(this._weapon));
-  let y = this.lineHeight();
-  if (!lines.length) this.drawText('-', 0, y, cw);
-  else for (const ln of lines) { this.drawText(ln, 0, y, cw); y += this.lineHeight(); }
-};
+    this.contents.clear(); const cw = this.contentsWidth();
+    this.changeTextColor(ColorManager.textColor(RETURN_COL));
+    this.drawText(UI.titleBonuses, 0, 0, cw);
+    this.resetTextColor();
+    const lines = linesFromTotals(totalsOf(this._weapon));
+    let y = this.lineHeight();
+    if (!lines.length) this.drawText('-', 0, y, cw);
+    else for (const ln of lines) { this.drawText(ln, 0, y, cw); y += this.lineHeight(); }
+  };
 
   function Window_GemList(){ this.initialize(...arguments); }
   Window_GemList.prototype = Object.create(Window_Selectable.prototype);
@@ -518,7 +594,6 @@ this._gemsHeader.resetTextColor();
       items.push(it);
     }
     items.sort((a,b)=>{
-      // Custom tier: Master > Greater > Lesser > others
       const tier = (n)=>{ n=(n||'').toLowerCase();
         if(/^master\b/.test(n)) return 3;
         if(/^greater\b/.test(n)) return 2;
@@ -526,7 +601,6 @@ this._gemsHeader.resetTextColor();
         return 0; };
       const ta = tier(a.name), tb = tier(b.name);
       if(tb!==ta) return tb-ta;
-      // Fallback to previous logic (Roman levels then base name)
       const pa=parseGemName(a.name), pb=parseGemName(b.name);
       if(pb.level!==pa.level) return pb.level-pa.level;
       const c=pa.base.localeCompare(pb.base); if(c!==0) return c;
@@ -545,7 +619,6 @@ this._gemsHeader.resetTextColor();
     const qty=$gameParty.numItems(it);
     this.drawIcon(it.iconIndex||0, rect.x, rect.y + (this.lineHeight()-ImageManager.iconHeight)/2);
     const mx=ImageManager.iconWidth+4;
-    // On n'affiche PAS un bonus calculé ici (les aléatoires diffèrent). Juste le nom × qty.
     this.drawText(`${it.name} ×${qty}`, rect.x+mx, rect.y, rect.width-mx);
   };
 

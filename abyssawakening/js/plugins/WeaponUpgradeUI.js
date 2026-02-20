@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc [v1.4] Weapon Upgrade UI — Inventory-first + compact panel (offset, toast, custom SE, Gem Slots row)
+ * @plugindesc [v1.4.1] Weapon Upgrade UI — Inventory-first + compact panel (offset, toast, custom SE, Gem Slots row)
  * @author You
  *
  * @help
@@ -197,9 +197,18 @@
       this._listWindow.activate(); this._listWindow.select(0);
     }
     onOk(){
-      const entry=this._listWindow.entry(); if(!entry){ SoundManager.playBuzzer(); return; }
+      const entry=this._listWindow.entry();
+      if(!entry){ SoundManager.playBuzzer(); return; }
       if(entry.__back){ this.popScene(); return; }
-      SceneManager.push(Scene_EnhanceDetail); SceneManager.prepareNextScene(entry.id);
+
+      // ✅ Convert ONLY for upgrade flow (safe for shops)
+      let w = entry;
+      if (window.WeaponUpg && typeof WeaponUpg.ensureIndependentForUpgrade === "function") {
+        w = WeaponUpg.ensureIndependentForUpgrade(entry);
+      }
+
+      $gameTemp._wupgSelectedWeapon = w;
+      SceneManager.push(Scene_EnhanceDetail);
     }
   }
 
@@ -229,14 +238,27 @@
 
   // ───────────────── Scene: Detail (group + toast + SE)
   class Scene_EnhanceDetail extends Scene_MenuBase{
-    prepare(id){ this._weaponId=id; }
-    initialize(){ super.initialize(); this._weapon=null; this._uiGroup=null; }
+    prepare(arg){
+      // Backward compat: some calls may pass a database id.
+      if (arg && typeof arg === "object") this._weapon = arg;
+      else this._weaponId = Number(arg||0);
+    }
+    initialize(){ super.initialize(); this._weapon=null; this._weaponId=0; this._uiGroup=null; }
     create(){
       super.create();
       this._uiw=Math.min(Graphics.boxWidth,Math.max(560,OPT.uiWidth));
       this._basex=Math.floor((Graphics.boxWidth-this._uiw)/2);
       this._cmdw=Math.max(160,Math.min(OPT.cmdWidth,this._uiw-320));
-      this._weapon=$dataWeapons[this._weaponId];
+
+      // Picker stores selected instance on $gameTemp.
+      this._weapon = this._weapon || $gameTemp._wupgSelectedWeapon || null;
+      $gameTemp._wupgSelectedWeapon = null;
+      if (!this._weapon && this._weaponId) this._weapon = $dataWeapons[this._weaponId];
+
+      // ✅ Safety: if opened directly, still ensure we upgrade an independent instance
+      if (this._weapon && window.WeaponUpg && typeof WeaponUpg.ensureIndependentForUpgrade === "function") {
+        this._weapon = WeaponUpg.ensureIndependentForUpgrade(this._weapon);
+      }
 
       this._uiGroup=new Sprite(); this.addChild(this._uiGroup); this._uiGroup.y=OPT.uiYOffset|0;
 
@@ -274,7 +296,14 @@
     refreshAll(){ this._headerWindow.setWeapon(this._weapon); this._paramsWindow.setWeapon(this._weapon); this._footerWindow.setWeapon(this._weapon); this._commandWindow.setWeapon(this._weapon); }
 
     onEnhance(){
-      const w=this._weapon; if(!w) return;
+      let w=this._weapon; if(!w) return;
+
+      // ✅ ensure independence right before attempting (extra safety)
+      if (window.WeaponUpg && typeof WeaponUpg.ensureIndependentForUpgrade === "function") {
+        w = WeaponUpg.ensureIndependentForUpgrade(w);
+        this._weapon = w;
+      }
+
       const res=WeaponUpg.attemptOn(w);
       const success=!!(res && (res.success ?? res.ok));
       const msg=(res && res.msg)? res.msg : (success?"Success!":"Failed.");

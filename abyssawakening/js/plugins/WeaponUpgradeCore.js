@@ -1,6 +1,6 @@
 /*:
  * @target MZ
- * @plugindesc [v2.8.1] Weapon Upgrade Core + Gem backend (fixe & aléatoire). Stocke sur l'objet arme. API WeaponUpg.* pour l'UI. (Hotfix: rétablit les APIs d'upgrade v2.x)
+ * @plugindesc [v2.8.2] Weapon Upgrade Core + Gem backend (fixe & aléatoire). Stocke sur l'objet arme. API WeaponUpg.* pour l'UI. (Hotfix: rétablit les APIs d'upgrade v2.x)
  * @author You
  *
  * @help
@@ -153,6 +153,89 @@
     return c;
   }
 
+  // =====================================================================
+  // Save-safe persistence for _wupg
+  // (works even if an external independent-items system rebuilds objects)
+  // =====================================================================
+  function _wupgStore() {
+    $gameSystem._wupgStore = $gameSystem._wupgStore || {};
+    return $gameSystem._wupgStore;
+  }
+  function _wupgKey(w) {
+    if (!w) return null;
+    const oid = (w.originalId != null) ? w.originalId : 0;
+    return `${w.id}|${oid}`;
+  }
+  function _wupgStoreRec(w) {
+    if (!w || !w._wupg) return;
+    const k = _wupgKey(w);
+    if (!k) return;
+    _wupgStore()[k] = {
+      lvl: w._wupg.lvl | 0,
+      fails: w._wupg.fails | 0,
+      slots: Array.isArray(w._wupg.slots) ? JSON.parse(JSON.stringify(w._wupg.slots)) : []
+    };
+  }
+  function _wupgRestoreRec(w) {
+    if (!w) return;
+    const k = _wupgKey(w);
+    const snap = k ? _wupgStore()[k] : null;
+    if (!snap) return;
+
+    w._wupg = w._wupg || {};
+    w._wupg.lvl = snap.lvl | 0;
+    w._wupg.fails = snap.fails | 0;
+    w._wupg.slots = Array.isArray(snap.slots) ? JSON.parse(JSON.stringify(snap.slots)) : [];
+  }
+
+  // =====================================================================
+  // Convert ONLY when upgrading (safe for shops): ensureIndependentForUpgrade
+  // =====================================================================
+  function ensureIndependentForUpgrade(w) {
+    if (!w) return w;
+
+    // Already independent?
+    if (w.id >= 10000 && w.originalId != null) return w;
+
+    // Only convert weapons explicitly tagged independentItem
+    if (!w.meta || !w.meta.independentItem) return w;
+
+    // Needs DM_IndependentItems runtime
+    if (!window.$gameIndependents || typeof $gameIndependents.gainIndependentItem !== 'function') return w;
+
+    // Create independent copy (this ALSO gains it to party)
+    $gameIndependents.gainIndependentItem(w, 1);
+    const newId = $gameIndependents._independentId - 1;
+    const nw = $dataWeapons[newId];
+    if (!nw) return w;
+
+    // Carry current record if any (for safety)
+    if (w._wupg) {
+      nw._wupg = JSON.parse(JSON.stringify(w._wupg));
+    }
+
+    // Swap equips (if equipped anywhere)
+    $gameParty.members().forEach(a => {
+      if (!a) return;
+      const eqs = a.equips();
+      for (let i = 0; i < eqs.length; i++) {
+        if (eqs[i] === w) a.changeEquip(i, nw);
+      }
+    });
+
+    // Remove one old DB copy from inventory (if any)
+    if ($gameParty.numItems(w) > 0) $gameParty.loseItem(w, 1, false);
+
+    // Copy persisted snapshot key if it existed
+    const ok = _wupgKey(w);
+    const nk = _wupgKey(nw);
+    if (ok && nk && _wupgStore()[ok]) {
+      _wupgStore()[nk] = JSON.parse(JSON.stringify(_wupgStore()[ok]));
+    }
+
+    return nw;
+  }
+
   // ---------- Upgrade notetags (compat UI) ----------
   function weaponMeta(w) {
     if (!w) return { _wupgParsed: true, _wupgUpg: false, _wupgMats: [] };
@@ -195,13 +278,14 @@
   function isUpgradeable(w) {
     return !!weaponMeta(w)._wupgUpg;
   }
+
   function inventoryUpgradeableWeapons() {
+    // IMPORTANT (DM_IndependentItems):
+    // Do NOT de-duplicate by database id. Independent items can have multiple instances
+    // of the same weapon, each with different upgrade levels / gem slots.
     const out = [];
-    const seen = new Set();
     $gameParty.weapons().forEach(w => {
       if (!w) return;
-      if (seen.has(w.id)) return;
-      seen.add(w.id);
       if (isUpgradeable(w) && $gameParty.numItems(w) > 0) out.push(w);
     });
     return out;
@@ -242,7 +326,7 @@
   }
   const DEFAULT_RANGES = parseRanges(DEFAULT_RANGES_RAW);
   function gemMeta(it) {
-    const note = String(it && it.note || '');
+    const note = String((it && it.note) || '');
     const isGem = /<\s*UpgradeGem\s*>/i.test(note);
     const fixed = parseFixedGem(it);
     let bonusCount = 0;
@@ -277,8 +361,13 @@
     if (!w) return { lvl: 0, fails: 0, slots: [], gems: [], gemRolls: [] };
     if (!w._wupg) w._wupg = { lvl: 0, fails: 0, slots: [], gems: [], gemRolls: [] };
     if (!Array.isArray(w._wupg.slots)) w._wupg.slots = [];
+
+    // ✅ restore persisted snapshot if external rebuild wiped custom fields
+    _wupgRestoreRec(w);
+
     return w._wupg;
   }
+
   function migrateOldGems(w) {
     const rec = recOfWeaponObj(w);
     // v1: rec.gems = [itemId,...]
@@ -349,6 +438,10 @@
   }
   function applyGemTo(w, idx, itemId) {
     if (!w) return { ok: false, msg: 'No weapon.' };
+
+    // ✅ convert only when we are about to mutate the instance
+    w = ensureIndependentForUpgrade(w);
+
     migrateOldGems(w);
     const rec = recOfWeaponObj(w);
     const unlocked = slotsAtLevel(rec.lvl | 0);
@@ -369,6 +462,10 @@
 
     ensureSlotArraySize(rec, idx);
     rec.slots[idx] = { itemId, bonuses };
+
+    // ✅ persist after gem change
+    _wupgStoreRec(w);
+
     return { ok: true, msg: 'Gem applied', slot: rec.slots[idx], totals: totalsOf(w) };
   }
 
@@ -462,8 +559,13 @@
   function nextMatsTextOf(w) {
     return matsToText(matsOf(w));
   }
+
   function attemptOn(w) {
     if (!w) return { ok: false, success: false, msg: 'No weapon.' };
+
+    // ✅ convert only when upgrading (safe for shops)
+    w = ensureIndependentForUpgrade(w);
+
     const rec = recOfWeaponObj(w);
     if (rec.lvl >= MAX_LEVEL) return { ok: false, success: false, msg: 'Max level.' };
     if (!canPayMats(w)) return { ok: false, success: false, msg: 'Not enough materials.' };
@@ -481,9 +583,17 @@
       if (!CONSUME_ON_FAIL) payMats(w);
       rec.lvl = Math.min(MAX_LEVEL, rec.lvl + 1);
       rec.fails = 0;
+
+      // ✅ persist
+      _wupgStoreRec(w);
+
       return { ok: true, success: true, msg: `Success! +${rec.lvl}` };
     } else {
       rec.fails = (rec.fails | 0) + 1;
+
+      // ✅ persist
+      _wupgStoreRec(w);
+
       return { ok: true, success: false, msg: `Failed (${rec.fails})` };
     }
   }
@@ -494,6 +604,9 @@
     maxLevel() { return MAX_LEVEL; },
     paramNames() { return PNS.slice(); },
     slotsAtLevel,
+
+    // conversion (for UI)
+    ensureIndependentForUpgrade,
 
     // upgrade (compat)
     isUpgradeable,

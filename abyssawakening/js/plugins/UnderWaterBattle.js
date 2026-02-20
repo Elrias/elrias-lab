@@ -49,7 +49,7 @@
  *   limité à +N par tour et par acteur (param breathGainCapPerTurn).
  *
  * Fin de tour :
- * - Breath -1 sauf si Guard utilisé ce tour
+ * - Breath -1 sauf si le battler est en état de garde (isGuarding)
  * - -1 supplémentaire si Agitation
  * - Si Breath == 0 : DoT % max HP (verrouillé à 1 fois par tour)
  *
@@ -145,7 +145,7 @@
 
   BattleManager._uwInitTurnData = function() {
     this._uw = {
-      guarded: new Set(),          // actorId
+      guarded: new Set(),          // actorId (fallback)
       stype1Count: new Map(),      // actorId -> count
       healBreathCount: new Map(),  // actorId -> how many +Breath already granted this turn
     };
@@ -181,8 +181,24 @@
   };
 
   // -----------------------------
-  // FIX: Count Type1/Type2 + detect Guard in startAction
-  // This is VisuStella-safe (works even if apply() isn't used normally)
+  // (Optional safety) Mark guard as soon as the Guard command is chosen.
+  // Helps when other plugins replace the Guard action with an auto-skill.
+  // -----------------------------
+  if (Scene_Battle && Scene_Battle.prototype.commandGuard) {
+    const _SB_commandGuard = Scene_Battle.prototype.commandGuard;
+    Scene_Battle.prototype.commandGuard = function() {
+      const actor = BattleManager.actor?.();
+      if (BattleManager.isUnderwater() && actor && actor.isActor && actor.isActor()) {
+        if (!BattleManager._uw) BattleManager._uwInitTurnData?.call(BattleManager);
+        BattleManager._uw.guarded.add(actor.actorId());
+      }
+      _SB_commandGuard.call(this);
+    };
+  }
+
+  // -----------------------------
+  // Count Type1/Type2 + fallback detect Guard in startAction
+  // (Not relied on for Breath anymore; kept for compatibility)
   // -----------------------------
   const _BM_startAction = BattleManager.startAction;
   BattleManager.startAction = function() {
@@ -193,16 +209,15 @@
     const subject = this._subject;
     if (!subject || !subject.isActor || !subject.isActor()) return;
 
-    // current action
     const action = subject.currentAction ? subject.currentAction() : null;
     if (!action) return;
 
     if (!this._uw) this._uwInitTurnData();
 
-    // Guard used this turn
+    // Fallback: if the current action is literally Guard
     if (action.isGuard && action.isGuard()) {
       this._uw.guarded.add(subject.actorId());
-      return; // pas de stype à compter pour Guard
+      return;
     }
 
     const item = action.item ? action.item() : null;
@@ -228,12 +243,6 @@
   };
 
   // -----------------------------
-  // Keep Game_Action.apply hook ONLY if you still need something there.
-  // Here we leave it untouched (no stype counting) to avoid double count.
-  // -----------------------------
-  // (No override needed)
-
-  // -----------------------------
   // IMMEDIATE Breath gain on ANY HP gain (heal/lifesteal/regen/scripts...)
   // Limited to +N per actor per turn (default 1)
   // -----------------------------
@@ -242,11 +251,11 @@
     _GB_gainHp.call(this, value);
 
     if (!BattleManager.isUnderwater()) return;
-    if (value <= 0) return;                 // only HP gains
+    if (value <= 0) return;
     if (!this.isActor || !this.isActor()) return;
 
     const actor = this;
-    if (!actorHasBreath(actor)) return;     // only after Breath is applied by the boss
+    if (!actorHasBreath(actor)) return;
 
     if (!BattleManager._uw) BattleManager._uwInitTurnData?.call(BattleManager);
 
@@ -255,11 +264,12 @@
     if (prev >= HEAL_BREATH_CAP) return;
 
     BattleManager._uw.healBreathCount.set(id, prev + 1);
-    addBreath(actor, +1);                   // immediate increment
+    addBreath(actor, +1);
   };
 
   // -----------------------------
   // End turn: Breath decreases + DoT at Breath 0
+  // IMPORTANT FIX: use actor.isGuarding() instead of action.isGuard()
   // DoT is LOCKED to once per troop turn per actor (prevents multi-proc under STB)
   // -----------------------------
   const _BM_endTurn = BattleManager.endTurn;
@@ -268,33 +278,36 @@
 
     _BM_endTurn.call(this);
 
-    if (underwater) {
-      const currentTurn = ($gameTroop && $gameTroop.turnCount) ? $gameTroop.turnCount() : 0;
+    if (!underwater) return;
 
-      $gameParty.battleMembers().forEach(actor => {
-        if (!actorHasBreath(actor)) return;
+    const currentTurn = ($gameTroop && $gameTroop.turnCount) ? $gameTroop.turnCount() : 0;
+    if (!this._uw) this._uwInitTurnData();
 
-        const id = actor.actorId();
+    $gameParty.battleMembers().forEach(actor => {
+      if (!actorHasBreath(actor)) return;
 
-        if (!this._uw.guarded.has(id)) addBreath(actor, -1);
-        if (actor.isStateAffected(STATE_AGITATION)) addBreath(actor, -1);
+      const id = actor.actorId();
 
-        const b = getBreath(actor);
-        if (b !== null && b <= 0 && DOT_PERCENT > 0) {
-          // Anti multi-proc : 1 fois par "turnCount" de troop
-          actor._uwLastDrownTurn = actor._uwLastDrownTurn ?? -999999;
-          if (actor._uwLastDrownTurn !== currentTurn) {
-            actor._uwLastDrownTurn = currentTurn;
+      // FIX: Guard check based on battler guarding state (works with VisuStella auto-trigger)
+      const isGuardingNow = (actor.isGuarding && actor.isGuarding()) || this._uw.guarded.has(id);
+      if (!isGuardingNow) addBreath(actor, -1);
 
-            const dmg = Math.floor(actor.mhp * DOT_PERCENT / 100);
-            if (dmg > 0) {
-              actor.gainHp(-dmg);
-              actor.onDamage(dmg);
-            }
+      if (actor.isStateAffected(STATE_AGITATION)) addBreath(actor, -1);
+
+      const b = getBreath(actor);
+      if (b !== null && b <= 0 && DOT_PERCENT > 0) {
+        actor._uwLastDrownTurn = actor._uwLastDrownTurn ?? -999999;
+        if (actor._uwLastDrownTurn !== currentTurn) {
+          actor._uwLastDrownTurn = currentTurn;
+
+          const dmg = Math.floor(actor.mhp * DOT_PERCENT / 100);
+          if (dmg > 0) {
+            actor.gainHp(-dmg);
+            actor.onDamage(dmg);
           }
         }
-      });
-    }
+      }
+    });
   };
 
 })();

@@ -195,7 +195,12 @@
         counters: {},
         firedThisTurn: {},
         isTriggerCasting: false,
-        queuedTriggerSkill: null,
+
+        // FIX: queue (no proc lost)
+        queuedTriggerSkills: [],
+        _lastActionConsumesTurn: false,
+        _processingTriggerQueue: false,
+
         turnLocal: {
           damageDealtHits: 0,
           healedThisTurn: false,
@@ -234,26 +239,20 @@
   }
 
   function checkImmediateTriggers(actor, condKey, condArg, skillId) {
-    
     const endTurnKeys = ["damage_dealt_this_turn", "healing_done", "end_hp_below", "end_hp_above", "end_tp_at_least"];
-    if (endTurnKeys.includes(condKey)) return; 
+    if (endTurnKeys.includes(condKey)) return;
 
     const triggers = allEquippedTriggersForActor(actor);
 
     for (const t of triggers) {
-
       if (t.skillId !== skillId) continue;
       if (t.cond.key !== condKey) continue;
       if (Number(t.cond.arg ?? null) !== Number(condArg ?? null)) continue;
 
       const current = getCounter(actor, condKey, condArg, skillId);
-
       if (current >= t.count) {
-        const st = battlerTriggerState(actor);
-        if (!st.queuedTriggerSkill) {
-          queueTriggerSkill(actor, skillId, condKey, condArg);
-          markFiredThisTurn(actor, condKey, condArg, skillId);
-        }
+        queueTriggerSkill(actor, skillId, condKey, condArg);
+        markFiredThisTurn(actor, condKey, condArg, skillId);
       }
     }
   }
@@ -288,6 +287,11 @@
     st.firedThisTurn = {};
     st.turnLocal.damageDealtHits = 0;
     st.turnLocal.healedThisTurn = false;
+
+    // optional: clear queue too
+    st.queuedTriggerSkills = [];
+    st._lastActionConsumesTurn = false;
+    st._processingTriggerQueue = false;
   }
 
   function resetTurnLocal(battler) {
@@ -307,10 +311,7 @@
 
     const triggers = [];
     for (const it of items) {
-      // Notetags (si it a un champ .note), sinon tente de lire son "objet base"
       triggers.push(...getNotetagTriggers(it));
-
-      // Dynamiques (independent)
       triggers.push(...getDynamicTriggers(it));
     }
     return triggers;
@@ -518,26 +519,28 @@
     return false;
   }
 
+  // FIX: queue (no proc lost) + anti-dupe
   function queueTriggerSkill(actor, skillId, condKey, condArg) {
-  const st = battlerTriggerState(actor);
-  if (st.queuedTriggerSkill) return false;
-  st.queuedTriggerSkill = {
-    skillId: skillId,
-    condKey: condKey,
-    condArg: condArg
-  };
-  return true;
+    const st = battlerTriggerState(actor);
+
+    const exists = st.queuedTriggerSkills.some(q =>
+      q.skillId === skillId &&
+      q.condKey === condKey &&
+      Number(q.condArg ?? null) === Number(condArg ?? null)
+    );
+    if (exists) return false;
+
+    st.queuedTriggerSkills.push({ skillId, condKey, condArg });
+    return true;
   }
 
   function tryFireTrigger(actor, trigger) {
-
     const { skillId, count } = trigger;
     const { key, arg } = trigger.cond;
 
     const endTurnKeys = ["damage_dealt_this_turn", "healing_done", "end_hp_below", "end_hp_above", "end_tp_at_least"];
     if (!endTurnKeys.includes(key)) return false;
 
-    // damage_dealt_this_turn: x => si hits >= x ce tour, +1 "tour valide"
     if (key === "damage_dealt_this_turn") {
       const hits = battlerTriggerState(actor).turnLocal.damageDealtHits;
       const minHits = Number(arg || 0);
@@ -546,7 +549,6 @@
       }
     }
 
-    // healing_done => si a soigné au moins une fois ce tour, +1 "tour valide"
     if (key === "healing_done") {
       const didHeal = battlerTriggerState(actor).turnLocal.healedThisTurn;
       if (didHeal) {
@@ -554,7 +556,6 @@
       }
     }
 
-    // end HP/TP => +1 "tour valide" si vrai
     if (key === "end_hp_below" || key === "end_hp_above") {
       if (!shouldTriggerOnEndHp(actor, key, Number(arg))) return false;
       incCounter(actor, key, arg, skillId, 1);
@@ -611,7 +612,6 @@
     item[dynamicFieldName] ??= [];
     if (!Array.isArray(item[dynamicFieldName])) item[dynamicFieldName] = [];
 
-    // Stockage minimal (on recalculera cond au runtime)
     item[dynamicFieldName].push({
       conditionRaw: rt.conditionRaw,
       count: rt.count,
@@ -672,16 +672,61 @@
     API.clearTriggers(equip);
   });
 
-const _BattleManager_endAction = BattleManager.endAction;
-BattleManager.endAction = function() {
-  const subject = this._subject;
+  // ---------------------------------------------
+  // STB timing: proc only after a "turn-consuming" action.
+  // In this project: Attack, Guard, Skill Type 2 ("EX") consume the turn.
+  // Type 1 (often <STB Instant>) can queue procs without consuming the turn.
+  // ---------------------------------------------
+  function actionConsumesTurn(subject, action) {
+    if (!subject || !subject.isActor || !subject.isActor()) return false;
+    if (!action || !action.item) return false;
+    const item = action.item();
+    if (!item) return false;
 
-  if (subject && subject.isActor()) {
+    if (DataManager.isSkill(item)) {
+      if (item.id === subject.attackSkillId()) return true;
+      if (item.id === subject.guardSkillId()) return true;
+      if (Number(item.stypeId) === 2) return true; // EX
+    }
+    return false;
+  }
+
+  const _BattleManager_startAction = BattleManager.startAction;
+  BattleManager.startAction = function() {
+    const subject = this._subject;
+    const action = subject && subject.currentAction ? subject.currentAction() : null;
+
+    if (subject && subject.isActor && subject.isActor()) {
+      const st = battlerTriggerState(subject);
+      st._lastActionConsumesTurn = actionConsumesTurn(subject, action);
+    }
+
+    _BattleManager_startAction.call(this);
+  };
+
+  const _BattleManager_endAction = BattleManager.endAction;
+  BattleManager.endAction = function() {
+    const subject = this._subject;
+
+    // Let BattleManager finalize the action first (VisuStella/flow friendly)
+    _BattleManager_endAction.call(this);
+
+    if (!subject || !subject.isActor || !subject.isActor()) return;
+
     const st = battlerTriggerState(subject);
+    if (!st.queuedTriggerSkills || st.queuedTriggerSkills.length === 0) return;
 
-    if (st.queuedTriggerSkill) {
-      const data = st.queuedTriggerSkill;
-      st.queuedTriggerSkill = null;
+    // IMPORTANT: only execute queued procs after a turn-consuming action
+    if (!st._lastActionConsumesTurn) return;
+
+    // Avoid re-entrancy / loops
+    if (st._processingTriggerQueue) return;
+    st._processingTriggerQueue = true;
+
+    try {
+      // Execute ONE proc at a time; the rest will run on subsequent endAction calls
+      const data = st.queuedTriggerSkills.shift();
+      if (!data) return;
 
       const skillId = data.skillId;
       const skill = $dataSkills[skillId];
@@ -693,16 +738,19 @@ BattleManager.endAction = function() {
         this.forceAction(subject);
 
         st.isTriggerCasting = false;
-        
+
+        // Reset ONLY when the proc is actually launched
         resetCounterFor(subject, data.condKey, data.condArg, data.skillId);
+
         st.orbDisplay.current = 0;
         st.orbDisplay.ttl = 20;
+      } else {
+        // If it can't be used right now, keep it (don't lose procs)
+        st.queuedTriggerSkills.unshift(data);
       }
+    } finally {
+      st._processingTriggerQueue = false;
     }
-  }
-
-  _BattleManager_endAction.call(this);
-};
-
+  };
 
 })();
