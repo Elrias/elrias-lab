@@ -199,7 +199,6 @@
         // FIX: queue (no proc lost)
         queuedTriggerSkills: [],
         _lastActionConsumesTurn: false,
-        _lastActionWasAutoSkillTrigger: false,
         _processingTriggerQueue: false,
 
         turnLocal: {
@@ -699,21 +698,7 @@
 
     if (subject && subject.isActor && subject.isActor()) {
       const st = battlerTriggerState(subject);
-
-      const isAuto =
-        !!(action && (
-          (typeof action.isAutoSkillTrigger === "function" && action.isAutoSkillTrigger()) ||
-          action._autoSkillTrigger === true
-        ));
-
-      st._lastActionWasAutoSkillTrigger = isAuto;
-
-      // IMPORTANT:
-      // - si c'est un AutoSkillTrigger -> on conserve l'info du dernier "vrai" tour consommé
-      // - sinon -> on calcule normalement
-      if (!isAuto) {
-        st._lastActionConsumesTurn = actionConsumesTurn(subject, action);
-      }
+      st._lastActionConsumesTurn = actionConsumesTurn(subject, action);
     }
 
     _BattleManager_startAction.call(this);
@@ -723,6 +708,7 @@
   BattleManager.endAction = function() {
     const subject = this._subject;
 
+    // Let BattleManager finalize the action first (VisuStella/flow friendly)
     _BattleManager_endAction.call(this);
 
     if (!subject || !subject.isActor || !subject.isActor()) return;
@@ -730,27 +716,15 @@
     const st = battlerTriggerState(subject);
     if (!st.queuedTriggerSkills || st.queuedTriggerSkills.length === 0) return;
 
-    // Règle STB: jamais lancer après une action qui ne consomme pas le tour
+    // IMPORTANT: only execute queued procs after a turn-consuming action
     if (!st._lastActionConsumesTurn) return;
 
-    // Si VisuStella/BattleManager a encore des forced actions à dérouler -> priorité à ça
-    if ((this._forcedBattlers && this._forcedBattlers.length > 0) || this._forcedBattler) return;
-
-    // IMPORTANT: éviter d'écraser un AutoSkillTrigger déjà préparé sur le battler
-    // (cas typique: Shooting Stars "disparaît" quand ton glyph arrive au même moment)
-    const battlerActions = subject._actions || [];
-    const hasPendingAuto = battlerActions.some(a =>
-      a && (
-        (typeof a.isAutoSkillTrigger === "function" && a.isAutoSkillTrigger()) ||
-        a._autoSkillTrigger === true
-      )
-    );
-    if (hasPendingAuto) return;
-
+    // Avoid re-entrancy / loops
     if (st._processingTriggerQueue) return;
     st._processingTriggerQueue = true;
 
     try {
+      // Execute ONE proc at a time; the rest will run on subsequent endAction calls
       const data = st.queuedTriggerSkills.shift();
       if (!data) return;
 
@@ -765,11 +739,13 @@
 
         st.isTriggerCasting = false;
 
+        // Reset ONLY when the proc is actually launched
         resetCounterFor(subject, data.condKey, data.condArg, data.skillId);
 
         st.orbDisplay.current = 0;
         st.orbDisplay.ttl = 20;
       } else {
+        // If it can't be used right now, keep it (don't lose procs)
         st.queuedTriggerSkills.unshift(data);
       }
     } finally {

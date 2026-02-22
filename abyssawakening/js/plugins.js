@@ -66,5 +66,6 @@ var $plugins =
 {"name":"CloudSyncOnBoot","status":true,"description":"Cloud Sync on Boot (imports cloud saves to local storage at startup)","parameters":{"ApiBaseUrl":"https://abyssawakening-backend.onrender.com","GameId":"abyssawakening","TokenKey":"cloudsave_token"}},
 {"name":"CloudUploadOnSave","status":true,"description":"Cloud Upload on Save (uploads the saved slot to backend after saving)","parameters":{"ApiBaseUrl":"https://abyssawakening-backend.onrender.com","GameId":"abyssawakening","TokenKey":"cloudsave_token"}},
 {"name":"AttackStates","status":true,"description":"Fix Attack States: 1 tentative par état (dédoublonnage) + cap à 100%","parameters":{}},
-{"name":"IndependentSellProxy","status":true,"description":"[Compat] More Currencies: sell Independent equips using their base (originalId) for UI & payment, but remove the independent instance.","parameters":{}}
+{"name":"IndependentSellProxy","status":true,"description":"[Compat] More Currencies: sell Independent equips using their base (originalId) for UI & payment, but remove the independent instance.","parameters":{}},
+{"name":"BarrierGauge","status":true,"description":"(Addon) Affiche le bouclier Absorb (VisuStella Anti-Damage Barriers) en bleu sur la jauge HP.","parameters":{}}
 ];

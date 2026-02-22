@@ -15,7 +15,7 @@
   const BONUS_RATE = 0.50;  // 0.50 = +50% de l'ATK utilisé ci-dessous
   const USE_FINAL_ATK = true; // true: ATK finale (incluant % & buffs). false: ATK base+flats (sans %)
   const ROUND_MODE = "floor"; // "floor" | "round" | "ceil"
-  const LOG = true;          // true pour logs console
+  const LOG = false;          // true pour logs console
 
   // Chaînage sur la vraie méthode native
   const _paramPlusBase = Game_BattlerBase.prototype.paramPlus;
