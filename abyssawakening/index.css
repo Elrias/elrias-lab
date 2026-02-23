@@ -456,3 +456,40 @@ body.overlay-menu #sidePanel {
     pointer-events: none;
   }
 }
+
+/* =========================
+   Fix: menu left small-height
+   ========================= */
+
+/* Le container du menu doit pouvoir scroller */
+.panelInner {
+  overflow-y: auto;
+  min-height: 0; /* important en flex pour permettre les scroll internes */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Le bloc LOGIN (premier panelBlock) ne doit pas être écrasé */
+.panelInner > .panelBlock:first-child {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+}
+
+/* Le bloc GUIDES doit pouvoir rétrécir quand la hauteur est faible */
+.panelBlockGrow {
+  flex: 1 1 auto;
+  min-height: 0; /* remplace le min-height:160px quand l'espace manque */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Et la liste des guides devient la zone scrollable si nécessaire */
+.panelBlockGrow .guidesList {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* Le footer reste en bas, mais ne force pas de layout “cassant” */
+.panelInner > .panelFooter {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+}
