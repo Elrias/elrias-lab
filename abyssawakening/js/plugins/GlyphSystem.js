@@ -201,6 +201,7 @@
         _lastActionConsumesTurn: false,
         _lastActionWasAutoSkillTrigger: false,
         _processingTriggerQueue: false,
+        hasStartedRealTurn: false,
 
         turnLocal: {
           damageDealtHits: 0,
@@ -335,12 +336,22 @@
     $gameTroop.members().forEach((e) => resetBattleCounters(e));
   };
 
-  const _BattleManager_startTurn = BattleManager.startTurn;
-  BattleManager.startTurn = function () {
-    _BattleManager_startTurn.call(this);
-    $gameParty.members().forEach((a) => resetTurnLocal(a));
-    $gameTroop.members().forEach((e) => resetTurnLocal(e));
-  };
+const _BattleManager_startTurn = BattleManager.startTurn;
+BattleManager.startTurn = function () {
+  _BattleManager_startTurn.call(this);
+
+  $gameParty.members().forEach((a) => {
+    resetTurnLocal(a);
+    const st = battlerTriggerState(a);
+    st.hasStartedRealTurn = true;   
+  });
+
+  $gameTroop.members().forEach((e) => {
+    resetTurnLocal(e);
+    const st = battlerTriggerState(e);
+    st.hasStartedRealTurn = true;
+  });
+};
 
   // ----------------------------
   // Counting hooks
@@ -536,6 +547,9 @@
   }
 
   function tryFireTrigger(actor, trigger) {
+    const st = battlerTriggerState(actor);
+
+    if (!st.hasStartedRealTurn) return false;
     const { skillId, count } = trigger;
     const { key, arg } = trigger.cond;
 
