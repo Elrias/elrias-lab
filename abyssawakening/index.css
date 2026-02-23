@@ -492,13 +492,3 @@ body.overlay-menu #sidePanel {
   flex: 0 0 auto;
   flex-shrink: 0;
 }
-
-/* Masquer le bouton Discord en plein écran */
-:fullscreen .discordButton {
-  display: none;
-}
-
-/* Compatibilité Safari */
-:-webkit-full-screen .discordButton {
-  display: none;
-}
