@@ -1,0 +1,101 @@
+/* Reset */
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background: #0f1115;
+    color: #e6e6e6;
+}
+
+/* Layout */
+.wiki-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.wiki-sidebar {
+    width: 260px;
+    background: #161a22;
+    padding: 20px;
+    border-right: 1px solid #2a2f3a;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.wiki-sidebar h2 {
+    margin-top: 0;
+    color: #9aa4ff;
+}
+
+.wiki-sidebar a {
+    display: block;
+    color: #cfcfcf;
+    text-decoration: none;
+    padding: 10px;
+    margin: 4px 0;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.wiki-sidebar a:hover {
+    background: #252b38;
+}
+
+.wiki-sidebar a.active {
+    background: #394061;
+    color: white;
+}
+
+/* Content */
+.wiki-content {
+    flex: 1;
+    padding: 40px;
+    max-width: 1100px;
+    margin: auto;
+}
+
+h1, h2 {
+    color: #ffffff;
+}
+
+/* Mobile Topbar */
+.wiki-topbar {
+    display: none;
+    background: #161a22;
+    padding: 10px;
+    border-bottom: 1px solid #2a2f3a;
+}
+
+#wikiMenuToggle {
+    font-size: 20px;
+    background: none;
+    border: none;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+
+    .wiki-topbar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .wiki-sidebar {
+        position: fixed;
+        left: -260px;
+        transition: left 0.3s ease;
+        z-index: 1000;
+    }
+
+    .wiki-sidebar.open {
+        left: 0;
+    }
+
+    .wiki-layout {
+        flex-direction: column;
+    }
+}
