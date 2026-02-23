@@ -30,37 +30,79 @@ body.theme-dark {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 40px;
+    padding: 20px 40px 10px 40px; 
 }
 
 .wiki-logo img {
     height: 55px;
+    border-radius: 12px;
+    padding: 4px;
+    background: white;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Theme button visible in both modes */
+/* Dark mode logo */
+body.theme-dark .wiki-logo img {
+    background: #1b1f2a;
+    border: 1px solid #2a2f3a;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+}
+
+.wiki-logo img:hover {
+    transform: translateY(-3px);
+}
+
 .theme-toggle {
-    background: transparent;
-    border: 1px solid currentColor;
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
     cursor: pointer;
     font-size: 14px;
+    transition: all 0.25s ease;
+}
+
+/* ===== LIGHT MODE ===== */
+body.theme-light .theme-toggle {
+    background: #111;
+    color: #fff;
+    border: 1px solid #111;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+/* ===== DARK MODE ===== */
+body.theme-dark .theme-toggle {
+    background: #ffffff;
+    color: #111;
+    border: 1px solid #ffffff;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+}
+
+/* Hover effect */
+.theme-toggle:hover {
+    transform: translateY(-2px);
 }
 
 /* ===== BANNER ===== */
 
 .wiki-banner {
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
+    margin: 0 auto 30px auto; /* plus de marge en haut */
+    padding: 0 40px;
 }
 
 .wiki-banner img {
     width: 100%;
-    height: auto;              /* IMPORTANT: plus de crop */
-    border-radius: 16px;
-    border: 1px solid #ddd;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    height: auto;
+    border-radius: 20px;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+}
+
+/* Dark */
+body.theme-dark .wiki-banner img {
+    border: 1px solid #2a2f3a;
+    box-shadow: 0 18px 50px rgba(0,0,0,0.7);
 }
 
 /* Dark mode banner border */
