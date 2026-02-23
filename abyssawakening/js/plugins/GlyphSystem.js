@@ -450,7 +450,7 @@ BattleManager.startTurn = function () {
     if (!result) return;
 
     // --- Evade ---
-    if (target.isActor() && result.evaded) {
+    if (target.isActor() && (result.evaded || result.missed)) {
       const stT = battlerTriggerState(target);
       if (!(ignoreTriggeredSkillForCounting && stT.isTriggerCasting)) {
         const actor = target;
@@ -771,7 +771,7 @@ BattleManager.startTurn = function () {
       const skillId = data.skillId;
       const skill = $dataSkills[skillId];
 
-      if (skill && subject.canUse(skill)) {
+      if (skill && subject.canUse(skill) && !$gameTroop.isAllDead()) {
         st.isTriggerCasting = true;
 
         subject.forceAction(skillId, -1);
