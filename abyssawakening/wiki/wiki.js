@@ -16,4 +16,4 @@ toggle.addEventListener("click", () => {
         document.body.className = "theme-dark";
         localStorage.setItem("wikiTheme", "theme-dark");
     }
-});s
+});
