@@ -1,8 +1,11 @@
 const toggle = document.getElementById("themeToggle");
 
 const savedTheme = localStorage.getItem("wikiTheme");
+
 if (savedTheme) {
     document.body.className = savedTheme;
+} else {
+    document.body.className = "theme-light";
 }
 
 toggle.addEventListener("click", () => {
@@ -13,4 +16,4 @@ toggle.addEventListener("click", () => {
         document.body.className = "theme-dark";
         localStorage.setItem("wikiTheme", "theme-dark");
     }
-});
+});s
