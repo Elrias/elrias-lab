@@ -286,9 +286,20 @@ html, body {
   opacity: 0.8;
 }
 
-/* --- Backdrop désactivé --- */
+/* --- Backdrop (mobile/tablet) --- */
 #backdrop {
-  display: none !important;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+  z-index: 9997; /* juste sous le panel (9998) */
+}
+
+body.menu-open #backdrop {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* Mode “pas assez de bande noire” => menu overlay */
@@ -396,4 +407,52 @@ body.overlay-menu #sidePanel {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* =========================
+   Responsive menu (mobile/tablet)
+   ========================= */
+@media (max-width: 1024px) {
+  /* Le panel doit être fixed pour overlay correctement */
+  #sidePanel {
+    position: fixed;         /* au lieu de absolute */
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    width: min(360px, 88vw); /* largeur mobile */
+    max-width: 360px;
+    z-index: 9998;
+
+    transform: translateX(-105%);
+    transition: transform 220ms ease;
+    pointer-events: none;
+  }
+
+  #sidePanel.open {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  /* Le contenu interne doit pouvoir scroller */
+  #sidePanel .panelInner {
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Le bouton menu reste accessible */
+  #menuToggle {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 9999; /* au-dessus */
+  }
+}
+
+/* Desktop : si tu ouvres le menu, pas besoin de backdrop */
+@media (min-width: 1025px) {
+  body.menu-open #backdrop {
+    opacity: 0;
+    pointer-events: none;
+  }
 }

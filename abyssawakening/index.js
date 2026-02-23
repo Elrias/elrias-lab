@@ -9,7 +9,7 @@ const toggle = document.getElementById("menuToggle");
 const menuIcon = document.getElementById("menuIcon");
 const menuLabel = document.getElementById("menuLabel");
 const discordBtn = document.getElementById("discordBtn");
-
+const backdrop = document.getElementById("backdrop");
 const fsBtn = document.getElementById("fullscreenBtn");
 
 // Auth
@@ -50,10 +50,12 @@ function setToggleState(isOpen) {
 }
 function closeMenu() {
   panel?.classList.remove("open");
+  document.body.classList.remove("menu-open");
   setToggleState(false);
 }
 function openMenu() {
   panel?.classList.add("open");
+  document.body.classList.add("menu-open");
   setToggleState(true);
 }
 toggle?.addEventListener("click", () => {
@@ -61,6 +63,21 @@ toggle?.addEventListener("click", () => {
   panel.classList.contains("open") ? closeMenu() : openMenu();
 });
 setToggleState(false);
+
+// Click backdrop => close
+backdrop?.addEventListener("click", closeMenu);
+
+// ESC => close
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeMenu();
+});
+
+// Click on a link in menu => close (mobile/tablet only)
+panel?.addEventListener("click", (e) => {
+  const a = e.target?.closest?.("a");
+  if (!a) return;
+  if (window.matchMedia("(max-width: 1024px)").matches) closeMenu();
+});
 
 // ---------------- Fullscreen ----------------
 function goFullscreen() {
