@@ -205,7 +205,6 @@
 
         turnLocal: {
           damageDealtHits: 0,
-          healedThisTurn: false,
         },
         orbDisplay: { current: 0, max: 0, ttl: 0 },
       };
@@ -241,7 +240,7 @@
   }
 
   function checkImmediateTriggers(actor, condKey, condArg, skillId) {
-    const endTurnKeys = ["damage_dealt_this_turn", "healing_done", "end_hp_below", "end_hp_above", "end_tp_at_least"];
+    const endTurnKeys = ["end_hp_below", "end_hp_above", "end_tp_at_least"];
     if (endTurnKeys.includes(condKey)) return;
 
     const triggers = allEquippedTriggersForActor(actor);
@@ -288,7 +287,6 @@
     st.counters = {};
     st.firedThisTurn = {};
     st.turnLocal.damageDealtHits = 0;
-    st.turnLocal.healedThisTurn = false;
 
     // optional: clear queue too
     st.queuedTriggerSkills = [];
@@ -300,7 +298,6 @@
     const st = battlerTriggerState(battler);
     st.firedThisTurn = {};
     st.turnLocal.damageDealtHits = 0;
-    st.turnLocal.healedThisTurn = false;
   }
 
   // ----------------------------
@@ -383,10 +380,8 @@ BattleManager.startTurn = function () {
             const { key, arg } = t.cond;
 
             if (key === "skill_type_use" && Number(arg) === Number(stypeId)) {
-              incCounter(this, "skill_type_use", arg, t.skillId, 1);
-            }
-            if (key === "attack" && item && item.id === this.attackSkillId()) {
-              incCounter(this, "attack", null, t.skillId, 1);
+              const amount = (Number(arg) === 2) ? 2 : 1;
+              incCounter(this, "skill_type_use", arg, t.skillId, amount);
             }
             if (key === "guard" && item && item.id === this.guardSkillId()) {
               incCounter(this, "guard", null, t.skillId, 1);
@@ -496,7 +491,39 @@ BattleManager.startTurn = function () {
       const stS = battlerTriggerState(subject);
       if (!(ignoreTriggeredSkillForCounting && stS.isTriggerCasting)) {
         if (hpDmg > 0) {
+
+          const isNormalAttack =
+            DataManager.isSkill(item) &&
+            item.id === subject.attackSkillId();
+
+          const isType1AsAttack =
+            subject.isActor() &&
+            subject.actor().meta.AllType1AsAttack &&
+            DataManager.isSkill(item) &&
+            Number(item.stypeId) === 1;
+
+          if (isNormalAttack || isType1AsAttack) {
+            const triggers = allEquippedTriggersForActor(subject);
+            for (const t of triggers) {
+              if (t.cond.key === "attack") {
+                incCounter(subject, "attack", null, t.skillId, 1);
+              }
+            }
+          }
+
           stS.turnLocal.damageDealtHits += 1;
+
+          const hits = stS.turnLocal.damageDealtHits;
+          const triggers = allEquippedTriggersForActor(subject);
+
+          for (const t of triggers) {
+            if (t.cond.key === "damage_dealt_this_turn") {
+              const minHits = Number(t.cond.arg || 0);
+              if (hits >= minHits) {
+                incCounter(subject, "damage_dealt_this_turn", minHits, t.skillId, 1);
+              }
+            }
+          }
         }
 
         if (result.critical && hpDmg > 0) {
@@ -510,7 +537,13 @@ BattleManager.startTurn = function () {
         }
 
         if (hpDmg < 0) {
-          stS.turnLocal.healedThisTurn = true;
+          const actor = subject;
+          const triggers = allEquippedTriggersForActor(actor);
+          for (const t of triggers) {
+            if (t.cond.key === "healing_done") {
+              incCounter(actor, "healing_done", null, t.skillId, 1);
+            }
+          }
         }
       }
     }
@@ -553,23 +586,8 @@ BattleManager.startTurn = function () {
     const { skillId, count } = trigger;
     const { key, arg } = trigger.cond;
 
-    const endTurnKeys = ["damage_dealt_this_turn", "healing_done", "end_hp_below", "end_hp_above", "end_tp_at_least"];
+    const endTurnKeys = ["end_hp_below", "end_hp_above", "end_tp_at_least"];
     if (!endTurnKeys.includes(key)) return false;
-
-    if (key === "damage_dealt_this_turn") {
-      const hits = battlerTriggerState(actor).turnLocal.damageDealtHits;
-      const minHits = Number(arg || 0);
-      if (minHits > 0 && hits >= minHits) {
-        incCounter(actor, "damage_dealt_this_turn", minHits, skillId, 1);
-      }
-    }
-
-    if (key === "healing_done") {
-      const didHeal = battlerTriggerState(actor).turnLocal.healedThisTurn;
-      if (didHeal) {
-        incCounter(actor, "healing_done", null, skillId, 1);
-      }
-    }
 
     if (key === "end_hp_below" || key === "end_hp_above") {
       if (!shouldTriggerOnEndHp(actor, key, Number(arg))) return false;

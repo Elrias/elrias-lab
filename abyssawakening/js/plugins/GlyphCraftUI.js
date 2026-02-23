@@ -155,10 +155,10 @@
       case "end_hp_above": return arg ? `if the bearer ends the turn above ${arg}% HP` : "if the bearer ends the turn above a HP threshold";
       case "skill_type_use":
         if (arg === "1") return "when the bearer uses a skill";
-        if (arg === "2") return "when the bearer uses an EX";
+        if (arg === "2") return " twice when the bearer uses an EX";
         return "when the bearer uses a skill";
       case "damage_taken_skill_type": return arg ? `when the bearer takes damage from special attacks` : "when the bearer takes damage from a given skill type";
-      case "damage_dealt_this_turn": return arg ? `if the bearer deals at least ${arg} hit(s) of damage this turn` : "if the bearer deals enough hits of damage this turn";
+      case "damage_dealt_this_turn": return arg ? `when the bearer deals over ${arg} hit(s) of damage in the same turn` : "if the bearer deals enough hits of damage this turn";
       default: return `when the bearer: ${titleCase(raw.replace(/_/g, " "))}`;
     }
   }
