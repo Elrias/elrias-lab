@@ -101,14 +101,16 @@ async function loadCharacter() {
     order.forEach(type => {
         const tag = `<${prefix}${type}>`;
 
-        const skill = skills.find(s =>
-            s && s.note && s.note.includes(tag)
-        );
+        const skill = skills.find(s => {
+            if (!s || !s.note) return false;
+            return s.note.trim().includes(tag);
+        });
 
         if (skill) {
             skillsHTML += `
                 <div class="skill-card">
-                    <h3>${type} — ${skill.name}</h3>
+                    <h3>${type}</h3>
+                    <h4>${skill.name}</h4>
                     <p>${skill.description}</p>
                 </div>
             `;
@@ -162,5 +164,3 @@ async function loadCharacter() {
 }
 
 loadCharacter();
-console.log("Prefix:", prefix);
-console.log("Skills:", skills.filter(s => s && s.note));
