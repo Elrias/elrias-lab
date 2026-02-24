@@ -3,19 +3,24 @@ const toggle = document.getElementById("themeToggle");
 const savedTheme = localStorage.getItem("wikiTheme");
 
 if (savedTheme) {
-    document.body.className = savedTheme;
+    document.body.classList.remove("theme-light", "theme-dark");
+    document.body.classList.add(savedTheme);
 } else {
-    document.body.className = "theme-light";
+    document.body.classList.add("theme-light");
 }
 
 toggle.addEventListener("click", () => {
+
     if (document.body.classList.contains("theme-dark")) {
-        document.body.className = "theme-light";
+        document.body.classList.remove("theme-dark");
+        document.body.classList.add("theme-light");
         localStorage.setItem("wikiTheme", "theme-light");
     } else {
-        document.body.className = "theme-dark";
+        document.body.classList.remove("theme-light");
+        document.body.classList.add("theme-dark");
         localStorage.setItem("wikiTheme", "theme-dark");
     }
+
 });
 
 /* ===== BURGER + OVERLAY ===== */
