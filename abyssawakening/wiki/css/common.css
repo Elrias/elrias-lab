@@ -271,9 +271,26 @@ body.theme-dark .back-to-top {
 
 .brand-title {
     font-family: 'Cinzel', serif;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    line-height: 1;
+}
+
+/* Dark theme */
+body.theme-dark .brand-title {
     color: #ffffff;
     text-shadow: 0 0 8px rgba(100, 150, 255, 0.4);
+}
+
+/* Light theme */
+body.theme-light .brand-title {
+    color: #1a1a1a;
+    text-shadow: none;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
