@@ -71,3 +71,30 @@
         display: none;
     }
 }
+
+.characters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.character-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #e6e6e6;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.character-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+body.theme-dark .character-card {
+    background: #1b1f2a;
+    border: 1px solid #2a2f3a;
+}
