@@ -148,6 +148,31 @@ body.theme-dark .wiki-card:hover {
     margin-top: 40px;
 }
 
+.skill-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.skill-icon {
+    width: 32px;
+    height: 32px;
+    background-repeat: no-repeat;
+}
+
+.character-top-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
 @media (max-width: 1000px) {
     .character-top-layout {
         grid-template-columns: 1fr;

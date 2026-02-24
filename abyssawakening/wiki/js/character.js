@@ -1,8 +1,23 @@
+function cleanDescription(text) {
+    if (!text) return "";
+
+    return text
+        .replace(/\\C\[\d+\]/g, "")
+        .replace(/\\n/g, "<br>");
+}
+
+function formatSkillType(type) {
+    if (type.startsWith("S")) {
+        return "Skill " + type.substring(1);
+    }
+    return type;
+}
+
 async function loadCharacter() {
     const params = new URLSearchParams(window.location.search);
     const nameParam = params.get("name");
     if (!nameParam) return;
-
+    const armors = await fetch("../../../data/Armors.json").then(r => r.json());
     const actors = await fetch("../../../data/Actors.json").then(r => r.json());
     const classes = await fetch("../../../data/Classes.json").then(r => r.json());
     const skills = await fetch("../../../data/Skills.json").then(r => r.json());
@@ -39,6 +54,38 @@ async function loadCharacter() {
     };
 
     const classType = classTypeMap[className] || "Unknown";
+
+    const runeTag = `<${prefix}Rune>`;
+    
+    // Rune
+    const rune = armors.find(a =>
+        a && a.note && a.note.includes(runeTag)
+    );
+
+    let runeHTML = "";
+
+    if (rune) {
+        const iconSize = 32;
+        const iconsPerRow = 16;
+
+        const sx = (rune.iconIndex % iconsPerRow) * iconSize;
+        const sy = Math.floor(rune.iconIndex / iconsPerRow) * iconSize;
+
+        runeHTML = `
+            <div class="rune-card">
+                <div class="rune-header">
+                    <div class="rune-icon"
+                        style="
+                            background-image: url('../../../img/system/IconSet.png');
+                            background-position: -${sx}px -${sy}px;
+                        ">
+                    </div>
+                    <h3>${rune.name}</h3>
+                </div>
+                <p>${cleanDescription(rune.description)}</p>
+            </div>
+        `;
+    }
 
     // Weapon type 
     let weaponType = "Unknown";
@@ -109,11 +156,28 @@ async function loadCharacter() {
         );
 
         if (skill) {
+
+            const iconSize = 32;
+            const iconsPerRow = 16;
+
+            const sx = (skill.iconIndex % iconsPerRow) * iconSize;
+            const sy = Math.floor(skill.iconIndex / iconsPerRow) * iconSize;
+
             skillsHTML += `
                 <div class="skill-card">
-                    <h3>${type}</h3>
-                    <h4>${skill.name}</h4>
-                    <p>${skill.description}</p>
+                    <div class="skill-header">
+                        <div class="skill-icon"
+                            style="
+                                background-image: url('../../../img/system/IconSet.png');
+                                background-position: -${sx}px -${sy}px;
+                            ">
+                        </div>
+                        <div>
+                            <h3>${formatSkillType(type)}</h3>
+                            <h4>${skill.name}</h4>
+                        </div>
+                    </div>
+                    <p>${cleanDescription(skill.description)}</p>
                 </div>
             `;
         }
@@ -124,24 +188,33 @@ async function loadCharacter() {
     container.innerHTML = `
     <div class="character-top-layout">
 
-        <div class="character-header-card">
-            <div class="character-face"
-                style="
-                    background-image: url('../../../img/faces/${actor.faceName}.png');
-                    background-position: ${x}px ${y}px;
-                ">
-            </div>
+        <div class="left-column">
 
-            <div class="character-header-info">
-                <h1>${actor.name}</h1>
-                <h2>${className}</h2>
-                <p class="role">${actor.nickname}</p>
+            <div class="character-header-card">
+                <div class="character-face"
+                    style="
+                        background-image: url('../../../img/faces/${actor.faceName}.png');
+                        background-position: ${x}px ${y}px;
+                    ">
+                </div>
 
-                <div class="meta-simple">
-                    <p><strong>Type:</strong> ${classType}</p>
-                    <p><strong>Weapon:</strong> ${weaponType}</p>
+                <div class="character-header-info">
+                    <h1>${actor.name}</h1>
+                    <h2>${className}</h2>
+                    <p class="role">${actor.nickname}</p>
+
+                    <div class="meta-simple">
+                        <p><strong>Type:</strong> ${classType}</p>
+                        <p><strong>Weapon:</strong> ${weaponType}</p>
+                    </div>
                 </div>
             </div>
+
+            <div class="rune-section">
+                <h2>Unique Rune</h2>
+                ${runeHTML}
+            </div>
+
         </div>
 
         <div class="stats-section">
@@ -163,8 +236,7 @@ async function loadCharacter() {
         <h2>Skills</h2>
         ${skillsHTML}
     </div>
-`;
-console.log(skills.filter(s => s.note && s.note.includes("Knight")));
+    `;
 }
 
 loadCharacter();
