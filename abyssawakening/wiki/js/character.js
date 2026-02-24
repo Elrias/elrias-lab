@@ -40,7 +40,7 @@ async function loadCharacter() {
 
     const classType = classTypeMap[className] || "Unknown";
 
-    // Weapon type (RPG Maker MZ)
+    // Weapon type 
     let weaponType = "Unknown";
     const weaponTrait = classData.traits.find(t => t.code === 51);
     if (weaponTrait) {
@@ -51,7 +51,7 @@ async function loadCharacter() {
     const x = -(actor.faceIndex % 4) * 144;
     const y = -Math.floor(actor.faceIndex / 4) * 144;
 
-    // Stats table
+    // Stats table 
     const paramNames = ["HP","MP","ATK","DEF","MAT","MDF","AGI","LUK"];
     let statRows = "";
 
@@ -59,19 +59,11 @@ async function loadCharacter() {
         statRows += `
             <tr>
                 <td>${paramNames[i]}</td>
-                <td>${actor.params[i][1]}</td>
-                <td>${actor.params[i][50]}</td>
+                <td>${classData.params[i][1]}</td>
+                <td>${classData.params[i][50]}</td>
             </tr>
         `;
     }
-
-    statRows += `
-        <tr>
-            <td>Crit Rate</td>
-            <td>5%</td>
-            <td>5%</td>
-        </tr>
-    `;
 
     // Prefix system
     function getPrefix(name) {
