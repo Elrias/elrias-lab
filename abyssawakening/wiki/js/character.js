@@ -63,9 +63,11 @@ async function loadCharacter() {
 
     const lukLv1 = classData.params[7][1];
     const lukLv50 = classData.params[7][50];
+    const lukLv99 = classData.params[7][99];
 
     const critLv1 = 5 + Math.floor(lukLv1 / 20);
     const critLv50 = 5 + Math.floor(lukLv50 / 20);
+    const critLv99 = 5 + Math.floor(lukLv99 / 20);
 
     paramMap.forEach(param => {
         statRows += `
@@ -83,6 +85,7 @@ async function loadCharacter() {
             <td>Crit Rate</td>
             <td>${critLv1}%</td>
             <td>${critLv50}%</td>
+            <td>${critLv99}%</td>
         </tr>
     `;
 
@@ -149,6 +152,7 @@ async function loadCharacter() {
                     <th>Param</th>
                     <th>Lv 1</th>
                     <th>Lv 50</th>
+                    <th>Lv 99</th>
                 </tr>
                 ${statRows}
             </table>
