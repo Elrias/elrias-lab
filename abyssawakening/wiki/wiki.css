@@ -205,8 +205,9 @@ body.theme-dark .burger span {
 .wiki-sidebar {
     width: 220px;
     position: sticky;
-    top: 120px;
+    top: 140px;
     font-size: 14px;
+    align-self: flex-start;
 }
 
 .wiki-sidebar a {
