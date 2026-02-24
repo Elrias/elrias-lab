@@ -52,7 +52,7 @@ async function loadCharacter() {
     const y = -Math.floor(actor.faceIndex / 4) * 144;
 
     // Stats table 
-    const paramNames = ["HP","MP","ATK","DEF","MAT","MDF","AGI","LUK"];
+    const paramNames = ["HP","ATK","DEF","MAT","MDF","AGI","LUK"];
     let statRows = "";
 
     for (let i = 0; i < 8; i++) {
