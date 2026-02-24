@@ -1,7 +1,8 @@
 .wiki-card-grid {
     display: grid;
     gap: 30px;
-    margin-top: 50px;
+    margin: 50px auto 0 auto;
+    max-width: 900;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 

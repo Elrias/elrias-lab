@@ -13,9 +13,15 @@ async function loadCharacters() {
 
         const card = document.createElement("a");
         card.className = "wiki-card";
-        card.href = `characters/${slug}.html`;
+        card.href = `${slug}/`;
 
         card.innerHTML = `
+            <div class="character-face"
+                style="
+                    background-image: url('../../img/faces/${actor.faceName}.png');
+                    background-position: ${-(actor.faceIndex % 4) * 144}px ${-Math.floor(actor.faceIndex / 4) * 144}px;
+                ">
+            </div>
             <h3>${actor.name}</h3>
             <p>${className}</p>
         `;
