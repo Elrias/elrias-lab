@@ -3,6 +3,9 @@
 body {
     font-family: "Segoe UI", sans-serif;
     transition: background 0.3s, color 0.3s;
+}
+
+body.wiki-internal {
     padding-top: 100px;
 }
 
@@ -161,6 +164,14 @@ body.theme-dark .wiki-logo img {
 .burger.open span:nth-child(3) {
     transform: rotate(-45deg);
     top: 9px;
+}
+
+body.theme-light .burger span {
+    background: #111;
+}
+
+body.theme-dark .burger span {
+    background: #ffffff;
 }
 
 /* ===== OVERLAY ===== */
