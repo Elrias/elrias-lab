@@ -7,6 +7,7 @@ async function loadCharacters() {
     actors.forEach(actor => {
         if (!actor) return;
         if (actor.name.includes("-")) return;
+        if (actor.name==="Stasia") return;
         const className = classes[actor.classId]?.name || "Unknown";
 
         const slug = actor.name.toLowerCase().replace(/\s+/g, "-");
