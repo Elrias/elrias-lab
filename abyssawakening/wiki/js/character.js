@@ -47,6 +47,10 @@ async function loadCharacter() {
         weaponType = system.weaponTypes[weaponTrait.dataId];
     }
 
+    // Face positioning
+    const x = -(actor.faceIndex % 4) * 144;
+    const y = -Math.floor(actor.faceIndex / 4) * 144;
+
     // Stats table 
     const paramMap = [
     { name: "HP", index: 0 },
