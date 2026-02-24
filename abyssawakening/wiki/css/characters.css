@@ -68,13 +68,11 @@ body.theme-dark .wiki-card:hover {
 
 .character-header-card {
     display: flex;
-    gap: 40px;
-    align-items: center;
+    gap: 30px;
     padding: 40px;
     border-radius: 20px;
     background: rgba(255,255,255,0.05);
     backdrop-filter: blur(10px);
-    margin-bottom: 60px;
 }
 
 .character-header-info h1 {
@@ -126,4 +124,28 @@ body.theme-dark .wiki-card:hover {
 
 .skill-card:hover {
     transform: translateY(-4px);
+}
+
+.character-top-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-bottom: 80px;
+}
+
+.stats-section {
+    padding: 40px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.03);
+}
+
+.skills-section {
+    margin-top: 40px;
+}
+
+@media (max-width: 1000px) {
+    .character-top-layout {
+        grid-template-columns: 1fr;
+    }
 }

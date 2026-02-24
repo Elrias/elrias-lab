@@ -47,23 +47,39 @@ async function loadCharacter() {
         weaponType = system.weaponTypes[weaponTrait.dataId];
     }
 
-    // Face positioning
-    const x = -(actor.faceIndex % 4) * 144;
-    const y = -Math.floor(actor.faceIndex / 4) * 144;
-
     // Stats table 
-    const paramNames = ["HP","ATK","DEF","MAT","MDF","AGI","LUK"];
+    const paramMap = [
+    { name: "HP", index: 0 },
+    { name: "ATK", index: 2 },
+    { name: "MAT", index: 4 },
+    { name: "AGI", index: 6 },
+    { name: "LUK", index: 7 }
+    ];
     let statRows = "";
 
-    for (let i = 0; i < 8; i++) {
+    const lukLv1 = classData.params[7][1];
+    const lukLv50 = classData.params[7][50];
+
+    const critLv1 = 5 + Math.floor(lukLv1 / 20);
+    const critLv50 = 5 + Math.floor(lukLv50 / 20);
+
+    paramMap.forEach(param => {
         statRows += `
             <tr>
-                <td>${paramNames[i]}</td>
-                <td>${classData.params[i][1]}</td>
-                <td>${classData.params[i][50]}</td>
+                <td>${param.name}</td>
+                <td>${classData.params[param.index][1]}</td>
+                <td>${classData.params[param.index][50]}</td>
             </tr>
         `;
-    }
+    });
+
+    statRows += `
+        <tr>
+            <td>Crit Rate</td>
+            <td>${critLv1}%</td>
+            <td>${critLv50}%</td>
+        </tr>
+    `;
 
     // Prefix system
     function getPrefix(name) {
@@ -97,6 +113,8 @@ async function loadCharacter() {
     const container = document.getElementById("characterContent");
 
     container.innerHTML = `
+    <div class="character-top-layout">
+
         <div class="character-header-card">
             <div class="character-face"
                 style="
@@ -104,13 +122,21 @@ async function loadCharacter() {
                     background-position: ${x}px ${y}px;
                 ">
             </div>
+
             <div class="character-header-info">
                 <h1>${actor.name}</h1>
                 <h2>${className}</h2>
                 <p class="role">${actor.nickname}</p>
+
                 <div class="meta">
-                    <span>${classType}</span>
-                    <span>${weaponType}</span>
+                    <div class="meta-item">
+                        <span class="meta-label">Type</span>
+                        <span class="meta-value">${classType}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Weapon</span>
+                        <span class="meta-value">${weaponType}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -127,11 +153,13 @@ async function loadCharacter() {
             </table>
         </div>
 
-        <div class="skills-section">
-            <h2>Skills</h2>
-            ${skillsHTML}
-        </div>
-    `;
+    </div>
+
+    <div class="skills-section">
+        <h2>Skills</h2>
+        ${skillsHTML}
+    </div>
+`;
 }
 
 loadCharacter();
