@@ -17,3 +17,61 @@ toggle.addEventListener("click", () => {
         localStorage.setItem("wikiTheme", "theme-dark");
     }
 });
+
+const burger = document.getElementById("burgerBtn");
+const mainNav = document.getElementById("mainNav");
+
+if (burger) {
+    burger.addEventListener("click", () => {
+        mainNav.classList.toggle("open");
+    });
+}
+
+/* ===== BURGER + OVERLAY ===== */
+
+const overlay = document.getElementById("menuOverlay");
+
+if (burger) {
+    burger.addEventListener("click", () => {
+        mainNav.classList.toggle("open");
+        burger.classList.toggle("open");
+        overlay.classList.toggle("active");
+    });
+}
+
+if (overlay) {
+    overlay.addEventListener("click", () => {
+        mainNav.classList.remove("open");
+        burger.classList.remove("open");
+        overlay.classList.remove("active");
+    });
+}
+
+/* ===== CLOSE MENU ON LINK CLICK ===== */
+
+document.querySelectorAll(".wiki-main-nav a").forEach(link => {
+    link.addEventListener("click", () => {
+        mainNav.classList.remove("open");
+        burger.classList.remove("open");
+        overlay.classList.remove("active");
+    });
+});
+
+/* ===== BACK TO TOP ===== */
+
+const backToTop = document.getElementById("backToTop");
+
+window.addEventListener("scroll", () => {
+    if (window.scrollY > 400) {
+        backToTop.classList.add("visible");
+    } else {
+        backToTop.classList.remove("visible");
+    }
+});
+
+backToTop.addEventListener("click", () => {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
