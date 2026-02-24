@@ -102,10 +102,10 @@ async function loadCharacter() {
     let skillsHTML = "";
 
     order.forEach(type => {
-        const key = `${prefix}${type}`;
+        const tag = `<${prefix}${type}>`;
 
         const skill = skills.find(s =>
-            s && s.meta && s.meta[key] !== undefined
+            s && s.note && s.note.includes(tag)
         );
 
         if (skill) {
@@ -164,6 +164,7 @@ async function loadCharacter() {
         ${skillsHTML}
     </div>
 `;
+console.log(skills.filter(s => s.note && s.note.includes("Knight")));
 }
 
 loadCharacter();
