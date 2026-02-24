@@ -550,3 +550,15 @@ body.theme-dark .back-to-top {
 .back-to-top:hover {
     transform: translateY(-4px);
 }
+
+@media (max-width: 1000px) {
+
+    .wiki-sidebar {
+        display: none;
+    }
+
+    .wiki-page-layout {
+        flex-direction: column;
+    }
+
+}
