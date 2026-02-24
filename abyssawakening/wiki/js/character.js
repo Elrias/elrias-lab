@@ -102,12 +102,11 @@ async function loadCharacter() {
     let skillsHTML = "";
 
     order.forEach(type => {
-        const tag = `<${prefix}${type}>`;
+        const key = `${prefix}${type}`;
 
-        const skill = skills.find(s => {
-            if (!s || !s.note) return false;
-            return s.note.trim().includes(tag);
-        });
+        const skill = skills.find(s =>
+            s && s.meta && s.meta[key] !== undefined
+        );
 
         if (skill) {
             skillsHTML += `
