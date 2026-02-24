@@ -83,8 +83,10 @@ body.theme-dark .wiki-logo img {
 /* ===== MAIN NAV ===== */
 
 .wiki-main-nav {
+    flex: 1;
     display: flex;
-    gap: 25px;
+    justify-content: center;
+    gap: 40px;
     z-index: 1500;
 }
 
