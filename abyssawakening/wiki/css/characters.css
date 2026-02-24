@@ -48,3 +48,15 @@ body.theme-dark .wiki-card:hover {
         transform: translateY(0);
     }
 }
+
+.character-face {
+    width: 144px;
+    height: 144px;
+
+    margin: 0 auto 15px auto;
+
+    background-repeat: no-repeat;
+    background-size: 576px 288px;
+
+    border-radius: 12px;
+}
