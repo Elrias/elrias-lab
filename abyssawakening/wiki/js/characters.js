@@ -14,7 +14,7 @@ async function loadCharacters() {
 
         const card = document.createElement("a");
         card.className = "wiki-card";
-        card.href = `${slug}/`;
+        card.href = `character/?name=${slug}`;
 
         card.innerHTML = `
             <div class="character-face"
