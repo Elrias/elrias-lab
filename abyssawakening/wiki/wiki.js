@@ -18,17 +18,10 @@ toggle.addEventListener("click", () => {
     }
 });
 
-const burger = document.getElementById("burgerBtn");
-const mainNav = document.getElementById("mainNav");
-
-if (burger) {
-    burger.addEventListener("click", () => {
-        mainNav.classList.toggle("open");
-    });
-}
-
 /* ===== BURGER + OVERLAY ===== */
 
+const burger = document.getElementById("burgerBtn");
+const mainNav = document.getElementById("mainNav");
 const overlay = document.getElementById("menuOverlay");
 
 if (burger) {
