@@ -1,6 +1,6 @@
 async function loadCharacters() {
-    const actors = await fetch("../data/Actors.json").then(r => r.json());
-    const classes = await fetch("../data/Classes.json").then(r => r.json());
+    const actors = await fetch("../../data/Actors.json").then(r => r.json());
+    const classes = await fetch("../../data/Classes.json").then(r => r.json());
 
     const container = document.getElementById("charactersGrid");
 
@@ -12,7 +12,7 @@ async function loadCharacters() {
         const slug = actor.name.toLowerCase().replace(/\s+/g, "-");
 
         const card = document.createElement("a");
-        card.className = "character-card";
+        card.className = "wiki-card";
         card.href = `characters/${slug}.html`;
 
         card.innerHTML = `
