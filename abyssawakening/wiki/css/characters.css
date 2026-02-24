@@ -60,3 +60,8 @@ body.theme-dark .wiki-card:hover {
 
     border-radius: 12px;
 }
+
+.wiki-article {
+    max-width: 1100px;
+    margin: 0 auto;
+}
