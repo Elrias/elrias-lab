@@ -90,12 +90,16 @@ body.theme-dark .wiki-card:hover {
     font-style: italic;
 }
 
-.meta span {
-    display: inline-block;
-    padding: 6px 12px;
-    margin-right: 10px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.1);
+.meta-simple p {
+    margin: 4px 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.meta-simple strong {
+    font-weight: 600;
+    opacity: 0.6;
+    margin-right: 6px;
 }
 
 .stats-section {

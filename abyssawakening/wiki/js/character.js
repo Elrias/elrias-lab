@@ -73,6 +73,7 @@ async function loadCharacter() {
                 <td>${param.name}</td>
                 <td>${classData.params[param.index][1]}</td>
                 <td>${classData.params[param.index][50]}</td>
+                <td>${classData.params[param.index][99]}</td>
             </tr>
         `;
     });
@@ -132,15 +133,9 @@ async function loadCharacter() {
                 <h2>${className}</h2>
                 <p class="role">${actor.nickname}</p>
 
-                <div class="meta">
-                    <div class="meta-item">
-                        <span class="meta-label">Type</span>
-                        <span class="meta-value">${classType}</span>
-                    </div>
-                    <div class="meta-item">
-                        <span class="meta-label">Weapon</span>
-                        <span class="meta-value">${weaponType}</span>
-                    </div>
+                <div class="meta-simple">
+                    <p><strong>Type:</strong> ${classType}</p>
+                    <p><strong>Weapon:</strong> ${weaponType}</p>
                 </div>
             </div>
         </div>
@@ -167,3 +162,5 @@ async function loadCharacter() {
 }
 
 loadCharacter();
+console.log("Prefix:", prefix);
+console.log("Skills:", skills.filter(s => s && s.note));
