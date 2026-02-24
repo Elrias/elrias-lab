@@ -61,6 +61,7 @@ body.theme-dark .wiki-header {
     display: flex;
     align-items: center;
     gap: 40px;
+    flex: 1;
 }
 
 /* ===== LOGO ===== */
@@ -291,7 +292,7 @@ body.theme-dark .back-to-top {
 
         display: flex;
         flex-direction: column;
-        padding: 120px 30px 40px 30px;
+        padding: 40px 30px;
         gap: 25px;
 
         z-index: 950;
