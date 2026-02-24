@@ -40,9 +40,12 @@ async function loadCharacter() {
 
     const classType = classTypeMap[className] || "Unknown";
 
-    // Weapon type
-    const weaponTypeId = classData.equipWeaponTypes[0];
-    const weaponType = system.weaponTypes[weaponTypeId];
+    // Weapon type (RPG Maker MZ)
+    let weaponType = "Unknown";
+    const weaponTrait = classData.traits.find(t => t.code === 51);
+    if (weaponTrait) {
+        weaponType = system.weaponTypes[weaponTrait.dataId];
+    }
 
     // Face positioning
     const x = -(actor.faceIndex % 4) * 144;
