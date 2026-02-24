@@ -447,7 +447,7 @@ body.theme-dark .wiki-card:hover {
 }
 
 .wiki-figure img {
-    max-width: 50%;
+    max-width: 75%;
     border-radius: 12px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.1);
 }
