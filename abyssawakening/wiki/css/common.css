@@ -268,3 +268,12 @@ body.theme-dark .back-to-top {
         display: block;
     }
 }
+
+.brand-title {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(100, 150, 255, 0.4);
+}
