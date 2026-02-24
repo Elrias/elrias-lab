@@ -425,11 +425,10 @@ body.theme-dark .wiki-card:hover {
 
 .wiki-hero {
     width: 100%;
-    background: white; /* bande blanche full width */
+    background: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px 0; /* contrôle la hauteur globale */
 }
 
 .wiki-hero-img {
