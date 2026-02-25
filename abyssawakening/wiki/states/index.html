@@ -27,7 +27,7 @@
             <a href="../characters/">Characters </a>
             <a href="../stats/">Stats</a>
             <a href="../equipments/">Equipments</a>
-            <a href="../ennemies/">Ennemies</a>
+            <a href="../enemies/">Enemies</a>
             <a href="./" class="active">States</a>
             <a href="../account/">Account</a>
         </nav>
@@ -49,26 +49,25 @@
 <button id="backToTop" class="back-to-top">↑</button>
 
     <!-- Main Content -->
-    <section class="wiki-article">
+    <main class="wiki-article">
+        <section class="states-wrapper">
+            <div class="states-intro">
+                <h1>States</h1>
+                <p>
+                    States represent buffs, debuffs and special conditions
+                    that affect characters during battle.
+                </p>
+                <p>
+                    States can be considered removable buffs, debuffs, or cannot be removed.
+                </p>
+            </div>
 
-        <div class="states-intro">
-            <h1>States</h1>
-            <p>
-                States represent buffs, debuffs and special conditions
-                that affect characters during battle.
-            </p>
-            <p>
-                States can be considered removable buffs, debuffs, or cannot be removed.
-            </p>
-        </div>
-
-        <div class="states-controls">
-            <input type="text" id="stateSearch" placeholder="Search a state...">
-        </div>
-
-        <div id="statesList" class="states-list"></div>
-
-    </section>
+            <div class="states-controls">
+                <input type="text" id="stateSearch" placeholder="Search a state...">
+            </div>
+            <div id="statesList" class="states-list"></div>
+        </section>
+    </main>
 
     <script src="../js/states.js"></script>
     <script src="../js/common.js"></script>
