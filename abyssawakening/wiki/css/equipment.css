@@ -9,6 +9,8 @@
     border-radius: 16px;
     background: rgba(255,255,255,0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    max-width: 320px;
+    width: 100%;
 }
 
 .equipment-card:hover {
@@ -75,4 +77,69 @@ body.theme-light .equipment-category-card {
 
 body.theme-light .equipment-category-card:hover {
     box-shadow: 0 15px 35px rgba(30,40,90,0.12);
+}
+
+/* Fond clair plus premium */
+body.light-theme {
+    background: linear-gradient(135deg, #f2f3f7 0%, #e6e8ef 100%);
+}
+
+/* Wrapper centré */
+.runes-wrapper {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+/* Cartes rune */
+.rune-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.rune-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Header rune (icon + title) */
+.rune-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.rune-header img {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+}
+
+/* Description */
+.rune-card p {
+    color: #444;
+    line-height: 1.6;
+}
+
+/* Search bar stylisée */
+#runeSearch {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #d0d3dc;
+    background: #fff;
+    margin-bottom: 40px;
+    transition: all 0.2s ease;
+}
+
+#runeSearch:focus {
+    outline: none;
+    border-color: #7a6cff;
+    box-shadow: 0 0 0 3px rgba(122,108,255,0.15);
 }
