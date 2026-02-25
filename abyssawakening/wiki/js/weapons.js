@@ -27,6 +27,17 @@ async function loadWeapons() {
     const weapons = await fetch("../../../data/Weapons.json")
         .then(r => r.json());
 
+    const upgradeableWeapons = weapons
+        .filter(w =>
+            w &&
+            w.note &&
+            w.note.includes("<WikiWeapon>") &&
+            w.note.includes("<EmberheartSeries>")
+        )
+        .sort((a, b) => a.price - b.price);
+
+    renderUpgradeableWeapons(upgradeableWeapons);
+
     allWeapons = weapons
         .filter(w =>
             w &&
@@ -65,6 +76,45 @@ async function loadWeapons() {
     typeFilter.addEventListener("change", applyFilters);
 }
 
+function renderUpgradeableWeapons(weapons) {
+
+    const container = document.getElementById("upgradeableWeaponsList");
+
+    container.innerHTML = weapons.map(weapon => {
+
+        const iconIndex = weapon.iconIndex;
+        const iconX = (iconIndex % 16) * 32;
+        const iconY = Math.floor(iconIndex / 16) * 32;
+
+        const description = cleanDescription(weapon.description);
+
+        return `
+            <div class="wiki-card upgradeable-card" data-id="${weapon.id}">
+                
+                <div class="weapon-header">
+                    <div style="
+                        width:32px;
+                        height:32px;
+                        background-image:url('../../../img/system/IconSet.png');
+                        background-position:-${iconX}px -${iconY}px;">
+                    </div>
+                    <h3>${weapon.name}</h3>
+                </div>
+
+                <div class="weapon-price">${weapon.price} G</div>
+
+                <p>${description}</p>
+
+                <div class="upgrade-table hidden"></div>
+
+            </div>
+        `;
+
+    }).join("");
+
+    setupUpgradeableToggle(weapons);
+}
+
 function renderWeapons(list) {
 
     const container = document.getElementById("weaponsList");
@@ -96,7 +146,7 @@ function renderWeapons(list) {
                 </div>
                 <p>${description}</p>
                 <div class="weapon-params">
-                    ${params[0] ? `<div><strong>ATK:</strong> ${params[0]}</div>` : ""}
+                    ${params[0] ? `<div><strong>HP:</strong> ${params[0]}</div>` : ""}
                     ${params[2] ? `<div><strong>ATK:</strong> ${params[2]}</div>` : ""}
                     ${params[3] ? `<div><strong>DEF:</strong> ${params[3]}</div>` : ""}
                     ${params[4] ? `<div><strong>MAT:</strong> ${params[4]}</div>` : ""}
@@ -119,6 +169,32 @@ function setupToggle() {
 
         section.classList.toggle("hidden");
         toggle.classList.toggle("active");
+
+    });
+}
+
+
+function setupUpgradeableToggle(weapons) {
+
+    document.querySelectorAll(".upgradeable-card").forEach(card => {
+
+        card.addEventListener("click", () => {
+
+            const weaponId = parseInt(card.dataset.id);
+            const weapon = weapons.find(w => w.id === weaponId);
+
+            const tableContainer = card.querySelector(".upgrade-table");
+
+            if (!tableContainer.classList.contains("hidden")) {
+                tableContainer.classList.add("hidden");
+                tableContainer.innerHTML = "";
+                return;
+            }
+
+            tableContainer.innerHTML = generateUpgradeTable(weapon);
+            tableContainer.classList.remove("hidden");
+
+        });
 
     });
 }

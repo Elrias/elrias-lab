@@ -139,3 +139,26 @@ body.theme-light #weaponTypeFilter {
     color: #111;
     border: 1px solid #d6d9e4;
 }
+
+.upgrade-stats-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.upgrade-stats-table th,
+.upgrade-stats-table td {
+    padding: 8px 10px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.upgrade-stats-table th {
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.upgrade-table.hidden {
+    display: none;
+}
