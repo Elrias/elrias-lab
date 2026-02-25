@@ -9,8 +9,6 @@
     border-radius: 16px;
     background: rgba(255,255,255,0.05);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    max-width: 320px;
-    width: 100%;
 }
 
 .equipment-card:hover {
@@ -50,10 +48,9 @@
 }
 
 .equipment-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
     gap: 40px;
-    justify-items: center;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(250px, 1fr));
 }
 
 .equipment-category-card {
