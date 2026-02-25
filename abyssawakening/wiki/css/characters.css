@@ -173,6 +173,46 @@ body.theme-dark .wiki-card:hover {
     gap: 30px;
 }
 
+.rune-icon {
+    width: 32px;
+    height: 32px;
+}
+
+body.theme-light .character-header-card,
+body.theme-light .stats-section,
+body.theme-light .skill-card,
+body.theme-light .rune-card {
+    background: #ffffff;
+    border: 1px solid #e4e7f0;
+    box-shadow: 0 8px 25px rgba(40, 50, 80, 0.06);
+}
+
+body.theme-light h1,
+body.theme-light h2 {
+    color: #111827;
+}
+
+body.theme-light .role {
+    color: #6b7280;
+}
+
+body.theme-light .stats-table th {
+    color: #374151;
+}
+
+body.theme-light .stats-table td {
+    color: #1f2937;
+}
+
+body.theme-light .stats-table tr {
+    border-bottom: 1px solid #e5e7eb;
+}
+
+body.theme-light .rune-card {
+    background: linear-gradient(145deg, #ffffff, #f4f6ff);
+    border: 1px solid #dbe3ff;
+}
+
 @media (max-width: 1000px) {
     .character-top-layout {
         grid-template-columns: 1fr;
