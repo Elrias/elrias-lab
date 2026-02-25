@@ -48,6 +48,37 @@
 <button id="backToTop" class="back-to-top">↑</button>
 
 <div class="wiki-page-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="wiki-sidebar">
+
+        <h3>Battle</h3>
+
+        <a href="#base-params">Base parameters</a>
+        <a href="#HP" class="sub">HP</a>
+        <a href="#ATK" class="sub">ATK</a>
+        <a href="#MAT" class="sub">MAT</a>
+        <a href="#DEF" class="sub">DEF</a>
+        <a href="#MDF" class="sub">MDF</a>
+        <a href="#LUK" class="sub">LUK</a>
+        <a href="#AGI" class="sub">AGI</a>
+
+        <a href="#extra-params">Extra parameters</a>
+        <a href="#HIT" class="sub">HIT</a>
+        <a href="#EVA" class="sub">EVA</a>
+        <a href="#CRI" class="sub">CRI</a>
+        <a href="#HPR" class="sub">HPR</a>
+        <a href="#TPR" class="sub">TPR</a>
+
+        <a href="#special-params">Special parameters</a>
+        <a href="#HOS" class="sub">HOS</a>
+        <a href="#HLR" class="sub">HLR</a>
+        <a href="#TCR" class="sub">TCR</a>
+
+        <a href="#damage-multipliers">Damage multipliers</a>
+        <a href="#dealt" class="sub">Damage dealt</a>
+        <a href="#taken" class="sub">Damage taken</a>
+
+    </aside>
 
     <!-- Main Content -->
     <main class="wiki-article">
@@ -110,6 +141,88 @@
             <h2>Agility</h2>
             <p>Agility will affect turn order.</p>
             <p>Allies will play their turn in order from highest agility to lowest agility in the party.</p>
+        </section>
+        <section id="extra-params">
+            <h1>Extra parameters</h1>
+            <p>Additionally to base parameters, there are extra parameters.</p>
+            <p>These parameters are :</p>
+            <ul>
+                <li>HIT - Hit rate</li>
+                <li>EVA - Evasion rate</li>
+                <li>CRI - Critical rate</li>
+                <li>HPR - HP Regen</li>
+                <li>TPR - TP Regen</li>
+            </ul>
+        </section>
+                <section id="HIT">
+            <h2>HIT</h2>
+            <p>Hit rate represents the chance for any attacks to land on the target.</p>
+            <p>Base hit rate is 100% for all actors, but can be reduced via debuff states.</p>
+        </section>
+        <section id="EVA">
+            <h2>EVA</h2>
+            <p>Evasion rate represents the chance for an actor to dodge attacks.</p>
+            <p>Dodging an attack will entirely negate the damage.</p>
+        </section>
+        <section id="CRI">    
+            <h2>CRI</h2>
+            <p>Critical rate represents the chance for an actor to land a critical hit.</p>
+            <p>Critical is rolled for every hit of multi-hit attacks.</p>
+            <p>A critical strike will increase damage by 50%.</p>
+            <p>Luck will increase the critical chance, critical damage multiplier and add a flat damage bonus to critical strikes.</p>
+        </section>
+        <section id="HPR">      
+            <h2>HP Regen</h2>
+            <p>HP regen represents the ammount of %Max HP an actor heals at the end of the turn.</p>
+            <p>HP regen is increased primarily via equipment and skills.</p>
+        </section>    
+        <section id="TPR">      
+            <h2>TP Regen</h2>
+            <p>TP regen represents the ammount of TP an actor recovers at the end of the turn.</p>
+            <p>TP regen is increased primarily via equipment and skills.</p>
+        </section>
+        <section id="special-params">
+            <h1>Special parameters</h1>
+            <p>There also exist special parameters.</p>
+            <p>These parameters are :</p>
+            <ul>
+                <li>HOS - Hostility</li>
+                <li>HLR - Healing received</li>
+                <li>TCR - TP Charge rate</li>
+            </ul>
+        </section>
+        <section id="HOS">    
+            <h2>HOS</h2>
+            <p>Hostility reprensents the chance for an actor to be targeted by an enemy.</p>
+            <p>Hostility starts at 100% for all actors, but it can be increased via equipment and states.</p>
+        </section>
+        <section id="HLR">      
+            <h2>Healing received</h2>
+            <p>Healing received increase healing from any source received by the target.</p>
+            <p>Some effects will only increase one specific healing source.</p>
+        </section>    
+        <section id="TCR">      
+            <h2>TP Charge rate</h2>
+            <p>TP Charge rate represents the ammount of TP recovered via attacks, guard and other effects.</p>
+            <p>It increases TP gains multiplicatively.</p>
+        </section>
+        <section id="damage-multipliers">
+            <h1>Damage multipliers</h1>
+            <p>Damage multipliers will increase or decrease damage dealt and taken there exist several types.</p>
+        </section>
+        <section id="dealt">      
+            <h2>Damage dealt</h2>
+            <p>Damage dealt multipliers will increase or decrease the final damage dealt to the target.</p>
+            <p>These multipliers can affect all damage, or specific sources.</p>
+            <p>All sources of damage dealt multipliers will stack additively.</p>
+            <p>These multipliers will affect all damage, including negative damage (healing)</p>
+        </section>    
+        <section id="taken">      
+            <h2>Damage taken</h2>
+            <p>Damage taken multipliers will increase or decrease the final damage taken by the target.</p>
+            <p>These multipliers can affect all damage, or specific sources.</p>
+            <p>All sources of damage taken multipliers will stack additively.</p>
+            <p>These multipliers will affect all damage, including negative damage (healing)</p>
         </section>
 </div>
 
