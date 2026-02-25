@@ -4,6 +4,7 @@
     margin: 50px auto 0 auto;
     max-width: 900;
     grid-template-columns: repeat(auto-fill, minmax(320px, 320px));
+    align-items: start;
 }
 
 .wiki-card {
