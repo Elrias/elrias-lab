@@ -1,4 +1,25 @@
 let allWeapons = [];
+let allUpgradeableWeapons = [];
+const LEVEL_MULTIPLIERS = [
+    1.00,
+    1.04,
+    1.08,
+    1.12,
+    1.20,
+    1.28,
+    1.36,
+    1.48,
+    1.60,
+    1.76,
+    2.00
+];
+
+function scaleStat(value, multiplier) {
+    if (value > 0) {
+        return Math.round(value * multiplier);
+    }
+    return value;
+}
 
 async function loadWeapons() {
 
@@ -24,6 +45,50 @@ async function loadWeapons() {
         }
 
     });
+
+    const upgradeTypeSelect = document.getElementById("upgradeTypeFilter");
+
+    weaponTypes.forEach((typeName, index) => {
+
+        if (
+            typeName &&
+            !excludedTypes.includes(index)
+        ) {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = typeName;
+
+            upgradeTypeSelect.appendChild(option.cloneNode(true));
+        }
+
+    });
+
+    const upgradeSearch = document.getElementById("upgradeSearch");
+    const upgradeTypeFilter = document.getElementById("upgradeTypeFilter");
+
+    function applyUpgradeFilters() {
+
+        const searchValue = upgradeSearch.value.toLowerCase();
+        const selectedType = upgradeTypeFilter.value;
+
+        const filtered = allUpgradeableWeapons.filter(w => {
+
+            const matchesSearch =
+                w.name.toLowerCase().includes(searchValue);
+
+            const matchesType =
+                selectedType === "all" ||
+                w.wtypeId == selectedType;
+
+            return matchesSearch && matchesType;
+        });
+
+        renderUpgradeableWeapons(filtered);
+    }
+
+    upgradeSearch.addEventListener("input", applyUpgradeFilters);
+    upgradeTypeFilter.addEventListener("change", applyUpgradeFilters);
+
     const weapons = await fetch("../../../data/Weapons.json")
         .then(r => r.json());
 
@@ -35,8 +100,8 @@ async function loadWeapons() {
             w.note.includes("<EmberheartSeries>")
         )
         .sort((a, b) => a.price - b.price);
-
-    renderUpgradeableWeapons(upgradeableWeapons);
+    allUpgradeableWeapons = upgradeableWeapons;
+    renderUpgradeableWeapons(allUpgradeableWeapons);
 
     allWeapons = weapons
         .filter(w =>
@@ -51,6 +116,8 @@ async function loadWeapons() {
 
     const searchInput = document.getElementById("weaponSearch");
     const typeFilter = document.getElementById("weaponTypeFilter");
+
+    
 
     function applyFilters() {
 
@@ -112,7 +179,7 @@ function renderUpgradeableWeapons(weapons) {
 
     }).join("");
 
-    setupUpgradeableToggle(weapons);
+    setupUpgradeableToggle();
 }
 
 function renderWeapons(list) {
@@ -174,14 +241,14 @@ function setupToggle() {
 }
 
 
-function setupUpgradeableToggle(weapons) {
+function setupUpgradeableToggle() {
 
     document.querySelectorAll(".upgradeable-card").forEach(card => {
 
-        card.addEventListener("click", () => {
+        card.onclick = () => {
 
             const weaponId = parseInt(card.dataset.id);
-            const weapon = weapons.find(w => w.id === weaponId);
+            const weapon = allUpgradeableWeapons.find(w => w.id === weaponId);
 
             const tableContainer = card.querySelector(".upgrade-table");
 
@@ -194,10 +261,59 @@ function setupUpgradeableToggle(weapons) {
             tableContainer.innerHTML = generateUpgradeTable(weapon);
             tableContainer.classList.remove("hidden");
 
-        });
+        };
 
     });
 }
 
+function generateUpgradeTable(weapon) {
+
+    const paramNames = ["HP","MP","ATK","DEF","MAT","MDF","AGI","LUK"];
+
+    let table = `
+        <table class="upgrade-stats-table">
+            <thead>
+                <tr>
+                    <th>Level</th>
+                    ${paramNames.map(p => `<th>${p}</th>`).join("")}
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    LEVEL_MULTIPLIERS.forEach((multiplier, level) => {
+
+        table += `<tr><td>+${level}</td>`;
+
+        weapon.params.forEach(value => {
+
+            const scaled = scaleStat(value, multiplier);
+            table += `<td>${scaled !== 0 ? scaled : "-"}</td>`;
+
+        });
+
+        table += `</tr>`;
+    });
+
+    table += `
+            </tbody>
+        </table>
+    `;
+
+    return table;
+}
+
+function setupUpgradeToggle() {
+
+    const toggle = document.getElementById("upgradeableWeaponsToggle");
+    const section = document.getElementById("upgradeableWeaponsSection");
+
+    toggle.addEventListener("click", () => {
+        section.classList.toggle("hidden");
+        toggle.classList.toggle("active");
+    });
+}
+
 setupToggle();
+setupUpgradeToggle();
 loadWeapons();
