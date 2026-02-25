@@ -4,16 +4,8 @@
     gap: 20px;
 }
 
-.equipment-hub {
-    width: 100%;
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 80px clamp(20px, 5vw, 80px);
-}
-
-.wiki-page-layout:has(.runes-wrapper) {
-    max-width: 1600px;
-    margin: 40px auto;
+.wiki-page-layout {
+    grid-template-columns: 1fr !important;
 }
 
 .equipment-card {
