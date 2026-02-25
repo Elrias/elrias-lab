@@ -1,12 +1,3 @@
-function cleanDescription(text) {
-    if (!text) return "";
-
-    return text
-        .replace(/\\C\[\d+\]/g, "")
-        .replace(/\\N\[\d+\]/g, "Hiro")
-        .replace(/\\n/g, "<br>");
-}
-
 function formatSkillType(type) {
     if (type.startsWith("S")) {
         return "Skill " + type.substring(1);

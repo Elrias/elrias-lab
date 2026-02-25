@@ -58,7 +58,7 @@ async function loadStates() {
                 </div>
 
                 <div class="state-description">
-                    ${helpDesc}
+                    ${cleanDescription(helpDesc)}
                 </div>
 
             </div>

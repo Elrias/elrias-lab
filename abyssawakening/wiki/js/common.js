@@ -73,3 +73,14 @@ backToTop.addEventListener("click", () => {
         behavior: "smooth"
     });
 });
+
+/* ===== UTILITIES ===== */
+
+function cleanDescription(text) {
+    if (!text) return "";
+
+    return text
+        .replace(/\\C\[\d+\]/g, "")
+        .replace(/\\N\[\d+\]/g, "Hiro")
+        .replace(/\\n/g, "<br>");
+}
