@@ -88,7 +88,7 @@ function renderCharacterRunes(list) {
                 <div class="equipment-header">
                     <div class="equipment-icon"
                         style="
-                            background-image: url('../../img/system/IconSet.png');
+                            background-image: url('../../../img/system/IconSet.png');
                             background-position: -${iconX}px -${iconY}px;
                         ">
                     </div>
