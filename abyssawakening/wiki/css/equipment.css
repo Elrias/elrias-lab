@@ -77,6 +77,10 @@
     color: rgba(255,255,255,0.5);
 }
 
+#runeSearch::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
 #weaponSearch:focus {
     outline: none;
     border-color: #7a6cff;
