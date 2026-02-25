@@ -78,7 +78,10 @@ function setupToggle() {
     const section = document.getElementById("basicWeaponsSection");
 
     toggle.addEventListener("click", () => {
+
         section.classList.toggle("hidden");
+        toggle.classList.toggle("active");
+
     });
 }
 

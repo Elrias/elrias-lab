@@ -22,10 +22,23 @@
 
 .weapon-section {
     margin-top: 30px;
+    margin-bottom: 60px;
 }
 
-.hidden {
-    display: none;
+.weapon-section {
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.weapon-section.hidden {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+}
+
+.weapon-section:not(.hidden) {
+    max-height: 2000px;
+    opacity: 1;
 }
 
 /* Param block inside card */
@@ -36,4 +49,56 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 6px 20px;
+}
+
+#waponsList,
+#wikiWeaponsList,
+#weaponsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 300px));
+    gap: 30px;
+    justify-content: start;
+}
+
+#weaponSearch {
+    width: 100%;
+    max-width: 420px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: white;
+    margin: 30px 0 40px 0;
+    transition: all 0.25s ease;
+}
+
+#weaponSearch::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+#weaponSearch:focus {
+    outline: none;
+    border-color: #7a6cff;
+    box-shadow: 0 0 0 3px rgba(122,108,255,0.25);
+}
+
+body.theme-light #weaponSearch {
+    background: white;
+    color: #111;
+    border: 1px solid #d6d9e4;
+}
+
+.toggle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.toggle-icon {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+}
+
+.weapon-toggle-card.active .toggle-icon {
+    transform: rotate(180deg);
 }
