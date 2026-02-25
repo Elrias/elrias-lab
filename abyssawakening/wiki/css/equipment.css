@@ -4,6 +4,18 @@
     gap: 20px;
 }
 
+.equipment-hub {
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 80px clamp(20px, 5vw, 80px);
+}
+
+.wiki-page-layout:has(.runes-wrapper) {
+    max-width: 1600px;
+    margin: 40px auto;
+}
+
 .equipment-card {
     padding: 24px;
     border-radius: 16px;
@@ -78,7 +90,7 @@ body.theme-light .equipment-category-card:hover {
 }
 
 /* Fond clair plus premium */
-body.light-theme {
+body.theme-light {
     background: linear-gradient(135deg, #f2f3f7 0%, #e6e8ef 100%);
 }
 
@@ -144,11 +156,11 @@ body.light-theme {
 
 .runes-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 40px 60px;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
 }
 
-body.light-theme .rune-card {
+body.theme-light .rune-card {
     background: #ffffff;
     border: 1px solid #e2e5ee;
     border-radius: 16px;
@@ -157,7 +169,7 @@ body.light-theme .rune-card {
     transition: all 0.2s ease;
 }
 
-body.light-theme .rune-card:hover {
+body.theme-light .rune-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 12px 26px rgba(0,0,0,0.08);
 }
