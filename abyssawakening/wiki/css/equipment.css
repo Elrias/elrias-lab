@@ -113,3 +113,36 @@ body.theme-light #runeSearch {
 .weapon-toggle-card.active .toggle-icon {
     transform: rotate(180deg);
 }
+
+.weapon-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.weapon-price {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #7a6cff;
+    font-size: 14px;
+}
+
+body.theme-light .weapon-price {
+    color: #5b4fff;
+}
+
+#weaponTypeFilter {
+    margin-left: 20px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05);
+    color: white;
+}
+
+body.theme-light #weaponTypeFilter {
+    background: white;
+    color: #111;
+    border: 1px solid #d6d9e4;
+}

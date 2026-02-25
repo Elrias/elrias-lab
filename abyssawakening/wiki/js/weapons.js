@@ -2,6 +2,28 @@ let allWeapons = [];
 
 async function loadWeapons() {
 
+    const system = await fetch("../../../data/System.json")
+        .then(r => r.json());
+
+    const weaponTypes = system.weaponTypes;
+
+    const typeSelect = document.getElementById("weaponTypeFilter");
+
+    const excludedTypes = [3, 5, 8, 9, 12, 14];
+
+    weaponTypes.forEach((typeName, index) => {
+
+        if (
+            typeName &&
+            !excludedTypes.includes(index)
+        ) {
+            const option = document.createElement("option");
+            option.value = index;
+            option.textContent = typeName;
+            typeSelect.appendChild(option);
+        }
+
+    });
     const weapons = await fetch("../../../data/Weapons.json")
         .then(r => r.json());
 
@@ -12,21 +34,35 @@ async function loadWeapons() {
             w.note.includes("<WikiWeapon>") &&
             !w.note.includes("<EmberheartSeries>")
         )
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => a.price - b.price);
 
     renderWeapons(allWeapons);
 
     const searchInput = document.getElementById("weaponSearch");
+    const typeFilter = document.getElementById("weaponTypeFilter");
 
-    searchInput.addEventListener("input", () => {
-        const value = searchInput.value.toLowerCase();
+    function applyFilters() {
 
-        const filtered = allWeapons.filter(w =>
-            w.name.toLowerCase().includes(value)
-        );
+        const searchValue = searchInput.value.toLowerCase();
+        const selectedType = typeFilter.value;
+
+        const filtered = allWeapons.filter(w => {
+
+            const matchesSearch =
+                w.name.toLowerCase().includes(searchValue);
+
+            const matchesType =
+                selectedType === "all" ||
+                w.wtypeId == selectedType;
+
+            return matchesSearch && matchesType;
+        });
 
         renderWeapons(filtered);
-    });
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+    typeFilter.addEventListener("change", applyFilters);
 }
 
 function renderWeapons(list) {
@@ -55,9 +91,10 @@ function renderWeapons(list) {
                     </div>
                     <h3>${weapon.name}</h3>
                 </div>
-
+                <div class="weapon-price">
+                    ${weapon.price} G
+                </div>
                 <p>${description}</p>
-
                 <div class="weapon-params">
                     ${params[2] ? `<div><strong>ATK:</strong> ${params[2]}</div>` : ""}
                     ${params[3] ? `<div><strong>DEF:</strong> ${params[3]}</div>` : ""}
