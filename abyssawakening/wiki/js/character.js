@@ -163,14 +163,14 @@ async function loadCharacter() {
             skillsHTML += buildSkillCard("Passive", passive);
         }
 
-        // EX multiples
         const mercEx = skills.filter(s =>
-            s && s.note?.includes("<MercenaryEX:")
+            s && s.note && /<MercenaryEX\s*:\s*.*?>/i.test(s.note)
         );
 
         mercEx.forEach(ex => {
-            const match = ex.note.match(/<MercenaryEX:\s*(.*?)>/);
-            const weapon = match ? match[1] : "Unknown";
+            const match = ex.note.match(/<MercenaryEX\s*:\s*(.*?)>/i);
+            const weapon = match ? match[1].trim() : "Unknown";
+
             skillsHTML += buildSkillCard(`EX (${weapon})`, ex);
         });
 
