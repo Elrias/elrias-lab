@@ -49,14 +49,37 @@
 
 <button id="backToTop" class="back-to-top">↑</button>
 
-<div class="wiki-page-layout">
+<main class="wiki-article">
 
-    <!-- Main Content -->
-    <main class="wiki-article">
-        <h1>coming soon</h1>
-    </main>
-</div>
+    <h1>Weapons</h1>
+    <p>
+        Weapons define a character’s offensive capabilities and scaling.
+    </p>
+
+    <!-- BASIC WEAPONS CARD -->
+    <div class="wiki-card weapon-toggle-card" id="basicWeaponsToggle">
+        <h2>Basic Weapons</h2>
+        <p>Standard weapons available in the shop</p>
+    </div>
+
+    <div id="basicWeaponsSection" class="weapon-section hidden">
+
+        <input type="text" id="weaponSearch" placeholder="Search a weapon...">
+
+        <div id="weaponsList" class="wiki-card-grid"></div>
+
+    </div>
+
+    <!-- UPGRADEABLE WEAPONS CARD -->
+    <div class="wiki-card weapon-toggle-card">
+        <h2>Upgradeable Weapons</h2>
+        <p>Advanced weapons that can be enhanced.</p>
+    </div>
+
+</main>
 
 <script src="../../js/common.js"></script>
+<script src="../../js/weapons.js"></script>
+
 </body>
 </html>
