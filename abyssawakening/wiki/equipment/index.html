@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="../css/common.css">
 <link rel="stylesheet" href="../css/article.css">
 <link rel="stylesheet" href="../css/equipment.css">
+<link rel="stylesheet" href="../css/characters.css">
 </head>
 <link rel="icon" type="image/png" href="../assets/icon.png">
 <body class="theme-light">
@@ -48,50 +49,42 @@
 
 <button id="backToTop" class="back-to-top">↑</button>
 
-<div class="wiki-page-layout">
+<!-- Main Content -->
+<main class="wiki-article">
 
-    <!-- Main Content -->
-    <main class="wiki-article">
 
-        <section class="equipment-hub">
+    <h1>Equipment</h1>
+    <p>
+        Equipment enhances characters through various systems.
+        Each category offers different strategic possibilities.
+    </p>
 
-            <div class="equipment-intro">
-                <h1>Equipment</h1>
-                <p>
-                    Equipment enhances characters through various systems.
-                    Each category offers different strategic possibilities.
-                </p>
-            </div>
+    <div class="wiki-card-grid">
 
-            <div class="equipment-grid">
+        <a href="./runes/" class="wiki-card">
+            <h2>Runes</h2>
+            <p>
+                Passive enhancement items that improve stats and grant special effects.
+            </p>
+            </a>
 
-                <a href="./runes/" class="equipment-category-card">
-                    <h2>Runes</h2>
-                    <p>
-                        Passive enhancement items that improve stats and grant special effects.
-                    </p>
-                </a>
+        <a href="./glyphs/" class="wiki-card">
+            <h2>Glyphs</h2>
+            <p>
+                Customizable equipment that alter combat behavior by triggering skills depending on specific conditions.
+            </p>
+        </a>
 
-                <a href="./glyphs/" class="equipment-category-card">
-                    <h2>Glyphs</h2>
-                    <p>
-                        Customizable equipment that alter combat behavior by triggering skills depending on specific conditions.
-                    </p>
-                </a>
+         <a href="./weapons/" class="wiki-card">
+            <h2>Weapons</h2>
+            <p>
+                Core gear defining a character’s offensive potential and playstyle.
+            </p>
+        </a>
 
-                <a href="./weapons/" class="equipment-category-card">
-                    <h2>Weapons</h2>
-                    <p>
-                        Core gear defining a character’s offensive potential and playstyle.
-                    </p>
-                </a>
+    </div>
 
-            </div>
-
-        </section>
-
-    </main>
-</div>
+</main>
 
 <script src="../js/common.js"></script>
 </body>

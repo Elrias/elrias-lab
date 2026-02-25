@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="../../css/common.css">
 <link rel="stylesheet" href="../../css/article.css">
 <link rel="stylesheet" href="../../css/equipment.css">
+<link rel="stylesheet" href="../css/characters.css">
 </head>
 <link rel="icon" type="image/png" href="../../assets/icon.png">
 <body class="theme-light">
@@ -48,42 +49,21 @@
 
 <button id="backToTop" class="back-to-top">↑</button>
 
-<div class="wiki-page-layout">
+<!-- Main Content -->
+<main class="wiki-article">
 
-    <!-- Main Content -->
-    <main class="wiki-article">
-        <section class="equipments-wrapper">
+    <h1>Runes</h1>
+    <p>Runes enhance characters with passive bonuses and unique effects.</p>
 
-            <!-- INTRO -->
-            <div class="equipments-intro">
-                <h1>Runes</h1>
-                <p>
-                    Runes enhance characters with passive bonuses and unique effects.
-                </p>
-            </div>
+    <input type="text" id="runeSearch" placeholder="Search a rune...">
 
-            <!-- ===== RUNES ===== -->
-            <div class="equipments-section">
-                <h2>Runes</h2>
+    <div id="runesList" class="wiki-card-grid"></div>
 
-                <div class="equipments-controls">
-                    <input type="text" id="runeSearch" placeholder="Search a rune...">
-                </div>
+    <h2 style="margin-top:80px;">Character Specific Runes</h2>
 
-                <div id="runesList" class="runes-list"></div>
-            </div>
+    <div id="characterRunesList" class="wiki-card-grid"></div>
 
-            <!-- ===== CHARACTER SPECIFIC ===== -->
-            <div class="equipments-section">
-                <h2>Character Specific Runes</h2>
-
-                <div id="characterRunesList" class="runes-list"></div>
-            </div>
-
-        </section>
-
-    </main>
-</div>
+</main>
 <script src="../../js/common.js"></script>
 <script src="../../js/runes.js"></script>
 </body>

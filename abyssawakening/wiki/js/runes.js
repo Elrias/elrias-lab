@@ -54,19 +54,21 @@ function renderRunes(list) {
         const description = cleanDescription(armor.description || armor.note || "");
 
         return `
-            <div class="equipment-card">
-                <div class="equipment-header">
-                    <div class="equipment-icon"
-                        style="
-                            background-image: url('../../../img/system/IconSet.png');
-                            background-position: -${iconX}px -${iconY}px;
-                        ">
+            <div class="wiki-card">
+
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div style="
+                        width:32px;
+                        height:32px;
+                        background-image:url('../../../img/system/IconSet.png');
+                        background-position:-${iconX}px -${iconY}px;
+                        background-repeat:no-repeat;">
                     </div>
                     <h3>${armor.name}</h3>
                 </div>
-                <p class="equipment-description">
-                    ${description}
-                </p>
+
+                <p>${description}</p>
+
             </div>
         `;
     }).join("");
@@ -84,19 +86,21 @@ function renderCharacterRunes(list) {
         const description = cleanDescription(armor.description || armor.note || "");
 
         return `
-            <div class="equipment-card">
-                <div class="equipment-header">
-                    <div class="equipment-icon"
-                        style="
-                            background-image: url('../../../img/system/IconSet.png');
-                            background-position: -${iconX}px -${iconY}px;
-                        ">
+            <div class="wiki-card">
+
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div style="
+                        width:32px;
+                        height:32px;
+                        background-image:url('../../../img/system/IconSet.png');
+                        background-position:-${iconX}px -${iconY}px;
+                        background-repeat:no-repeat;">
                     </div>
                     <h3>${armor.name}</h3>
                 </div>
-                <p class="equipment-description">
-                    ${description}
-                </p>
+
+                <p>${description}</p>
+
             </div>
         `;
     }).join("");
