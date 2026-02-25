@@ -3,6 +3,7 @@ function cleanDescription(text) {
 
     return text
         .replace(/\\C\[\d+\]/g, "")
+        .replace(/\\N\[\d+\]/g, "Hiro")
         .replace(/\\n/g, "<br>");
 }
 
@@ -13,12 +14,57 @@ function formatSkillType(type) {
     return type;
 }
 
+function extractSkillExtras(skill) {
+
+    const note = skill.note || "";
+    const extras = [];
+
+    // Cooldown
+    const cdMatch = note.match(/<Cooldown:\s*(\d+)>/i);
+    if (cdMatch) {
+        extras.push(`Cooldown: ${cdMatch[1]} turns`);
+    }
+
+    // Item Cost (peut être multiple)
+    const itemMatches = [...note.matchAll(/<Item Cost:\s*(.*?)>/gi)];
+    itemMatches.forEach(match => {
+        extras.push(`Item Cost: ${match[1]}`);
+    });
+
+    // HP Cost (JS block)
+    if (note.includes("<JS HP Cost>")) {
+        extras.push("HP Cost: Based on Max HP");
+    }
+
+    // TP Cost (direct DB)
+    if (skill.tpCost && skill.tpCost > 0) {
+        extras.push(`TP Cost: ${skill.tpCost}`);
+    }
+
+    return extras;
+}
+
 function buildSkillCard(label, skill) {
+
     const iconSize = 32;
     const iconsPerRow = 16;
 
     const sx = (skill.iconIndex % iconsPerRow) * iconSize;
     const sy = Math.floor(skill.iconIndex / iconsPerRow) * iconSize;
+
+    let extrasHTML = "";
+
+    if (label === "Skill") {
+        const extras = extractSkillExtras(skill);
+
+        if (extras.length > 0) {
+            extrasHTML = `
+                <div class="skill-extras">
+                    ${extras.map(e => `<span class="skill-extra">${e}</span>`).join("")}
+                </div>
+            `;
+        }
+    }
 
     return `
         <div class="skill-card">
@@ -34,6 +80,9 @@ function buildSkillCard(label, skill) {
                     <h4>${skill.name}</h4>
                 </div>
             </div>
+
+            ${extrasHTML}
+
             <p>${cleanDescription(skill.description)}</p>
         </div>
     `;
