@@ -44,7 +44,7 @@ function extractSkillExtras(skill) {
     return extras;
 }
 
-function buildSkillCard(label, skill) {
+function buildSkillCard(label, skill, isBaseSkill = false) {
 
     const iconSize = 32;
     const iconsPerRow = 16;
@@ -54,7 +54,7 @@ function buildSkillCard(label, skill) {
 
     let extrasHTML = "";
 
-    if (label === "Skill") {
+    if (isBaseSkill) {
         const extras = extractSkillExtras(skill);
 
         if (extras.length > 0) {
@@ -229,7 +229,7 @@ async function loadCharacter() {
         );
 
         mercSkills.forEach(skill => {
-            skillsHTML += buildSkillCard("Skill", skill);
+            skillsHTML += buildSkillCard("Skill", skill, true);
         });
 
     } else {
@@ -251,7 +251,8 @@ async function loadCharacter() {
             );
 
             if (skill) {
-                skillsHTML += buildSkillCard(formatSkillType(type), skill);
+                const isBaseSkill = type.startsWith("S");
+                skillsHTML += buildSkillCard(formatSkillType(type), skill, isBaseSkill);
             }
         });
 
