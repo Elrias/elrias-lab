@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stats | Abyss Awakening Wiki</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/common.css">
+<link rel="stylesheet" href="../css/article.css">
+</head>
+<link rel="icon" type="image/png" href="../assets/icon.png">
+<body class="theme-light">
+
+<header class="wiki-header">
+
+    <div class="wiki-header-left">
+        <div class="wiki-logo">
+            <a href="../" class="brand">
+                <img src="../assets/logo.png" alt="Logo">
+                <span class="brand-title">AA Wiki</span>
+            </a>
+        </div>
+
+        <nav class="wiki-main-nav" id="mainNav">
+            <a href="../battle/">Battle</a>
+            <a href="../characters/">Characters</a>
+            <a href="./" class="active">Stats</a>
+            <a href="../equipment/">Equipment</a>
+            <a href="../enemies/">Enemies</a>
+            <a href="../states/">States</a>
+            <a href="../account/">Account</a>
+        </nav>
+    </div>
+
+    <div class="wiki-header-right">
+        <button class="burger" id="burgerBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <button id="themeToggle" class="theme-toggle">☀</button>
+    </div>
+
+</header>
+<div id="menuOverlay" class="menu-overlay"></div>
+
+<button id="backToTop" class="back-to-top">↑</button>
+
+<div class="wiki-page-layout">
+
+    <!-- Main Content -->
+    <main class="wiki-article">
+
+        <section id="base-params">
+            <h1>Base parameters</h1>
+            <p>There are 7 base parameters for all characters in Abyss Awakening.</p>
+            <p>These parameters are :</p>
+            <ul>
+                <li>HP  - Health</li>
+                <li>ATK - Attack</li>
+                <li>MAT - Magic attack</li>
+                <li>DEF - Defense</li>
+                <li>MDF - Magic Defense</li>
+                <li>LUK - Luck</li>
+                <li>AGI - Agility</li>
+            </ul>
+            <h2>HP</h2>
+            <p>HP represents the hit points of the character.</p>
+            <p>The character will be knocked out when their HP reaches 0.</p>
+            <h2>Attack</h2>
+            <p>Attack is the value that affects physical damage dealt.</p>
+            <p>Each physical attack, skill or EX deal a different ammount of damage based on attack.</p>
+            <p>Basic attacks will always deal 100% of attack if using a physical damage weapon.</p>
+            <h2>Magic Attack</h2>
+            <p>Magic Attack is the value that affects magic damage dealt.</p>
+            <p>Each magic attack, skill or EX deal a different ammount of damage based on Magic attack.</p>
+            <p>Basic attacks will always deal 100% of Magic attack if using a magic damage weapon.</p>
+            <h2>Defense</h2>
+            <p>Defense is the value that affects physical damage taken.</p>
+            <p>Physical damage received will be divided by the defense value.</p>
+            <p>The base value for defense is 10. At this point it does not reduce any physical damage.</p>
+            <p>Each point in defense over 10 will grant more physical damage reduction.</p>
+            <p>Defense can be lowered under 10, in this case, physical damage taken will be increased.</p>
+            <h2>Magic Defense</h2>
+            <p>Magic Defense is the value that affects magic damage taken.</p>
+            <p>Magic damage received will be divided by the Magic Defense value.</p>
+            <p>The base value for Magic Defense is 10. At this point it does not reduce any magic damage.</p>
+            <p>Each point in Magic Defense over 10 will grant more magic damage reduction.</p>
+            <p>Magic Defense can be lowered under 10, in this case, magic damage taken will be increased.</p>
+            <h2>Luck</h2>
+            <p>Luck affects critical strike chance and critical damage.</p>
+            <p>For every 20 points in luck, critical strike chance will be increased by 1%.</p>
+            <p>For every 10 points in luck, critical strike damage will increase by 1%</p>
+            <p>For every 5 points in luck, critical strikes will deal 1 extra flat damage.</p>
+            <h2>Agility</h2>
+            <p>Agility will affect turn order.</p>
+            <p>Allies will play their turn in order from highest agility to lowest agility in the party.</p>
+        </section>
+</div>
+
+<script src="../js/common.js"></script>
+</body>
+</html>
