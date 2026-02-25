@@ -96,6 +96,7 @@ function renderWeapons(list) {
                 </div>
                 <p>${description}</p>
                 <div class="weapon-params">
+                    ${params[0] ? `<div><strong>ATK:</strong> ${params[0]}</div>` : ""}
                     ${params[2] ? `<div><strong>ATK:</strong> ${params[2]}</div>` : ""}
                     ${params[3] ? `<div><strong>DEF:</strong> ${params[3]}</div>` : ""}
                     ${params[4] ? `<div><strong>MAT:</strong> ${params[4]}</div>` : ""}
