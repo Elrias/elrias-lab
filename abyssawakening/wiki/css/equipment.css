@@ -162,3 +162,6 @@ body.theme-light #weaponTypeFilter {
 .upgrade-table.hidden {
     display: none;
 }
+.upgradeable-card {
+    height: fit-content;
+}

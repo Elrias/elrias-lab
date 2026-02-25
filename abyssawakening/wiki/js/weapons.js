@@ -270,12 +270,16 @@ function generateUpgradeTable(weapon) {
 
     const paramNames = ["HP","MP","ATK","DEF","MAT","MDF","AGI","LUK"];
 
+    const usefulIndexes = weapon.params
+        .map((value, index) => value > 0 ? index : null)
+        .filter(index => index !== null);
+
     let table = `
         <table class="upgrade-stats-table">
             <thead>
                 <tr>
                     <th>Level</th>
-                    ${paramNames.map(p => `<th>${p}</th>`).join("")}
+                    ${usefulIndexes.map(i => `<th>${paramNames[i]}</th>`).join("")}
                 </tr>
             </thead>
             <tbody>
@@ -285,11 +289,10 @@ function generateUpgradeTable(weapon) {
 
         table += `<tr><td>+${level}</td>`;
 
-        weapon.params.forEach(value => {
-
-            const scaled = scaleStat(value, multiplier);
-            table += `<td>${scaled !== 0 ? scaled : "-"}</td>`;
-
+        usefulIndexes.forEach(index => {
+            const baseValue = weapon.params[index];
+            const scaled = scaleStat(baseValue, multiplier);
+            table += `<td>${scaled}</td>`;
         });
 
         table += `</tr>`;
