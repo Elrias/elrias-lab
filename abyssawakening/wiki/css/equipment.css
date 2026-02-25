@@ -14,3 +14,26 @@
     border-color: #7a6cff;
     box-shadow: 0 0 0 3px rgba(122,108,255,0.15);
 }
+
+.weapon-toggle-card {
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.weapon-section {
+    margin-top: 30px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Param block inside card */
+.weapon-params {
+    margin-top: 15px;
+    font-size: 14px;
+    opacity: 0.85;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 20px;
+}
