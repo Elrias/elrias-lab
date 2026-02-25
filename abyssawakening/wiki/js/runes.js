@@ -2,7 +2,7 @@ let allRunes = [];
 
 async function loadEquipments() {
 
-    const armors = await fetch("../../data/Armors.json")
+    const armors = await fetch("../../../data/Armors.json")
         .then(r => r.json());
 
     // ===== RUNES I / II / III =====
