@@ -55,38 +55,6 @@ async function loadCharacter() {
 
     const classType = classTypeMap[className] || "Unknown";
 
-    const runeTag = `<${prefix}Rune>`;
-    
-    // Rune
-    const rune = armors.find(a =>
-        a && a.note && a.note.includes(runeTag)
-    );
-
-    let runeHTML = "";
-
-    if (rune) {
-        const iconSize = 32;
-        const iconsPerRow = 16;
-
-        const sx = (rune.iconIndex % iconsPerRow) * iconSize;
-        const sy = Math.floor(rune.iconIndex / iconsPerRow) * iconSize;
-
-        runeHTML = `
-            <div class="rune-card">
-                <div class="rune-header">
-                    <div class="rune-icon"
-                        style="
-                            background-image: url('../../../img/system/IconSet.png');
-                            background-position: -${sx}px -${sy}px;
-                        ">
-                    </div>
-                    <h3>${rune.name}</h3>
-                </div>
-                <p>${cleanDescription(rune.description)}</p>
-            </div>
-        `;
-    }
-
     // Weapon type 
     let weaponType = "Unknown";
     const weaponTrait = classData.traits.find(t => t.code === 51);
@@ -182,6 +150,38 @@ async function loadCharacter() {
             `;
         }
     });
+
+    const runeTag = `<${prefix}Rune>`;
+    
+    // Rune
+    const rune = armors.find(a =>
+        a && a.note && a.note.includes(runeTag)
+    );
+
+    let runeHTML = "";
+
+    if (rune) {
+        const iconSize = 32;
+        const iconsPerRow = 16;
+
+        const sx = (rune.iconIndex % iconsPerRow) * iconSize;
+        const sy = Math.floor(rune.iconIndex / iconsPerRow) * iconSize;
+
+        runeHTML = `
+            <div class="rune-card">
+                <div class="rune-header">
+                    <div class="rune-icon"
+                        style="
+                            background-image: url('../../../img/system/IconSet.png');
+                            background-position: -${sx}px -${sy}px;
+                        ">
+                    </div>
+                    <h3>${rune.name}</h3>
+                </div>
+                <p>${cleanDescription(rune.description)}</p>
+            </div>
+        `;
+    }
 
     const container = document.getElementById("characterContent");
 
