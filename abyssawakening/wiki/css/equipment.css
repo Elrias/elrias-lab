@@ -48,9 +48,9 @@
 }
 
 .equipment-grid {
-    gap: 40px;
     display: grid;
-    grid-template-columns: repeat(3, minmax(250px, 1fr));
+    gap: 40px;
+    grid-template-columns: repeat(3, 1fr);
 }
 
 .equipment-category-card {
@@ -140,4 +140,46 @@ body.light-theme {
     outline: none;
     border-color: #7a6cff;
     box-shadow: 0 0 0 3px rgba(122,108,255,0.15);
+}
+
+.runes-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 60px;
+}
+
+body.light-theme .rune-card {
+    background: #ffffff;
+    border: 1px solid #e2e5ee;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+body.light-theme .rune-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.08);
+}
+
+@media (max-width: 900px) {
+    .runes-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1000px) {
+    .equipment-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+    .equipment-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .equipment-category-card {
+        padding: 28px;
+    }
 }
