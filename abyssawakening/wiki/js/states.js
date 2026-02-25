@@ -1,6 +1,6 @@
 async function loadStates() {
 
-    const states = await fetch("")
+    const states = await fetch("../../data/States.json")
         .then(r => r.json());
 
     const system = await fetch("../../data/System.json")
