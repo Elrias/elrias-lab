@@ -20,9 +20,7 @@ function renderEnemyList(list, containerId) {
     const container = document.getElementById(containerId);
     container.innerHTML = "";
 
-    list
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .forEach(enemy => {
+    list.forEach(enemy => {
 
             const battlerName = enemy.battlerName;
             const portraitPath = `../../img/enemies/HBportraits/${battlerName}.png`;

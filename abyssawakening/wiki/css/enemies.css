@@ -19,3 +19,50 @@
     font-size: 1.1rem;
     font-weight: 600;
 }
+
+.enemy-top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.enemy-visual {
+    text-align: center;
+}
+
+.enemy-visual img {
+    width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+}
+
+.enemy-parameters {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.param-line {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 0;
+}
+
+.sp-spheres {
+    display: flex;
+    gap: 4px;
+}
+
+.sp-orb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: gold;
+}
+
+.enemy-skill-card {
+    margin-bottom: 16px;
+    padding: 16px;
+}
