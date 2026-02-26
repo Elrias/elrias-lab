@@ -132,19 +132,13 @@
 
 /* Collapsible */
 .drop-container {
-    margin-top: 15px;
-    transition: all 0.3s ease;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 40px;
 }
 
 .drop-container.hidden {
     display: none;
-}
-
-/* 2 columns layout */
-#enemyDrops {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px 40px;
 }
 
 /* Drop line cleanup */
