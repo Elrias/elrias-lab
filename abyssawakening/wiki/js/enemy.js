@@ -21,6 +21,7 @@ async function initEnemyPage() {
     renderParameters(enemy);
     renderDropTable(enemy);
     setupDropToggle();
+    renderSkills(enemy);
 }
 
 function renderEnemyHeader(enemy) {
@@ -205,4 +206,101 @@ function setupDropToggle() {
         container.classList.toggle("hidden");
         toggle.classList.toggle("active");
     });
+}
+
+async function renderSkills(enemy) {
+
+    const container = document.querySelector(".enemy-skills-section");
+    container.innerHTML = "<h2>Skills</h2>";
+
+    if (!enemy.actions || enemy.actions.length === 0) {
+        container.innerHTML += "<p>No skills.</p>";
+        return;
+    }
+
+    const skills = await fetch("../../../data/Skills.json").then(r => r.json());
+    const states = await fetch("../../../data/States.json").then(r => r.json());
+
+    enemy.actions.forEach(action => {
+
+        const skill = skills[action.skillId];
+        if (!skill) return;
+
+        const skillDiv = document.createElement("div");
+        skillDiv.className = "enemy-skill-card";
+
+        const typeLabel = getSkillTypeLabel(skill);
+        const conditionLabel = getSkillCondition(action, states);
+        const spCost = getSkillSPCost(skill);
+
+        skillDiv.innerHTML = `
+            <div class="skill-left">
+                ${renderIcon(skill.iconIndex)}
+                <div>
+                    <div class="skill-name">${skill.name}</div>
+                    <div class="skill-desc">${skill.description}</div>
+                </div>
+            </div>
+
+            <div class="skill-right">
+                <div class="skill-type">${typeLabel}</div>
+                ${conditionLabel ? `<div class="skill-condition">${conditionLabel}</div>` : ""}
+                ${spCost ? `<div class="skill-sp">${spCost}</div>` : ""}
+            </div>
+        `;
+
+        container.appendChild(skillDiv);
+    });
+}
+
+function getSkillTypeLabel(skill) {
+
+    if (skill.hitType === 0) {
+        return "Attack";
+    }
+
+    if (skill.note.includes("\\I[89]EX")) {
+        return "EX";
+    }
+
+    return "Skill";
+}
+
+function getSkillCondition(action, states) {
+
+    if (action.conditionType === 2) {
+        const hpPercent = Math.floor(action.conditionParam1 * 100);
+        return `${hpPercent}% HP`;
+    }
+
+    if (action.conditionType === 4) {
+
+        const state = states[action.conditionParam1];
+        if (!state) return null;
+
+        const match = state.name.match(/(\d+)%/);
+
+        if (match) {
+            return `${match[1]}% HP`;
+        }
+
+        return state.name;
+    }
+
+    return null;
+}
+
+function getSkillSPCost(skill) {
+
+    if (!skill.tpCost || skill.tpCost <= 0) return null;
+
+    const sp = Math.floor(skill.tpCost / 10);
+
+    if (sp <= 0) return null;
+
+    const orbs = Array.from({ length: sp })
+        .map(() => `<div class="sp-orb"></div>`)
+        .join("");
+
+    return `<div class="sp-spheres">${orbs}</div>`;
 }
