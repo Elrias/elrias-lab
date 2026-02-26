@@ -30,7 +30,7 @@ function renderEnemyHeader(enemy) {
     // RPG Maker MZ battlerName
     const battler = enemy.battlerName;
 
-    imgEl.src = `../../../img/enemies/${battler}.png`;
+    imgEl.src = `../../../img/sv_enemies/${battler}.png`;
 
     imgEl.onerror = function() {
         this.onerror = null;
