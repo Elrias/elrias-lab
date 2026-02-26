@@ -33,6 +33,6 @@ function renderEnemyHeader(enemy) {
     imgEl.src = `../../../img/enemies/${battler}.png`;
 
     imgEl.onerror = function() {
-        this.src = "../../../assets/placeholder.png";
+        this.onerror = null;
     };
 }
