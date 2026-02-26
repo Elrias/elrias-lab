@@ -208,3 +208,25 @@ body.theme-light #upgradeTypeFilter {
 .upgradeable-card {
     height: fit-content;
 }
+
+.wiki-section {
+    margin-top: 60px;
+}
+
+.wiki-section h2 {
+    margin-bottom: 16px;
+}
+
+.wiki-section ul {
+    margin-top: 16px;
+    padding-left: 20px;
+    line-height: 1.7;
+}
+
+/* Skills grid */
+#glyphSkillList {
+    margin-top: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+}
