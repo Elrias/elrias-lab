@@ -18,6 +18,7 @@ async function initEnemyPage() {
     }
 
     renderEnemyHeader(enemy);
+    renderParameters(enemy);
 }
 
 function renderEnemyHeader(enemy) {
