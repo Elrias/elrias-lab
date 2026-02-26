@@ -1,0 +1,21 @@
+.enemy-card {
+    text-align: center;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.enemy-card:hover {
+    transform: translateY(-6px);
+}
+
+.enemy-portrait {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+    margin: 0 auto 16px auto;
+}
+
+.enemy-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
