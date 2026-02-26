@@ -244,8 +244,8 @@ async function renderSkills(enemy) {
 
             <div class="skill-right">
                 <div class="skill-type">${typeLabel}</div>
-                ${conditionLabel ? `<div class="skill-condition">${conditionLabel}</div>` : ""}
-                ${spCost ? `<div class="skill-sp">${spCost}</div>` : ""}
+                <div class="skill-condition">${conditionLabel || ""}</div>
+                <div class="skill-sp-wrapper">${spCost || ""}</div>
             </div>
         `;
 

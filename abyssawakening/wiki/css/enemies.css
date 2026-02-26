@@ -52,14 +52,7 @@
 
 .sp-spheres {
     display: flex;
-    gap: 4px;
-}
-
-.sp-orb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: gold;
+    gap: 6px;
 }
 
 .enemy-skill-card {
@@ -154,7 +147,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px;
+    padding: 14px 18px;
     margin: 10px 0;
     border: 1px solid var(--border);
     border-radius: 10px;
@@ -164,26 +157,32 @@
     display: flex;
     align-items: center;
     gap: 15px;
+    flex: 1;
 }
 
 .skill-name {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .skill-desc {
-    opacity: 0.8;
+    opacity: 0.75;
     font-size: 0.9em;
 }
 
 .skill-right {
-    text-align: right;
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
 }
 
 .skill-type {
-    font-weight: bold;
+    font-weight: 600;
 }
 
 .skill-condition {
     font-size: 0.85em;
     opacity: 0.7;
+    min-height: 18px;
 }
