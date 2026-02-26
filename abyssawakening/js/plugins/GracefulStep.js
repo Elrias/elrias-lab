@@ -7,9 +7,7 @@
  */
 (() => {
   // ===== Réglages =====
-  const ACTOR_ID          = 0;     // 0 = n'importe quel acteur ; sinon ID précis
-  const STATE_GATE_ID     = 167;    // 0 = ignoré ; requis (actif OU passif via states()) sinon
-  const TEAM_STATE_ID     = 168;    // état appliqué à l'équipe
+  const ACTOR_ID          = 21;     // 0 = n'importe quel acteur ; sinon ID précis
 
   // Que considérer comme "dodge" ?
   const TRIGGER_ON_EVADE  = true;  // result().evaded === true
@@ -20,22 +18,13 @@
   const ALLOW_MAGICAL     = true;
   const ALLOW_CERTAINHIT  = false;
 
-  const INCLUDE_SELF      = true;
-  const ONLY_ALIVE        = true;
   const ONCE_PER_TURN     = false;
   const REFRESH_DURATION  = true;
 
-  const hasStateAny = (b, id) => id > 0 && b.states && b.states().includes($dataStates[id]);
+  function applyDodgeEffects(b) {
 
-  function canTrigger(b) {
-    if (!b?.isActor?.()) return false;
-    if (ACTOR_ID > 0 && b.actorId() !== ACTOR_ID) return false;
-    if (STATE_GATE_ID > 0 && !hasStateAny(b, STATE_GATE_ID)) return false;
-    return true;
-  }
-
-  function applyTeamStateFrom(b) {
-    if (!canTrigger(b)) return;
+    if (!b?.isActor?.()) return;
+    if (ACTOR_ID > 0 && b.actorId() !== ACTOR_ID) return;
 
     if (ONCE_PER_TURN) {
       b._lastDodgeTurn ??= -9999;
@@ -44,14 +33,26 @@
       b._lastDodgeTurn = t;
     }
 
-    const unit = b.friendsUnit();
-    const targets = ONLY_ALIVE ? unit.aliveMembers() : unit.members();
+    // ==============================
+    // 1️⃣ State 167 → applique 168 à soi-même
+    // ==============================
+    if (b.isStateAffected(167)) {
+      const had = b.isStateAffected(168);
+      b.addState(168);
 
-    for (const a of targets) {
-      if (!INCLUDE_SELF && a === b) continue;
-      const had = a.isStateAffected?.(TEAM_STATE_ID);
-      a.addState(TEAM_STATE_ID);
-      if (REFRESH_DURATION && had && a.resetStateCounts) a.resetStateCounts(TEAM_STATE_ID);
+      if (REFRESH_DURATION && had && b.resetStateCounts) {
+        b.resetStateCounts(168);
+      }
+    }
+
+    // ==============================
+    // 2️⃣ State 179 → +15 TP à l'équipe
+    // ==============================
+    if (b.isStateAffected(179)) {
+      const allies = b.friendsUnit().aliveMembers();
+      for (const member of allies) {
+        member.gainTp(15);
+      }
     }
   }
 
@@ -59,7 +60,7 @@
     const stamp = Graphics?.frameCount ?? Date.now();
     if (b._dtsLastStamp === stamp) return;
     b._dtsLastStamp = stamp;
-    applyTeamStateFrom(b);
+    applyDodgeEffects(b);
   }
 
   const _performEvasion = Game_Battler.prototype.performEvasion;
