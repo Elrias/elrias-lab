@@ -25,9 +25,17 @@ function renderGlyphSkills(skills) {
         const card = document.createElement("div");
         card.classList.add("wiki-card");
 
+        const iconX = (skill.iconIndex % 16) * 32;
+        const iconY = Math.floor(skill.iconIndex / 16) * 32;
+
         card.innerHTML = `
             <div class="card-header">
-                <img src="../../../img/icons/${getIconName(skill.iconIndex)}.png" class="skill-icon">
+                <div class="skill-icon" 
+                     style="
+                        background-image: url('../../../img/system/IconSet.png');
+                        background-position: -${iconX}px -${iconY}px;
+                     ">
+                </div>
                 <h3>${skill.name}</h3>
             </div>
             <p>${cleanDescription(skill.description)}</p>
@@ -35,14 +43,6 @@ function renderGlyphSkills(skills) {
 
         list.appendChild(card);
     });
-}
-
-/* Même fonction que characters.js */
-function cleanDescription(text) {
-    if (!text) return "";
-    return text.replace(/\\C\[\d+\]/g, "")
-               .replace(/\\I\[\d+\]/g, "")
-               .replace(/\\{|\}/g, "");
 }
 
 /* Adapter selon ton système d’icônes */
