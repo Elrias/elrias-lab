@@ -168,8 +168,6 @@ function renderUpgradeableWeapons(weapons) {
                     <h3>${weapon.name}</h3>
                 </div>
 
-                <div class="weapon-price">${weapon.price} G</div>
-
                 <p>${description}</p>
 
                 <div class="upgrade-table hidden"></div>
