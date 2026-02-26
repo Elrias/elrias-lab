@@ -66,3 +66,23 @@
     margin-bottom: 16px;
     padding: 16px;
 }
+
+.param-line {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.sp-spheres {
+    display: flex;
+    gap: 6px;
+}
+
+.sp-orb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff, gold);
+    box-shadow: 0 0 6px gold;
+}
