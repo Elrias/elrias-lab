@@ -255,24 +255,34 @@ async function renderSkills(enemy) {
 
 function getSkillTypeLabel(skill) {
 
-    if (skill.hitType === 0) {
-        return "Attack";
+    switch (skill.stypeId) {
+        case 0:
+            return "Attack";
+        case 1:
+            return "Skill";
+        case 2:
+            return "EX";
+        default:
+            return "Unknown";
     }
-
-    if (skill.note.includes("\\I[89]EX")) {
-        return "EX";
-    }
-
-    return "Skill";
 }
 
 function getSkillCondition(action, states) {
 
+    // HP condition
     if (action.conditionType === 2) {
-        const hpPercent = Math.floor(action.conditionParam1 * 100);
-        return `${hpPercent}% HP`;
+
+        const min = Math.floor(action.conditionParam1 * 100);
+        const max = Math.floor(action.conditionParam2 * 100);
+
+        if (min === 0 && max === 100) {
+            return null;
+        }
+
+        return `${min}% - ${max}% HP`;
     }
 
+    // State condition (boss trigger states)
     if (action.conditionType === 4) {
 
         const state = states[action.conditionParam1];
