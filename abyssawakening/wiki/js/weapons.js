@@ -139,6 +139,18 @@ async function loadWeapons() {
         renderWeapons(filtered);
     }
 
+    const items = await fetch("../../../data/Items.json")
+        .then(r => r.json());
+
+    const upgradeGems = items
+        .filter(item =>
+            item &&
+            item.note &&
+            item.note.includes("<UpgradeGem>")
+        );
+
+    renderGems(upgradeGems);
+
     searchInput.addEventListener("input", applyFilters);
     typeFilter.addEventListener("change", applyFilters);
 }
@@ -313,6 +325,40 @@ function setupUpgradeToggle() {
         section.classList.toggle("hidden");
         toggle.classList.toggle("active");
     });
+}
+
+function renderGems(gems) {
+
+    const container = document.getElementById("gemList");
+    if (!container) return;
+
+    container.innerHTML = gems.map(gem => {
+
+        const iconX = (gem.iconIndex % 16) * 32;
+        const iconY = Math.floor(gem.iconIndex / 16) * 32;
+
+        const description = cleanDescription(gem.description || "");
+
+        return `
+            <div class="wiki-card">
+
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                    <div style="
+                        width:32px;
+                        height:32px;
+                        background-image:url('../../../img/system/IconSet.png');
+                        background-position:-${iconX}px -${iconY}px;
+                        background-repeat:no-repeat;">
+                    </div>
+                    <h3>${gem.name}</h3>
+                </div>
+
+                <p>${description}</p>
+
+            </div>
+        `;
+
+    }).join("");
 }
 
 setupToggle();
