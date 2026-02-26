@@ -46,26 +46,37 @@ function renderParameters(enemy) {
     container.innerHTML = "";
 
     const p = enemy.params;
+    const note = enemy.note;
 
-    addParam("Max HP", p[0]);
-    addParam("ATK", p[2]);
-    addParam("MAT", p[4]);
-    addParam("DEF", p[3]);
-    addParam("MDF", p[5]);
+    function getParam(tag, index) {
+
+        const regex = new RegExp(`<${tag}:\\s*(\\d+)>`);
+        const match = note.match(regex);
+
+        if (match) {
+            return Number(match[1]);
+        }
+
+        return p[index];
+    }
+
+    addParam("Max HP", getParam("MHP", 0));
+    addParam("ATK", getParam("ATK", 2));
+    addParam("MAT", getParam("MAT", 4));
+    addParam("DEF", getParam("DEF", 3));
+    addParam("MDF", getParam("MDF", 5));
     addParam("EXP", enemy.exp);
 
-    // === SP (TPSphereCount) ===
-    const spMatch = enemy.note.match(/<TPSphereCount:\s*(\d+)>/);
-
+    // SP spheres
+    const spMatch = note.match(/<TPSphereCount:\s*(\d+)>/);
     if (spMatch) {
         const count = Number(spMatch[1]);
 
         if (count > 0) {
-
             const div = document.createElement("div");
             div.className = "param-line";
 
-            const orbs = Array.from({length: count})
+            const orbs = Array.from({ length: count })
                 .map(() => `<div class="sp-orb"></div>`)
                 .join("");
 
