@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../css/common.css">
 <link rel="stylesheet" href="../../css/article.css">
+<link rel="stylesheet" href="../../css/equipment.css">
 </head>
 <link rel="icon" type="image/png" href="../../assets/icon.png">
 <body class="theme-light">
@@ -49,18 +50,16 @@
 
 <div class="wiki-page-layout">
 
-    <!-- Main Content -->
     <main class="wiki-article">
-        <section id="glyphs"></section>
+
         <h1>Glyphs</h1>
-            <p>Glyphs are equipment composed of 3 different parts.</p>
-            <p>You will need one part of each type to create a glyph you can equip.</p>
-            <p>These parts define the condition, count and skill triggered by the glyph.</p>
-        </section>
-        <section id="condition"></section>
-        <h2>Part A: Condition</h2>
+        <p>Glyphs are equipment composed of 3 different parts.</p>
+        <p>You will need one part of each type to create a glyph you can equip.</p>
+        <p>These parts define the condition, count and skill triggered by the glyph.</p>
+
+        <section class="wiki-section">
+            <h2>Part A: Condition</h2>
             <p>The part A of glyphs define a condition required for the glyph to "react".</p>
-            <p>These conditions are :</p>
             <ul>
                 <li>Passivity: reacts each time the bearer is damaged.</li>
                 <li>Action: reacts each time the bearer attacks.</li>
@@ -79,10 +78,10 @@
                 <li>Wealth: reacts each time the bearer uses an item.</li>
             </ul>
         </section>
-        <section id="count"></section>
+
+        <section class="wiki-section">
             <h2>Part B: Count</h2>
-            <p>The part B of glyphs define the count. It represents the ammount of times a glyph needs to react before it triggers it's skill.</p>
-            <p>The different counts are :</p>
+            <p>The part B of glyphs define the count.</p>
             <ul>
                 <li>Featherlight: 3 reactions.</li>
                 <li>Light: 4 reactions.</li>
@@ -90,16 +89,19 @@
                 <li>Heavy: 6 reactions.</li>
             </ul>
         </section>
-        <section id="skill"></section>
+
+        <section class="wiki-section">
             <h2>Part C: Skill</h2>
             <p>The part C of glyphs define the triggered skill.</p>
-            <p>The trigger skill will be cast automatically at the end of the character's turn after it has reacted enough times.</p>
-            <p>The different skills are :</p>
-            <div></div>
+
+            
+            <div id="glyphSkillList" class="wiki-card-grid"></div>
         </section>
+
     </main>
 </div>
 
 <script src="../../js/common.js"></script>
+<script src="../../js/glyphs.js"></script>
 </body>
 </html>
