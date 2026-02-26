@@ -112,3 +112,46 @@
 .icon {
     background-repeat: no-repeat;
 }
+
+/* Toggle header */
+.drop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+}
+
+.drop-header.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Collapsible */
+.drop-container {
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+.drop-container.hidden {
+    display: none;
+}
+
+/* 2 columns layout */
+#enemyDrops {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 40px;
+}
+
+/* Drop line cleanup */
+.drop-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+}

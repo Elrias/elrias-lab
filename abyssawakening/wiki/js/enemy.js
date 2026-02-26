@@ -20,6 +20,7 @@ async function initEnemyPage() {
     renderEnemyHeader(enemy);
     renderParameters(enemy);
     renderDropTable(enemy);
+    setupDropToggle();
 }
 
 function renderEnemyHeader(enemy) {
@@ -182,4 +183,15 @@ function renderIcon(iconIndex) {
             ">
         </div>
     `;
+}
+
+function setupDropToggle() {
+
+    const toggle = document.getElementById("dropToggle");
+    const container = document.getElementById("enemyDrops");
+
+    toggle.addEventListener("click", () => {
+        container.classList.toggle("hidden");
+        toggle.classList.toggle("active");
+    });
 }
