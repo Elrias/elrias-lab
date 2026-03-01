@@ -238,14 +238,32 @@
 
   // ---------- Upgrade notetags (compat UI) ----------
   function weaponMeta(w) {
-    if (!w) return { _wupgParsed: true, _wupgUpg: false, _wupgMats: [] };
-    if (w._wupgParsed) return w;
-    w._wupgParsed = true;
-    const note = String(w.note || '');
-    w._wupgUpg = /<\s*Upgradeable\s*>/i.test(note);
+    if (!w) return { _wupgUpg: false, _wupgMats: [], _wupgMatsLevel10: null };
+
+    let baseWeapon = w;
+    if (w.baseItemId && $dataWeapons[w.baseItemId]) {
+      baseWeapon = $dataWeapons[w.baseItemId];
+    } else if (w.originalId && $dataWeapons[w.originalId]) {
+      baseWeapon = $dataWeapons[w.originalId];
+    } else if ($dataWeapons[w.id]) {
+      baseWeapon = $dataWeapons[w.id];
+    }
+
+    const note = String(baseWeapon.note || '');
+
+    const upg = /<\s*Upgradeable\s*>/i.test(note);
+
     const mm = note.match(/<\s*UpgradeMaterial\s*:\s*([^>]+)>/i);
-    w._wupgMats = mm ? parseMats(mm[1]) : [];
-    return w;
+    const mats = mm ? parseMats(mm[1]) : [];
+
+    const m10 = note.match(/<\s*UpgradeMaterialLevel10\s*:\s*([^>]+)>/i);
+    const mats10 = m10 ? parseMats(m10[1]) : null;
+
+    return {
+      _wupgUpg: upg,
+      _wupgMats: mats,
+      _wupgMatsLevel10: mats10
+    };
   }
   function parseMats(str) {
     const out = [];
@@ -268,12 +286,15 @@
       .join(', ');
   }
   function canPayMats(w) {
-    const mats = matsOf(w);
+    const mats = nextMatsOf(w);
     if (!mats.length) return true;
     return mats.every(m => $gameParty.numItems($dataItems[m.itemId]) >= m.qty);
   }
+
   function payMats(w) {
-    matsOf(w).forEach(m => $gameParty.loseItem($dataItems[m.itemId], m.qty));
+    nextMatsOf(w).forEach(m => {
+      $gameParty.loseItem($dataItems[m.itemId], m.qty);
+    });
   }
   function isUpgradeable(w) {
     return !!weaponMeta(w)._wupgUpg;
@@ -554,11 +575,19 @@
     return { before, after, delta, cur, next };
   }
   function nextMatsOf(w) {
-    return matsOf(w);
+  const rec = recOfWeaponObj(w);
+  const nextLevel = (rec.lvl | 0) + 1;
+  const meta = weaponMeta(w);
+  // Cas spécial 9 → 10
+  if (nextLevel === 10 && meta._wupgMatsLevel10) {
+    return meta._wupgMatsLevel10;
   }
-  function nextMatsTextOf(w) {
-    return matsToText(matsOf(w));
-  }
+
+  return matsOf(w);
+}
+function nextMatsTextOf(w) {
+  return matsToText(nextMatsOf(w));
+}
 
   function attemptOn(w) {
     if (!w) return { ok: false, success: false, msg: 'No weapon.' };

@@ -61,6 +61,9 @@
     };
 
     DataManager.processSVENotetags = function(group) {
+        const noteHeat = /<(?:HEAT DISTORTION)>/i;
+        const noteHeatSpeed = /<(?:HEAT SPEED):[ ]*(\d+)>/i;
+        const noteHeatPower = /<(?:HEAT POWER):[ ]*(\d+)[.](\d+)>/i;
         const noteBreathing = /<(?:BREATHING)>/i;
         const noteNoBreathing = /<(?:NO BREATHING)>/i;
         const noteBreathSpeed = /<(?:BREATHING SPEED):[ ]*(\d+)>/i;
@@ -81,7 +84,9 @@
         for (let n = 1; n < group.length; n++) {
             const obj = group[n];
             const notedata = obj.note.split(/[\r\n]+/);
-
+            obj.sveHeat = false;
+            obj.sveHeatSpeed = 4;
+            obj.sveHeatPower = 0.003;
             obj.sveBreathing = false;
             obj.sveBreathSpeed = 20;
             obj.sveBreathRateX = 0.1;
@@ -130,6 +135,12 @@
                     obj.sveScaleX = parseFloat(RegExp.$1) * 0.01;
                 } else if (line.match(noteScaleSpriteHeight)) {
                     obj.sveScaleY = parseFloat(RegExp.$1) * 0.01;
+                } else if (line.match(noteHeat)) {
+                    obj.sveHeat = true;
+                } else if (line.match(noteHeatSpeed)) {
+                    obj.sveHeatSpeed = parseInt(RegExp.$1);
+                } else if (line.match(noteHeatPower)) {
+                    obj.sveHeatPower = parseFloat(RegExp.$1 + '.' + RegExp.$2);
                 }
             }
         }
@@ -152,7 +163,9 @@
             this._sveFloatDeath = enemy.enemy().sveFloatDeath;
             this._sveScaleX = enemy.enemy().sveScaleX;
             this._sveScaleY = enemy.enemy().sveScaleY;
-
+            this._sveHeat = enemy.enemy().sveHeat;
+            this._sveHeatSpeed = enemy.enemy().sveHeatSpeed;
+            this._sveHeatPower = enemy.enemy().sveHeatPower;
             this.scale.x = this._sveScaleX;
             this.scale.y = this._sveScaleY;
         }
@@ -163,6 +176,7 @@
         _Sprite_Enemy_update.call(this);
         this.updateBreathing();
         this.updateFloating();
+        this.updateHeat();
     };
 
     Sprite_Enemy.prototype.updateBreathing = function() {
@@ -185,5 +199,19 @@
 
             this.y += Math.sin(Graphics.frameCount / speed) * rate * height;
         }
+    };
+
+    Sprite_Enemy.prototype.updateHeat = function() {
+        if (!this._sveHeat) return;
+
+        const speed = this._sveHeatSpeed;
+        const power = this._sveHeatPower;
+
+        const t = Graphics.frameCount / speed;
+
+        this.scale.x += Math.sin(t * 3.3) * power;
+        this.scale.y += Math.cos(t * 2.7) * power;
+
+        this.x += Math.sin(t * 5.1) * (power * 40);
     };
 })();

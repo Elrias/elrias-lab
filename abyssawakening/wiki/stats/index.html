@@ -77,6 +77,7 @@
         <a href="#damage-multipliers">Damage multipliers</a>
         <a href="#dealt" class="sub">Damage dealt</a>
         <a href="#taken" class="sub">Damage taken</a>
+        <a href="#cap" class="sub">Damage cap</a>
 
     </aside>
 
@@ -101,18 +102,21 @@
             <h2>HP</h2>
             <p>HP represents the hit points of the character.</p>
             <p>The character will be knocked out when their HP reaches 0.</p>
+            <p>HP is capped at 99999.</p>
         </section>
         <section id="ATK">
             <h2>Attack</h2>
             <p>Attack is the value that affects physical damage dealt.</p>
             <p>Each physical attack, skill or EX deal a different ammount of damage based on attack.</p>
             <p>Basic attacks will always deal 100% of attack if using a physical damage weapon.</p>
+            <p>Attack is capped at 9999.</p>
         </section>
         <section id="MAT">    
             <h2>Magic Attack</h2>
             <p>Magic Attack is the value that affects magic damage dealt.</p>
             <p>Each magic attack, skill or EX deal a different ammount of damage based on Magic attack.</p>
             <p>Basic attacks will always deal 100% of Magic attack if using a magic damage weapon.</p>
+            <p>Magic Attack is capped at 9999.</p>
         </section>
         <section id="DEF">      
             <h2>Defense</h2>
@@ -121,6 +125,7 @@
             <p>The base value for defense is 10. At this point it does not reduce any physical damage.</p>
             <p>Each point in defense over 10 will grant more physical damage reduction.</p>
             <p>Defense can be lowered under 10, in this case, physical damage taken will be increased.</p>
+            <p>Defense is capped at 100 (90% damage reduction).</p>
         </section>    
         <section id="MDF">      
             <h2>Magic Defense</h2>
@@ -129,6 +134,7 @@
             <p>The base value for Magic Defense is 10. At this point it does not reduce any magic damage.</p>
             <p>Each point in Magic Defense over 10 will grant more magic damage reduction.</p>
             <p>Magic Defense can be lowered under 10, in this case, magic damage taken will be increased.</p>
+            <p>Magic Defense is capped at 100 (90% damage reduction).</p>
         </section>
         <section id="LUK">      
             <h2>Luck</h2>
@@ -136,11 +142,13 @@
             <p>For every 25 points in luck, critical strike chance will be increased by 1%.</p>
             <p>For every 20 points in luck, critical strike damage will increase by 1%</p>
             <p>For every 5 points in luck, critical strikes will deal 1 extra flat damage.</p>
+            <p>Luck is capped at 2000.</p>
         </section>
         <section id="AGI">  
             <h2>Agility</h2>
             <p>Agility will affect turn order.</p>
             <p>Allies will play their turn in order from highest agility to lowest agility in the party.</p>
+            <p>Agility is capped at 9999.</p>
         </section>
         <section id="extra-params">
             <h1>Extra parameters</h1>
@@ -223,6 +231,11 @@
             <p>These multipliers can affect all damage, or specific sources.</p>
             <p>All sources of damage taken multipliers will stack additively.</p>
             <p>These multipliers will affect all damage, including negative damage (healing)</p>
+        </section>
+        <section id="cap">      
+            <h2>Damage cap</h2>
+            <p>Damage is capped at 999,999.</p>
+            <p>Soft cap starts at over 750,000 damage.</p>
         </section>
     </main>
 </div>

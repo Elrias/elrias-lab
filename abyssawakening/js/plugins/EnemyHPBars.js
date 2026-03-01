@@ -197,7 +197,9 @@
 
     Spriteset_Battle.prototype.createEnemyHealthBars = function() {
         this._enemyHealthBars = [];
-        const visibleEnemies = this._enemySprites.filter(enemySprite => !enemySprite._battler.isHidden());
+        const visibleEnemies = this._enemySprites.filter(enemySprite =>
+            enemySprite._battler.isAlive() && !enemySprite._battler.isHidden()
+        );
         const numEnemies = visibleEnemies.length;
         const barWidth = numEnemies === 1 ? 400 : 200; // Barre de vie plus grande s'il n'y a qu'un ennemi
         const totalWidth = numEnemies * barWidth + (numEnemies - 1) * 40; // 40 pixels d'espace entre les barres
@@ -219,5 +221,19 @@
     Spriteset_Battle.prototype.updateEnemyHealthBars = function() {
         this._enemyHealthBars.forEach(bar => this.removeChild(bar)); // Retirer les barres de vie existantes
         this.createEnemyHealthBars(); // Créer de nouvelles barres de vie pour les ennemis visibles
+    };
+
+    const _Spriteset_Battle_update = Spriteset_Battle.prototype.update;
+    Spriteset_Battle.prototype.update = function() {
+        _Spriteset_Battle_update.call(this);
+
+        const aliveCount = this._enemySprites.filter(sprite =>
+            sprite._battler && sprite._battler.isAlive()
+        ).length;
+
+        if (this._lastAliveCount !== aliveCount) {
+            this._lastAliveCount = aliveCount;
+            this.updateEnemyHealthBars();
+        }
     };
 })();

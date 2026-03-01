@@ -109,7 +109,11 @@
 
     Spriteset_Battle.prototype.createEnemyTPSpheres = function() {
         this._enemyTPSpheres = [];
-        const visibleEnemies = this._enemySprites.filter(enemySprite => !enemySprite._battler.isHidden());
+        const visibleEnemies = this._enemySprites.filter(enemySprite =>
+            enemySprite._battler &&
+            enemySprite._battler.isAlive() &&
+            !enemySprite._battler.isHidden()
+        );
         visibleEnemies.forEach((enemySprite) => {
             const numSpheres = this.getTPSphereCount(enemySprite._battler.enemy());
             const tpSpheres = new Sprite_EnemyTPSphere(enemySprite._battler, numSpheres);
@@ -135,5 +139,19 @@
         const comment = enemy.note;
         const match = comment.match(/<TPSphereCount:\s*(\d+)>/i);
         return match ? parseInt(match[1], 10) : 3; // Nombre par défaut de 3 sphères si non spécifié
+    };
+
+    const _Spriteset_Battle_update_TP = Spriteset_Battle.prototype.update;
+    Spriteset_Battle.prototype.update = function() {
+        _Spriteset_Battle_update_TP.call(this);
+
+        const aliveCount = this._enemySprites.filter(sprite =>
+            sprite._battler && sprite._battler.isAlive()
+        ).length;
+
+        if (this._lastAliveCountTP !== aliveCount) {
+            this._lastAliveCountTP = aliveCount;
+            this.updateEnemyTPSpheres();
+        }
     };
 })();

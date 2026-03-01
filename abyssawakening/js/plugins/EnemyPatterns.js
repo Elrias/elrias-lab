@@ -64,9 +64,9 @@
       if (action?.isSkill?.()) {
         const skill  = action.item();
         const tpNeed = subject.skillTpCost?.(skill) ?? 0;
-        if (tpNeed > subject.tp) {
-          log("processTurn: TP insuffisant -> reselect (cap rating)");
-          reselectNow(subject, {capRating: TP_RESELECT_RATING_CAP});
+        if (!subject.canUse(skill)) {
+            log("processTurn: Skill unusable -> reselect");
+            reselectNow(subject, {capRating: TP_RESELECT_RATING_CAP});
         }
       }
     }
@@ -81,9 +81,9 @@
     if (subject?.isEnemy?.() && action?.isSkill?.()) {
       const skill  = action.item();
       const tpNeed = subject.skillTpCost?.(skill) ?? 0;
-      if (tpNeed > subject.tp) {
-        log("startAction: TP insuffisant -> reselect (cap rating)");
-        reselectNow(subject, {capRating: TP_RESELECT_RATING_CAP});
+      if (!subject.canUse(skill)) {
+          log("startAction: Skill unusable -> reselect");
+          reselectNow(subject, {capRating: TP_RESELECT_RATING_CAP});
       }
     }
     _startAction.call(this);
