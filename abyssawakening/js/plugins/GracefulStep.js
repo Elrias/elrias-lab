@@ -18,7 +18,7 @@
   const ALLOW_MAGICAL     = true;
   const ALLOW_CERTAINHIT  = false;
 
-  const ONCE_PER_TURN     = false;
+  const ONCE_PER_TURN     = true;
   const REFRESH_DURATION  = true;
 
   function applyDodgeEffects(b) {
@@ -26,23 +26,13 @@
     if (!b?.isActor?.()) return;
     if (ACTOR_ID > 0 && b.actorId() !== ACTOR_ID) return;
 
+    b.addState(168);
+
     if (ONCE_PER_TURN) {
       b._lastDodgeTurn ??= -9999;
       const t = $gameTroop.turnCount();
       if (t === b._lastDodgeTurn) return;
       b._lastDodgeTurn = t;
-    }
-
-    // ==============================
-    // 1️⃣ State 167 → applique 168 à soi-même
-    // ==============================
-    if (b.isStateAffected(167)) {
-      const had = b.isStateAffected(168);
-      b.addState(168);
-
-      if (REFRESH_DURATION && had && b.resetStateCounts) {
-        b.resetStateCounts(168);
-      }
     }
 
     // ==============================

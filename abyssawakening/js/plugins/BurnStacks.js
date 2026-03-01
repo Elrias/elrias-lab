@@ -27,31 +27,33 @@
 
   Game_Battler.prototype.addState = function(stateId) {
     const info = chainIndex.get(stateId);
+
     if (!info) return _addState.call(this, stateId);
 
     const { chain, idx: wantedIdx } = info;
 
-    // Trouver le plus haut rang déjà présent
     let currentIdx = -1;
     for (let i = chain.length - 1; i >= 0; i--) {
-      if (this.isStateAffected(chain[i])) { currentIdx = i; break; }
+      if (this.isStateAffected(chain[i])) {
+        currentIdx = i;
+        break;
+      }
     }
 
-    // Aucun rang présent -> appliquer normalement celui demandé
-    if (currentIdx < 0) return _addState.call(this, stateId);
+    if (currentIdx < 0) {
+      return _addState.call(this, stateId);
+    }
 
-    // Déjà au cap -> rafraîchir proprement ce rang (durées/notetags inclus)
     if (currentIdx === chain.length - 1) {
       return _addState.call(this, chain[currentIdx]);
     }
 
-    // Calculer le prochain rang à poser
     const nextIdx = STEP_ONLY
       ? currentIdx + 1
       : Math.max(currentIdx + 1, wantedIdx);
 
-    // Remplacer l’ancien par le nouveau
-    this.removeState(chain[currentIdx]);      // nettoie et refresh
-    return _addState.call(this, chain[nextIdx]); // reset durées via moteur
+    _addState.call(this, chain[nextIdx]);
+    
+    this.removeState(chain[currentIdx]);
   };
 })();
