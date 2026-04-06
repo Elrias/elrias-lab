@@ -192,6 +192,6 @@ null,
 {"id":190,"expanded":false,"name":"<Cell: ↓→↑ >","order":170,"parentId":143,"scrollX":0,"scrollY":0},
 {"id":191,"expanded":false,"name":"<Cell: ←→↑ >","order":171,"parentId":143,"scrollX":0,"scrollY":0},
 {"id":192,"expanded":false,"name":"<Cell: ↓←→↑ >","order":172,"parentId":143,"scrollX":0,"scrollY":0},
-{"id":193,"expanded":false,"name":"2 - Road","order":188,"parentId":0,"scrollX":1390.2857142857142,"scrollY":1410.8571428571427,"quick":false},
+{"id":193,"expanded":false,"name":"2 - Road","order":188,"parentId":0,"scrollX":1404,"scrollY":1410.8571428571427,"quick":false},
 {"id":194,"expanded":false,"name":"Scorvyrm lair","order":189,"parentId":193,"scrollX":1390.2857142857142,"scrollY":793.7142857142857,"quick":false}
 ]
