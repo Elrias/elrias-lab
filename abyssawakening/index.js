@@ -1,5 +1,5 @@
 // ---------------- Config ----------------
-const API_BASE = "https://abyssawakening-backend.onrender.com"; // <-- TON URL Render
+const API_BASE = "https://abyssawakening-backend.onrender.com";
 const TOKEN_KEY = "cloudsave_token";
 const FLASH_KEY = "flash_message";
 
