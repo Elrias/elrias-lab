@@ -4,6 +4,236 @@ const BASE_PATH = "/elrias-lab/abyssawakening/";
 const DEFAULT_AVATAR = BASE_PATH + "img/avatars/default.png";
 const DEFAULT_ACHIEVEMENT_ICON = BASE_PATH + "img/achievements/default.png";
 
+const ACHIEVEMENT_CONFIG = {
+  DEFEAT_GREAT_RAGEWOLF: {
+    icon: "msq",
+    rarity: "bronze"
+  },
+  DEFEAT_SCORVYRM: {
+    icon: "msq",
+    rarity: "silver"
+  },
+  DEFEAT_BLAZEWING: {
+    icon: "msq",
+    rarity: "silver"
+  },
+  DEFEAT_NOCTYR: {
+    icon: "msq",
+    rarity: "silver"
+  },
+  DEFEAT_HOLLOW_SENTINEL: {
+    icon: "msq",
+    rarity: "gold"
+  },
+  DEFEAT_AUTOMATED_SENTRY: {
+    icon: "msq",
+    rarity: "gold"
+  },
+  DEFEAT_CORRUPTED_ALRIC: {
+    icon: "msq",
+    rarity: "gold"
+  },
+  DEFEAT_GIANT_SNAKE: {
+    icon: "sq",
+    rarity: "bronze"
+  },
+  DEFEAT_ORECLAD: {
+    icon: "sq",
+    rarity: "bronze"
+  },
+  DEFEAT_THUNDERWING: {
+    icon: "sq",
+    rarity: "silver"
+  },
+  DEFEAT_HYDROCARNUM: {
+    icon: "sq",
+    rarity: "bronze"
+  },
+  DEFEAT_GLACIAL_SERPENT: {
+    icon: "sq",
+    rarity: "bronze"
+  },
+  DEFEAT_LEVIATHAN: {
+    icon: "sq",
+    rarity: "silver"
+  },
+  DEFEAT_CRIMSON_DRAGON: {
+    icon: "sq",
+    rarity: "bronze"
+  },
+  DEFEAT_IFRIT: {
+    icon: "sq",
+    rarity: "bronze"
+  },
+  DEFEAT_EMBERHEART: {
+    icon: "sq",
+    rarity: "silver"
+  },
+  KILL_100: {
+    icon: "battle",
+    rarity: "bronze"
+  },
+  KILL_500: {
+    icon: "battle",
+    rarity: "silver"
+  },
+  KILL_1000: {
+    icon: "battle",
+    rarity: "gold"
+  },
+  HIRO_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  DAN_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  ERIKA_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  JASMINE_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  LESLIE_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  REYAN_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  EMI_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  KAI_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  VALERYA_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  LEO_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  GALAD_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  VALENTINE_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  SHELON_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  THYME_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  CLAW_50: {
+    icon: "character",
+    rarity: "silver"
+  },
+  GOLD_20000: {
+    icon: "gold",
+    rarity: "bronze"
+  },
+  GOLD_100000: {
+    icon: "gold",
+    rarity: "silver"
+  },
+  GOLD_500000: {
+    icon: "gold",
+    rarity: "gold"
+  },
+  PLAYTIME_600: {
+    icon: "time",
+    rarity: "bronze"
+  },
+  PLAYTIME_3000: {
+    icon: "time",
+    rarity: "silver"
+  },
+  PLAYTIME_6000: {
+    icon: "time",
+    rarity: "gold"
+  },
+  SPEED_THUNDERWING: {
+    icon: "time",
+    rarity: "gold"
+  },
+  SPEED_LEVIATHAN: {
+    icon: "time",
+    rarity: "gold"
+  },
+  SPEED_EMBERHEART: {
+    icon: "time",
+    rarity: "gold"
+  },
+  BURST_THUNDERWING: {
+    icon: "burst",
+    rarity: "gold"
+  },
+  BURST_LEVIATHAN: {
+    icon: "burst",
+    rarity: "gold"
+  },
+  BURST_EMBERHEART: {
+    icon: "burst",
+    rarity: "gold"
+  },
+  BACKUP_50: {
+    icon: "backup",
+    rarity: "bronze"
+  },
+  BACKUP_100: {
+    icon: "backup",
+    rarity: "silver"
+  },
+  BACKUP_500: {
+    icon: "backup",
+    rarity: "gold"
+  },
+  RECRUIT_1: {
+    icon: "backup",
+    rarity: "bronze"
+  },
+  RECRUIT_5: {
+    icon: "backup",
+    rarity: "silver"
+  },
+  RECRUIT_ALL: {
+    icon: "backup",
+    rarity: "gold"
+  },
+  WEAPON_EMBER_9: {
+    icon: "battle",
+    rarity: "silver"
+  },
+  WEAPON_EMBER_10: {
+    icon: "battle",
+    rarity: "gold"
+  },
+};
+
+function getAchievementIcon(achievementId) {
+  const config = ACHIEVEMENT_CONFIG[achievementId];
+
+  if (!config) {
+    console.warn("Missing config for", id);
+    return "/img/achievements/default.png";
+  }
+
+  return `/img/achievements/${config.rarity}_${config.icon}.png`;
+}
+
 // =========================
 // ROUTING (CLEAN)
 // =========================
@@ -138,7 +368,7 @@ function renderProfile(data, { isOwner }) {
   document.getElementById("achievements").innerHTML =
     (data.achievements || [])
       .map(a => {
-        const icon = a.icon || DEFAULT_ACHIEVEMENT_ICON;
+        const icon = getAchievementIcon(achievement.id);
 
         return `
           <div class="achievement">
