@@ -1,6 +1,6 @@
 const token = localStorage.getItem("TOKEN");
 
-fetch("https://ton-backend.onrender.com/profile", {
+fetch("https://abyssawakening-backend.onrender.com/profile", {
   headers: {
     Authorization: "Bearer " + token
   }
