@@ -1,17 +1,23 @@
 const API_BASE = "https://abyssawakening-backend.onrender.com";
 
 // =========================
-// ROUTING
+// ROUTING (FIXED)
 // =========================
-const path = window.location.pathname.split("/");
+const path = window.location.pathname.split("/").filter(Boolean);
+
+// Exemple GitHub Pages:
+// /elrias-lab/abyssawakening/profile/Mercenary_1
+// => ["elrias-lab","abyssawakening","profile","Mercenary_1"]
+
+const profileIndex = path.indexOf("profile");
 
 // /profile
-if (path.length === 2 || !path[2]) {
+if (profileIndex === -1 || profileIndex === path.length - 1) {
   loadPrivateProfile();
-} 
+}
 // /profile/username
 else {
-  const username = path[2];
+  const username = path[profileIndex + 1];
   loadPublicProfile(username);
 }
 
@@ -81,9 +87,7 @@ function renderProfile(data, options = {}) {
     return;
   }
 
-  // =========================
   // HEADER
-  // =========================
   document.getElementById("avatar").src =
     data.user.avatar || "/img/default.png";
 
@@ -96,18 +100,14 @@ function renderProfile(data, options = {}) {
   document.getElementById("score").textContent =
     data.user.score + " pts";
 
-  // =========================
   // OWNER FEATURES
-  // =========================
   if (isOwner) {
     document.getElementById("header").insertAdjacentHTML("beforeend", `
       <button onclick="copyProfileLink()">Copy profile link</button>
     `);
   }
 
-  // =========================
   // MAIN CHARACTER
-  // =========================
   const main = data.mainCharacter;
 
   if (main) {
@@ -120,9 +120,7 @@ function renderProfile(data, options = {}) {
     `;
   }
 
-  // =========================
   // PARTY
-  // =========================
   document.getElementById("party").innerHTML = data.party.map(p => `
     <div class="card">
       <strong>${p.name} (Lvl ${p.level})</strong>
@@ -130,9 +128,7 @@ function renderProfile(data, options = {}) {
     </div>
   `).join("");
 
-  // =========================
   // ACHIEVEMENTS
-  // =========================
   document.getElementById("achievements").innerHTML = data.achievements.map(a => `
     <div class="achievement">
       <img src="${a.icon}" onerror="this.src='/img/achievements/default.png'">
@@ -146,12 +142,15 @@ function renderProfile(data, options = {}) {
 }
 
 // =========================
-// SHARE BUTTON
+// SHARE BUTTON (FIXED)
 // =========================
 function copyProfileLink() {
   const username = document.getElementById("username").textContent;
 
-  const url = `${window.location.origin}/profile/${username}`;
+  // IMPORTANT pour GitHub Pages
+  const basePath = window.location.pathname.split("/profile")[0];
+
+  const url = `${window.location.origin}${basePath}/profile/${username}`;
 
   navigator.clipboard.writeText(url);
 
