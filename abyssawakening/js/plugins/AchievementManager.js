@@ -183,7 +183,7 @@
         // BACKEND
         // =========================
         sendAchievementToBackend(id) {
-            const token = localStorage.getItem("TOKEN");
+            const token = localStorage.getItem("cloudsave_token")
 
             if (!token) {
                 console.warn("No token, skip sync");
