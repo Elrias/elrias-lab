@@ -19,49 +19,6 @@
             this._queue.push(text);
         }
 
-        sendAchievementToBackend(id) {
-            const token = localStorage.getItem("TOKEN");
-
-            if (!token) {
-                console.warn("No token, skip sync");
-                return;
-            }
-
-            fetch(ACHIEVEMENT_API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + token
-                },
-                body: JSON.stringify({
-                    achievementId: id
-                })
-            })
-            .then(res => {
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                return res.json();
-            })
-            .then(() => {
-                console.log("Achievement synced:", id);
-            })
-            .catch(err => {
-                console.warn("Sync failed:", id, err);
-
-                // fallback queue
-                this.data.pendingSync.push(id);
-                this.save();
-            });
-        }
-
-        retryPendingSync() {
-            if (!this.data.pendingSync.length) return;
-
-            const queue = [...this.data.pendingSync];
-            this.data.pendingSync = [];
-
-            queue.forEach(id => this.sendAchievementToBackend(id));
-        }
-
         update() {
             super.update();
 
@@ -220,6 +177,52 @@
         init() {
             console.log("AchievementManager initialized");
             this.load();
+        },
+
+        // =========================
+        // BACKEND
+        // =========================
+        sendAchievementToBackend(id) {
+            const token = localStorage.getItem("TOKEN");
+
+            if (!token) {
+                console.warn("No token, skip sync");
+                return;
+            }
+
+            fetch(ACHIEVEMENT_API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
+                },
+                body: JSON.stringify({
+                    achievementId: id
+                })
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            })
+            .then(() => {
+                console.log("Achievement synced:", id);
+            })
+            .catch(err => {
+                console.warn("Sync failed:", id, err);
+
+                // fallback queue
+                this.data.pendingSync.push(id);
+                this.save();
+            });
+        },
+
+        retryPendingSync() {
+            if (!this.data.pendingSync.length) return;
+
+            const queue = [...this.data.pendingSync];
+            this.data.pendingSync = [];
+
+            queue.forEach(id => this.sendAchievementToBackend(id));
         },
 
         // =========================
@@ -435,10 +438,14 @@
 
             // Popup
             const scene = SceneManager._scene;
-            if (scene._achievementPopup) {
+            if (scene && scene._achievementPopup) {
                 scene._achievementPopup.showAchievement("Achievement unlocked: " + ach.title);
             }
-            this.sendAchievementToBackend(id);
+            try {
+                this.sendAchievementToBackend(id);
+            } catch (e) {
+                console.warn("Backend sync error:", e);
+            }
             this.save();
         },
 

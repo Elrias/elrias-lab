@@ -6,7 +6,7 @@ null,
 {"id":4,"battlerName":"Jasmina","characterIndex":0,"characterName":"Jasmina","classId":4,"equips":[4,0,0,3,0],"faceIndex":7,"faceName":"Jasmina","traits":[],"initialLevel":1,"maxLevel":50,"name":"Jasmine","nickname":"Damage","note":"","profile":""},
 {"id":5,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"--------------------","nickname":"","note":"","profile":""},
 {"id":6,"battlerName":"Galad","characterIndex":4,"characterName":"","classId":6,"equips":[5,0,0,0,0],"faceIndex":2,"faceName":"Allie","traits":[],"initialLevel":1,"maxLevel":50,"name":"Galad","nickname":"Tank","note":"","profile":""},
-{"id":7,"battlerName":"Leo","characterIndex":2,"characterName":"","classId":7,"equips":[2,0,0,0,0],"faceIndex":1,"faceName":"Allie","traits":[],"initialLevel":1,"maxLevel":50,"name":"Leo","nickname":"Tank","note":"","profile":""},
+{"id":7,"battlerName":"Leo","characterIndex":0,"characterName":"Leo","classId":7,"equips":[2,0,0,0,0],"faceIndex":1,"faceName":"Allie","traits":[],"initialLevel":1,"maxLevel":50,"name":"Leo","nickname":"Tank","note":"","profile":""},
 {"id":8,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"--------------------","nickname":"","note":"","profile":""},
 {"id":9,"battlerName":"Thyme","characterIndex":7,"characterName":"","classId":9,"equips":[3,0,0,0,0],"faceIndex":4,"faceName":"Allie","traits":[],"initialLevel":1,"maxLevel":50,"name":"Thyme","nickname":"Support","note":"","profile":""},
 {"id":10,"battlerName":"Shelon","characterIndex":6,"characterName":"","classId":10,"equips":[10,0,0,0,0],"faceIndex":0,"faceName":"Allie","traits":[],"initialLevel":1,"maxLevel":50,"name":"Shelon","nickname":"Support","note":"","profile":""},
@@ -20,5 +20,5 @@ null,
 {"id":18,"battlerName":"Karis","characterIndex":0,"characterName":"Karis","classId":18,"equips":[5,0,0,0,0],"faceIndex":5,"faceName":"Karis","traits":[],"initialLevel":1,"maxLevel":50,"name":"Valerya","nickname":"Damage","note":"","profile":""},
 {"id":19,"battlerName":"Claw","characterIndex":4,"characterName":"","classId":19,"equips":[8,0,0,0,0],"faceIndex":1,"faceName":"Emi","traits":[],"initialLevel":1,"maxLevel":50,"name":"Claw","nickname":"Damage","note":"","profile":""},
 {"id":20,"battlerName":"","characterIndex":0,"characterName":"","classId":1,"equips":[0,0,0,0,0],"faceIndex":0,"faceName":"","traits":[],"initialLevel":1,"maxLevel":99,"name":"--------------------","nickname":"","note":"","profile":""},
-{"id":21,"battlerName":"Valentine","characterIndex":0,"characterName":"","classId":21,"equips":[10,0,0,0,0],"faceIndex":0,"faceName":"Valentine","traits":[],"initialLevel":1,"maxLevel":50,"name":"Valentine","nickname":"Support","note":"","profile":""}
+{"id":21,"battlerName":"Jasmine","characterIndex":0,"characterName":"Jasmine","classId":21,"equips":[10,0,0,0,0],"faceIndex":0,"faceName":"Valentine","traits":[],"initialLevel":1,"maxLevel":50,"name":"Valentine","nickname":"Support","note":"","profile":""}
 ]
