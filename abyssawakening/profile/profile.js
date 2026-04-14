@@ -374,6 +374,9 @@ function renderProfile(data, { isOwner }) {
     console.error("Invalid profile data");
     return;
   }
+  
+  console.log("MAIN:", data.mainCharacter);
+  console.log("PARTY:", data.party);
 
   // HEADER
   const avatarImg = document.getElementById("avatar");
