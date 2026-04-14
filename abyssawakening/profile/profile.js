@@ -223,12 +223,81 @@ const ACHIEVEMENT_CONFIG = {
   },
 };
 
+const TITLE_RULES = [
+  {
+    title: "Beast Slayer",
+    achievements: ["KILL_1000"]
+  },
+  {
+    title: "Ultimate Speedrunner",
+    achievements: ["SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART"]
+  },
+  {
+    title: "Maximum Firepower",
+    achievements: ["WEAPON_EMBER_10"]
+  },
+  {
+    title: "The Collector",
+    achievements: ["RECRUIT_ALL"]
+  },
+  {
+    title: "Master Supplier",
+    achievements: ["BACKUP_500"]
+  },
+  {
+    title: "Nuclear",
+    achievements: ["BURST_THUNDERWING", "BURST_LEVIATHAN", "BURST_EMBERHEART"]
+  },  
+  {
+    title: "Absolute Addict",
+    achievements: ["PLAYTIME_6000"]
+  },
+  {
+    title: "Richest man alive",
+    achievements: ["GOLD_500000"]
+  },
+  {
+    title: "One man army",
+    achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"]
+  },
+  {
+    title: "Seasoned Adventurer",
+    achievements: ["DEFEAT_EMBERHEART"]
+  },
+  {
+    title: "Seasoned Adventurer",
+    achievements: ["DEFEAT_EMBERHEART"]
+  },
+  {
+    title: "The Green Devil",
+    achievements: ["DEFEAT_CORRUPTED_ALRIC"]
+  },
+];
+
+function getUnlockedTitles(achievements) {
+  const unlocked = ["Rookie"];
+
+  const userAchievementIds = achievements.map(a => a.achievement_id);
+
+  TITLE_RULES.forEach(rule => {
+    const hasAll = rule.achievements.every(id =>
+      userAchievementIds.includes(id)
+    );
+
+    if (hasAll) {
+      unlocked.push(rule.title);
+    }
+  });
+
+  return unlocked;
+}
+
 function getAchievementIcon(achievementId) {
   const config = ACHIEVEMENT_CONFIG[achievementId];
 
   if (!config) {
     console.warn("Missing config for", achievementId);
-    return `${BASE_PATH}/img/achievements/default.png`;
+    return `${BASE_PATH}img/achievements/default.png`;
   }
 
   return `${BASE_PATH}img/achievements/${config.rarity}_${config.icon}.png`;
@@ -322,16 +391,55 @@ function renderProfile(data, { isOwner }) {
   document.getElementById("username").textContent =
     data.user.username;
 
-  document.getElementById("title").textContent =
-    data.user.title || "";
+  const titleSpan = document.getElementById("active-title");
+  const select = document.getElementById("title-select");
+
+  // titre actuel
+  titleSpan.textContent = data.user.active_title || "Rookie";
+
+  // titres débloqués
+  const titles = getUnlockedTitles(data.achievements);
+
+  // sécurité : ajouter le titre actif même si pas dans les règles
+  if (!titles.includes(data.user.active_title)) {
+    titles.push(data.user.active_title);
+  }
+
+  // remplir dropdown
+  select.innerHTML = "";
+
+  titles.forEach(title => {
+    const option = document.createElement("option");
+    option.value = title;
+    option.textContent = title;
+
+    if (title === data.user.active_title) {
+      option.selected = true;
+    }
+
+    select.appendChild(option);
+  });
+
+  select.onchange = () => {
+    const newTitle = select.value;
+
+    titleSpan.textContent = newTitle;
+
+    // TODO backend
+    console.log("New title:", newTitle);
+  };
+
+  if (!isOwner) {
+    select.style.display = "none";
+  }
 
   document.getElementById("score").textContent =
-    data.user.score + " pts";
+    "Achievements score :  " + data.user.score + " pts";
 
   // OWNER BUTTON
   if (isOwner) {
     document.getElementById("header").insertAdjacentHTML("beforeend", `
-      <button onclick="copyProfileLink()">🔗</button>
+      <button class="icon-btn" onclick="copyProfileLink()">🔗</button>
     `);
   }
 
@@ -383,7 +491,7 @@ function renderProfile(data, { isOwner }) {
   document.getElementById("achievements").innerHTML =
     (data.achievements || [])
       .map(a => {
-        const icon = getAchievementIcon(a.id);
+        const icon = getAchievementIcon(a.achievement_id);
 
         return `
           <div class="achievement">

@@ -86,3 +86,25 @@ body {
   align-items: center;
   gap: 8px;
 }
+
+.profile-title {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #aaa;
+  font-size: 14px;
+}
+
+#title-select {
+  background: #111;
+  color: white;
+  border: 1px solid #333;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#active-title {
+  font-style: italic;
+  color: #888;
+}
