@@ -177,6 +177,7 @@
         init() {
             console.log("AchievementManager initialized");
             this.load();
+            this.syncAllUnlocked();
         },
 
         // =========================
@@ -253,6 +254,17 @@
 
             } catch (e) {
                 console.error(e);
+            }
+        },
+
+        syncAllUnlocked() {
+            const token = localStorage.getItem("cloudsave_token");
+            if (!token) return;
+
+            for (const id in this.unlocked) {
+                if (this.unlocked[id]) {
+                    this.sendAchievementToBackend(id);
+                }
             }
         },
 
