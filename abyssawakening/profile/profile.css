@@ -1,0 +1,57 @@
+body {
+  font-family: Arial;
+  background: #111;
+  color: white;
+}
+
+#header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 2px solid #333;
+  padding: 20px;
+}
+
+#avatar {
+  width: 80px;
+  height: 80px;
+  background: #333;
+}
+
+#score {
+  margin-left: auto;
+  font-size: 20px;
+}
+
+#content {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+#left {
+  width: 40%;
+}
+
+#right {
+  width: 60%;
+}
+
+.card {
+  border: 1px solid #333;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.achievement {
+  display: flex;
+  gap: 10px;
+  border: 1px solid #333;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.achievement img {
+  width: 40px;
+  height: 40px;
+}

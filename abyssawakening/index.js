@@ -11,7 +11,6 @@ const menuLabel = document.getElementById("menuLabel");
 const discordBtn = document.getElementById("discordBtn");
 const backdrop = document.getElementById("backdrop");
 const fsBtn = document.getElementById("fullscreenBtn");
-
 // Auth
 const authForm = document.getElementById("authForm");
 const authTitle = document.getElementById("authTitle");
