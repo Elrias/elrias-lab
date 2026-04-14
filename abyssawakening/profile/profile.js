@@ -227,11 +227,11 @@ function getAchievementIcon(achievementId) {
   const config = ACHIEVEMENT_CONFIG[achievementId];
 
   if (!config) {
-    console.warn("Missing config for", id);
-    return "/img/achievements/default.png";
+    console.warn("Missing config for", achievementId);
+    return `${BASE_PATH}/img/achievements/default.png`;
   }
 
-  return `/img/achievements/${config.rarity}_${config.icon}.png`;
+  return `${BASE_PATH}img/achievements/${config.rarity}_${config.icon}.png`;
 }
 
 // =========================
@@ -368,7 +368,7 @@ function renderProfile(data, { isOwner }) {
   document.getElementById("achievements").innerHTML =
     (data.achievements || [])
       .map(a => {
-        const icon = getAchievementIcon(achievement.id);
+        const icon = getAchievementIcon(a.id);
 
         return `
           <div class="achievement">
