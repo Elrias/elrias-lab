@@ -1,5 +1,8 @@
 const API_BASE = "https://abyssawakening-backend.onrender.com";
-const BASE_PATH = "/elrias-lab/abyssawakening";
+const BASE_PATH = "/elrias-lab/abyssawakening/";
+
+const DEFAULT_AVATAR = BASE_PATH + "img/avatars/default.png";
+const DEFAULT_ACHIEVEMENT_ICON = BASE_PATH + "img/achievements/default.png";
 
 // =========================
 // ROUTING (CLEAN)
@@ -78,8 +81,13 @@ function renderProfile(data, { isOwner }) {
   }
 
   // HEADER
-  document.getElementById("avatar").src =
-    data.user.avatar || "/img/default.png";
+  const avatarImg = document.getElementById("avatar");
+
+  avatarImg.src = data.user.avatar || DEFAULT_AVATAR;
+
+  avatarImg.onerror = () => {
+    avatarImg.src = DEFAULT_AVATAR;
+  };
 
   document.getElementById("username").textContent =
     data.user.username;
@@ -129,16 +137,21 @@ function renderProfile(data, { isOwner }) {
   // =========================
   document.getElementById("achievements").innerHTML =
     (data.achievements || [])
-      .map(a => `
-        <div class="achievement">
-          <img src="${a.icon}" onerror="this.src='/img/achievements/default.png'">
-          <div>
-            <strong>${a.title}</strong>
-            <p>${a.description}</p>
-            <span>${a.score} pts</span>
+      .map(a => {
+        const icon = a.icon || DEFAULT_ACHIEVEMENT_ICON;
+
+        return `
+          <div class="achievement">
+            <img src="${icon}" 
+                onerror="this.src='${DEFAULT_ACHIEVEMENT_ICON}'">
+            <div>
+              <strong>${a.title}</strong>
+              <p>${a.description}</p>
+              <span>${a.score} pts</span>
+            </div>
           </div>
-        </div>
-      `)
+        `;
+      })
       .join("");
 }
 
