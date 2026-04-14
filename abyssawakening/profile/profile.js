@@ -253,16 +253,12 @@ const TITLE_RULES = [
     achievements: ["PLAYTIME_6000"]
   },
   {
-    title: "Richest man alive",
+    title: "Golden Sovereign",
     achievements: ["GOLD_500000"]
   },
   {
     title: "One man army",
     achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"]
-  },
-  {
-    title: "Seasoned Adventurer",
-    achievements: ["DEFEAT_EMBERHEART"]
   },
   {
     title: "Seasoned Adventurer",
@@ -284,7 +280,7 @@ function getUnlockedTitles(achievements) {
       userAchievementIds.includes(id)
     );
 
-    if (hasAll) {
+    if (hasAll && !unlocked.includes(rule.title)) {
       unlocked.push(rule.title);
     }
   });
@@ -491,7 +487,9 @@ function renderProfile(data, { isOwner }) {
   document.getElementById("achievements").innerHTML =
     (data.achievements || [])
       .map(a => {
-        const icon = getAchievementIcon(a.achievement_id);
+        const achievementId = a.achievement_id || a.id;
+
+        const icon = getAchievementIcon(achievementId);
 
         return `
           <div class="achievement">
