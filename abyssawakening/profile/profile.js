@@ -331,8 +331,23 @@ function renderProfile(data, { isOwner }) {
   // OWNER BUTTON
   if (isOwner) {
     document.getElementById("header").insertAdjacentHTML("beforeend", `
-      <button onclick="copyProfileLink()">Copy profile link</button>
+      <button onclick="copyProfileLink()">🔗</button>
     `);
+  }
+
+  if (isOwner) {
+    const btn = document.getElementById("edit-username-btn");
+
+    btn.onclick = () => {
+      const newName = prompt("Enter new username:");
+
+      if (!newName) return;
+
+      // TODO: envoyer au backend plus tard
+      document.getElementById("username").textContent = newName;
+    };
+  } else {
+    document.getElementById("edit-username-btn").style.display = "none";
   }
 
   // =========================
