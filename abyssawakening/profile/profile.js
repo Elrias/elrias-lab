@@ -17,7 +17,7 @@ if (username) {
 // PRIVATE PROFILE
 // =========================
 function loadPrivateProfile() {
-  const token = localStorage.getItem("TOKEN");
+  const token = localStorage.getItem("cloudsave_token")
 
   if (!token) {
     console.warn("No token found (not logged in)");
