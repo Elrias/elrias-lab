@@ -374,7 +374,7 @@ function renderProfile(data, { isOwner }) {
     console.error("Invalid profile data");
     return;
   }
-  
+
   console.log("MAIN:", data.mainCharacter);
   console.log("PARTY:", data.party);
 
@@ -475,11 +475,17 @@ function renderProfile(data, { isOwner }) {
   // =========================
   // PARTY
   // =========================
-  document.getElementById("party").innerHTML = (data.party || [])
+  const party = (data.party || []).slice(1, 4);
+
+  document.getElementById("party").innerHTML = party
     .map(p => `
       <div class="card">
         <strong>${p.name} (Lvl ${p.level})</strong>
-        <div>${p.equipment.join(", ")}</div>
+
+        <div><strong>Equipment:</strong></div>
+        <ul>
+          ${(p.equipment || []).map(e => `<li>${e}</li>`).join("")}
+        </ul>
       </div>
     `)
     .join("");
