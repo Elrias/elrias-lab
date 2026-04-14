@@ -1,3 +1,10 @@
+const params = new URLSearchParams(window.location.search);
+const redirect = params.get("redirect");
+
+if (redirect) {
+  window.history.replaceState(null, "", redirect);
+}
+
 const API_BASE = "https://abyssawakening-backend.onrender.com";
 
 // =========================
