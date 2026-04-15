@@ -4,12 +4,25 @@ const BASE_PATH = "/elrias-lab/abyssawakening/";
 const DEFAULT_AVATAR = BASE_PATH + "img/avatars/default.png";
 const DEFAULT_ACHIEVEMENT_ICON = BASE_PATH + "img/achievements/default.png";
 let ACTORS_DB = [];
+let SKILLS_DB = [];
+let WEAPONS_DB = [];
+let ARMORS_DB = [];
 
 fetch(`${BASE_PATH}data/Actors.json`)
   .then(r => r.json())
   .then(data => {
     ACTORS_DB = data.filter(Boolean);
   });
+
+Promise.all([
+  fetch(`${BASE_PATH}data/Skills.json`).then(r => r.json()),
+  fetch(`${BASE_PATH}data/Weapons.json`).then(r => r.json()),
+  fetch(`${BASE_PATH}data/Armors.json`).then(r => r.json())
+]).then(([skills, weapons, armors]) => {
+  SKILLS_DB = skills.filter(Boolean);
+  WEAPONS_DB = weapons.filter(Boolean);
+  ARMORS_DB = armors.filter(Boolean);
+});
 
 const ACHIEVEMENT_CONFIG = {
   DEFEAT_GREAT_RAGEWOLF: {
@@ -277,6 +290,41 @@ const TITLE_RULES = [
   },
 ];
 
+function findByName(name, db) {
+  return db.find(e => 
+    e.name.toLowerCase().trim() === name.toLowerCase().trim()
+  );
+}
+
+function getEquipmentData(name) {
+  return (
+    findByName(name, WEAPONS_DB) ||
+    findByName(name, ARMORS_DB)
+  );
+}
+
+function getSkillData(name) {
+  return findByName(name, SKILLS_DB);
+}
+
+function getIconStyle(iconIndex) {
+  const size = 32;
+  const cols = 16;
+
+  const x = -(iconIndex % cols) * size;
+  const y = -Math.floor(iconIndex / cols) * size;
+
+  return `
+    background-image: url('${BASE_PATH}img/system/IconSet.png');
+    background-position: ${x}px ${y}px;
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+  `;
+}
+
 function getActorByName(name) {
   if (!name) return null;
 
@@ -528,7 +576,18 @@ function renderProfile(data, { isOwner }) {
             <ul>
               ${(main.skills || [])
                 .filter(s => s !== "Weapon Mastery")
-                .map(s => `<li>${s}</li>`)
+                  .map(s => {
+                    const skill = getSkillData(s);
+
+                    if (!skill) return `<li>${s}</li>`;
+
+                    return `
+                      <li>
+                        <span style="${getIconStyle(skill.iconIndex)}"></span>
+                        ${s}
+                      </li>
+                    `;
+                  })
                 .join("")}
             </ul>
           </div>
@@ -536,7 +595,19 @@ function renderProfile(data, { isOwner }) {
           <div>
             <p><strong>Equipment:</strong></p>
             <ul>
-              ${(main.equipment || []).map(e => `<li>${e}</li>`).join("")}
+              ${(main.equipment || [])
+                .map(e => {
+                  const eq = getEquipmentData(e);
+
+                  if (!eq) return `<li>${e}</li>`;
+
+                  return `
+                    <li>
+                      <span style="${getIconStyle(eq.iconIndex)}"></span>
+                      ${e}
+                    </li>
+                  `;
+                }).join("")}
             </ul>
           </div>
         </div>

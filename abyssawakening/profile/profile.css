@@ -141,3 +141,7 @@ body {
   image-rendering: pixelated;
   border: 1px solid #333;
 }
+
+li span {
+  image-rendering: pixelated;
+}
