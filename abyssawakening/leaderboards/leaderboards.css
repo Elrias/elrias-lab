@@ -24,6 +24,27 @@ body {
   margin-bottom: 10px;
 
   transition: 0.2s;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  .name {
+    flex: 1;
+  }
+}
+
+.leaderboard-row.rank-1 {
+  border: 2px solid gold;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+}
+
+.leaderboard-row.rank-2 {
+  border: 2px solid silver;
+  box-shadow: 0 0 12px rgba(192, 192, 192, 0.6);
+}
+
+.leaderboard-row.rank-3 {
+  border: 2px solid #cd7f32;
+  box-shadow: 0 0 12px rgba(205, 127, 50, 0.6);
 }
 
 .leaderboard-row:hover {
@@ -76,8 +97,4 @@ body {
 .avatar.rank-3 {
   border: 3px solid #cd7f32; /* bronze */
   box-shadow: 0 0 8px #cd7f32;
-}
-
-.leaderboard-row {
-  cursor: pointer;
 }

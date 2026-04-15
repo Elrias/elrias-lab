@@ -22,7 +22,7 @@ function renderLeaderboard(players) {
 
   container.innerHTML = players.map((p, index) => `
     <div class="leaderboard-row" onclick="goToProfile('${p.username}')">  
-        <div class="leaderboard-row">
+        <div class="leaderboard-row rank-${index + 1}">
         
         <div class="rank">#${index + 1}</div>
 
