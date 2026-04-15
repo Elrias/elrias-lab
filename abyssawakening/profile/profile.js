@@ -270,6 +270,16 @@ const TITLE_RULES = [
   },
 ];
 
+function getFaceStyle(faceName, faceIndex) {
+  const x = -(faceIndex % 4) * 144;
+  const y = -Math.floor(faceIndex / 4) * 144;
+
+  return `
+    background-image: url('${BASE_PATH}img/faces/${faceName}.png');
+    background-position: ${x}px ${y}px;
+  `;
+}
+
 function getUnlockedTitles(achievements) {
   const unlocked = ["Rookie"];
 
@@ -466,7 +476,11 @@ function renderProfile(data, { isOwner }) {
       <h2>Party</h2>
 
       <div class="card">
-        <h3>${main.name} (Lvl ${main.level})</h3>
+        <div class="character-header">
+          <div class="character-face" style="${getFaceStyle(main.faceName, main.faceIndex)}"></div>
+
+          <h3>${main.name} (Lvl ${main.level})</h3>
+        </div>
 
         <div class="main-grid">
           <div>
@@ -498,7 +512,11 @@ function renderProfile(data, { isOwner }) {
   document.getElementById("party-members").innerHTML = party
     .map(p => `
       <div class="card party-card">
-        <strong>${p.name} (Lvl ${p.level})</strong>
+        <div class="character-header">
+          <div class="character-face" style="${getFaceStyle(p.faceName, p.faceIndex)}"></div>
+
+          <strong>${p.name} (Lvl ${p.level})</strong>
+        </div>
 
         <p><strong>Equipment:</strong></p>
         <ul>
