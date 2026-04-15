@@ -385,6 +385,10 @@ function renderProfile(data, { isOwner }) {
     return;
   }
 
+  console.log("FULL DATA:", data);
+  console.log("MAIN CHARACTER:", data.mainCharacter);
+  console.log("PARTY:", data.party);
+  
   // HEADER
   const avatarImg = document.getElementById("avatar");
 
