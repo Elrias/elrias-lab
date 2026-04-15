@@ -5,8 +5,6 @@ const DEFAULT_AVATAR = BASE_PATH + "img/avatars/default.png";
 const DEFAULT_ACHIEVEMENT_ICON = BASE_PATH + "img/achievements/default.png";
 let ACTORS_DB = [];
 let SKILLS_DB = [];
-let WEAPONS_DB = [];
-let ARMORS_DB = [];
 
 fetch(`${BASE_PATH}data/Actors.json`)
   .then(r => r.json())
@@ -25,281 +23,79 @@ Promise.all([
 });
 
 const ACHIEVEMENT_CONFIG = {
-  DEFEAT_GREAT_RAGEWOLF: {
-    icon: "msq",
-    rarity: "bronze"
-  },
-  DEFEAT_SCORVYRM: {
-    icon: "msq",
-    rarity: "silver"
-  },
-  DEFEAT_BLAZEWING: {
-    icon: "msq",
-    rarity: "silver"
-  },
-  DEFEAT_NOCTYR: {
-    icon: "msq",
-    rarity: "silver"
-  },
-  DEFEAT_HOLLOW_SENTINEL: {
-    icon: "msq",
-    rarity: "gold"
-  },
-  DEFEAT_AUTOMATED_SENTRY: {
-    icon: "msq",
-    rarity: "gold"
-  },
-  DEFEAT_CORRUPTED_ALRIC: {
-    icon: "msq",
-    rarity: "gold"
-  },
-  DEFEAT_GIANT_SNAKE: {
-    icon: "sq",
-    rarity: "bronze"
-  },
-  DEFEAT_ORECLAD: {
-    icon: "sq",
-    rarity: "bronze"
-  },
-  DEFEAT_THUNDERWING: {
-    icon: "sq",
-    rarity: "silver"
-  },
-  DEFEAT_HYDROCARNUM: {
-    icon: "sq",
-    rarity: "bronze"
-  },
-  DEFEAT_GLACIAL_SERPENT: {
-    icon: "sq",
-    rarity: "bronze"
-  },
-  DEFEAT_LEVIATHAN: {
-    icon: "sq",
-    rarity: "silver"
-  },
-  DEFEAT_CRIMSON_DRAGON: {
-    icon: "sq",
-    rarity: "bronze"
-  },
-  DEFEAT_IFRIT: {
-    icon: "sq",
-    rarity: "bronze"
-  },
-  DEFEAT_EMBERHEART: {
-    icon: "sq",
-    rarity: "silver"
-  },
-  KILL_100: {
-    icon: "battle",
-    rarity: "bronze"
-  },
-  KILL_500: {
-    icon: "battle",
-    rarity: "silver"
-  },
-  KILL_1000: {
-    icon: "battle",
-    rarity: "gold"
-  },
-  HIRO_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  DAN_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  ERIKA_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  JASMINE_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  LESLIE_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  REYAN_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  EMI_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  KAI_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  VALERYA_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  LEO_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  GALAD_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  VALENTINE_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  SHELON_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  THYME_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  CLAW_50: {
-    icon: "character",
-    rarity: "silver"
-  },
-  GOLD_20000: {
-    icon: "gold",
-    rarity: "bronze"
-  },
-  GOLD_100000: {
-    icon: "gold",
-    rarity: "silver"
-  },
-  GOLD_500000: {
-    icon: "gold",
-    rarity: "gold"
-  },
-  PLAYTIME_600: {
-    icon: "time",
-    rarity: "bronze"
-  },
-  PLAYTIME_3000: {
-    icon: "time",
-    rarity: "silver"
-  },
-  PLAYTIME_6000: {
-    icon: "time",
-    rarity: "gold"
-  },
-  SPEED_THUNDERWING: {
-    icon: "time",
-    rarity: "gold"
-  },
-  SPEED_LEVIATHAN: {
-    icon: "time",
-    rarity: "gold"
-  },
-  SPEED_EMBERHEART: {
-    icon: "time",
-    rarity: "gold"
-  },
-  BURST_THUNDERWING: {
-    icon: "burst",
-    rarity: "gold"
-  },
-  BURST_LEVIATHAN: {
-    icon: "burst",
-    rarity: "gold"
-  },
-  BURST_EMBERHEART: {
-    icon: "burst",
-    rarity: "gold"
-  },
-  BACKUP_50: {
-    icon: "backup",
-    rarity: "bronze"
-  },
-  BACKUP_100: {
-    icon: "backup",
-    rarity: "silver"
-  },
-  BACKUP_500: {
-    icon: "backup",
-    rarity: "gold"
-  },
-  RECRUIT_1: {
-    icon: "backup",
-    rarity: "bronze"
-  },
-  RECRUIT_5: {
-    icon: "backup",
-    rarity: "silver"
-  },
-  RECRUIT_ALL: {
-    icon: "backup",
-    rarity: "gold"
-  },
-  WEAPON_EMBER_9: {
-    icon: "battle",
-    rarity: "silver"
-  },
-  WEAPON_EMBER_10: {
-    icon: "battle",
-    rarity: "gold"
-  },
+  DEFEAT_GREAT_RAGEWOLF: { icon: "msq", rarity: "bronze" },
+  DEFEAT_SCORVYRM: { icon: "msq", rarity: "silver" },
+  DEFEAT_BLAZEWING: { icon: "msq", rarity: "silver" },
+  DEFEAT_NOCTYR: { icon: "msq", rarity: "silver" },
+  DEFEAT_HOLLOW_SENTINEL: { icon: "msq", rarity: "gold" },
+  DEFEAT_AUTOMATED_SENTRY: { icon: "msq", rarity: "gold" },
+  DEFEAT_CORRUPTED_ALRIC: { icon: "msq", rarity: "gold" },
+  DEFEAT_GIANT_SNAKE: { icon: "sq", rarity: "bronze" },
+  DEFEAT_ORECLAD: { icon: "sq", rarity: "bronze" },
+  DEFEAT_THUNDERWING: { icon: "sq", rarity: "silver" },
+  DEFEAT_HYDROCARNUM: { icon: "sq", rarity: "bronze" },
+  DEFEAT_GLACIAL_SERPENT: { icon: "sq", rarity: "bronze" },
+  DEFEAT_LEVIATHAN: { icon: "sq", rarity: "silver" },
+  DEFEAT_CRIMSON_DRAGON: { icon: "sq", rarity: "bronze" },
+  DEFEAT_IFRIT: { icon: "sq", rarity: "bronze" },
+  DEFEAT_EMBERHEART: { icon: "sq", rarity: "silver" },
+  KILL_100: { icon: "battle", rarity: "bronze" },
+  KILL_500: { icon: "battle", rarity: "silver" },
+  KILL_1000: { icon: "battle", rarity: "gold" },
+  HIRO_50: { icon: "character", rarity: "silver" },
+  DAN_50: { icon: "character", rarity: "silver" },
+  ERIKA_50: { icon: "character", rarity: "silver" },
+  JASMINE_50: { icon: "character", rarity: "silver" },
+  LESLIE_50: { icon: "character", rarity: "silver" },
+  REYAN_50: { icon: "character", rarity: "silver" },
+  EMI_50: { icon: "character", rarity: "silver" },
+  KAI_50: { icon: "character", rarity: "silver" },
+  VALERYA_50: { icon: "character", rarity: "silver" },
+  LEO_50: { icon: "character", rarity: "silver" },
+  GALAD_50: { icon: "character", rarity: "silver" },
+  VALENTINE_50: { icon: "character", rarity: "silver" },
+  SHELON_50: { icon: "character", rarity: "silver" },
+  THYME_50: { icon: "character", rarity: "silver" },
+  CLAW_50: { icon: "character", rarity: "silver" },
+  GOLD_20000: { icon: "gold", rarity: "bronze" },
+  GOLD_100000: { icon: "gold", rarity: "silver" },
+  GOLD_500000: { icon: "gold", rarity: "gold" },
+  PLAYTIME_600: { icon: "time", rarity: "bronze" },
+  PLAYTIME_3000: { icon: "time", rarity: "silver" },
+  PLAYTIME_6000: { icon: "time", rarity: "gold" },
+  SPEED_THUNDERWING: { icon: "time", rarity: "gold" },
+  SPEED_LEVIATHAN: { icon: "time", rarity: "gold" },
+  SPEED_EMBERHEART: { icon: "time", rarity: "gold" },
+  BURST_THUNDERWING: { icon: "burst", rarity: "gold" },
+  BURST_LEVIATHAN: { icon: "burst", rarity: "gold" },
+  BURST_EMBERHEART: { icon: "burst", rarity: "gold" },
+  BACKUP_50: { icon: "backup", rarity: "bronze" },
+  BACKUP_100: { icon: "backup", rarity: "silver" },
+  BACKUP_500: { icon: "backup", rarity: "gold" },
+  RECRUIT_1: { icon: "backup", rarity: "bronze" },
+  RECRUIT_5: { icon: "backup", rarity: "silver" },
+  RECRUIT_ALL: { icon: "backup", rarity: "gold" },
+  WEAPON_EMBER_9: { icon: "battle", rarity: "silver" },
+  WEAPON_EMBER_10: { icon: "battle", rarity: "gold" },
 };
 
 const TITLE_RULES = [
-  {
-    title: "Beast Slayer",
-    achievements: ["KILL_1000"]
-  },
-  {
-    title: "Ultimate Speedrunner",
-    achievements: ["SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART"]
-  },
-  {
-    title: "Maximum Firepower",
-    achievements: ["WEAPON_EMBER_10"]
-  },
-  {
-    title: "The Collector",
-    achievements: ["RECRUIT_ALL"]
-  },
-  {
-    title: "Master Supplier",
-    achievements: ["BACKUP_500"]
-  },
-  {
-    title: "Nuclear",
-    achievements: ["BURST_THUNDERWING", "BURST_LEVIATHAN", "BURST_EMBERHEART"]
-  },  
-  {
-    title: "Absolute Addict",
-    achievements: ["PLAYTIME_6000"]
-  },
-  {
-    title: "Golden Sovereign",
-    achievements: ["GOLD_500000"]
-  },
-  {
-    title: "One man army",
-    achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"]
-  },
-  {
-    title: "Seasoned Adventurer",
-    achievements: ["DEFEAT_EMBERHEART"]
-  },
-  {
-    title: "The Green Devil",
-    achievements: ["DEFEAT_CORRUPTED_ALRIC"]
-  },
+  { title: "Beast Slayer", achievements: ["KILL_1000"] },
+  { title: "Ultimate Speedrunner", achievements: ["SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART"] },
+  { title: "Maximum Firepower", achievements: ["WEAPON_EMBER_10"] },
+  { title: "The Collector", achievements: ["RECRUIT_ALL"] },
+  { title: "Master Supplier", achievements: ["BACKUP_500"] },
+  { title: "Nuclear", achievements: ["BURST_THUNDERWING", "BURST_LEVIATHAN", "BURST_EMBERHEART"] },
+  { title: "Absolute Addict", achievements: ["PLAYTIME_6000"] },
+  { title: "Golden Sovereign", achievements: ["GOLD_500000"] },
+  { title: "One man army", achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"] },
+  { title: "Seasoned Adventurer", achievements: ["DEFEAT_EMBERHEART"] },
+  { title: "The Green Devil", achievements: ["DEFEAT_CORRUPTED_ALRIC"] },
 ];
 
 function findByName(name, db) {
-  return db.find(e => 
+  return db.find(e =>
     e.name.toLowerCase().trim() === name.toLowerCase().trim()
-  );
-}
-
-function getEquipmentData(name) {
-  return (
-    findByName(name, WEAPONS_DB) ||
-    findByName(name, ARMORS_DB)
   );
 }
 
@@ -472,7 +268,6 @@ function renderProfile(data, { isOwner }) {
     console.error("Invalid profile data");
     return;
   }
-  
   console.log("FULL DATA:", data);
   console.log("MAIN CHARACTER:", data.mainCharacter);
   console.log("PARTY:", data.party);
@@ -507,18 +302,18 @@ function renderProfile(data, { isOwner }) {
   select.innerHTML = "";
 
   titles
-  .filter(Boolean)
-  .forEach(title => {
-    const option = document.createElement("option");
-    option.value = title;
-    option.textContent = title;
+    .filter(Boolean)
+    .forEach(title => {
+      const option = document.createElement("option");
+      option.value = title;
+      option.textContent = title;
 
-    if (title === data.user.active_title) {
-      option.selected = true;
-    }
+      if (title === data.user.active_title) {
+        option.selected = true;
+      }
 
-    select.appendChild(option);
-  });
+      select.appendChild(option);
+    });
 
   select.onchange = () => {
     const newTitle = select.value;
@@ -579,20 +374,20 @@ function renderProfile(data, { isOwner }) {
             <p><strong>Skills:</strong></p>
             <ul>
               ${(main.skills || [])
-                .filter(s => s !== "Weapon Mastery")
-                  .map(s => {
-                    const skill = getSkillData(s);
+        .filter(s => s !== "Weapon Mastery")
+        .map(s => {
+          const skill = getSkillData(s);
 
-                    if (!skill) return `<li>${s}</li>`;
+          if (!skill) return `<li>${s}</li>`;
 
-                    return `
+          return `
                       <li>
                         <span style="${getIconStyle(skill.iconIndex)}"></span>
                         ${s}
                       </li>
                     `;
-                  })
-                .join("")}
+        })
+        .join("")}
             </ul>
           </div>
 
@@ -601,17 +396,16 @@ function renderProfile(data, { isOwner }) {
             <ul>
               ${(main.equipment || [])
                 .map(e => {
-                  const eq = getEquipmentData(e);
-
-                  if (!eq) return `<li>${e}</li>`;
+                  if (!e) return "";
 
                   return `
                     <li>
-                      <span style="${getIconStyle(eq.iconIndex)}"></span>
-                      ${e}
+                      <span style="${getIconStyle(e.iconIndex)}"></span>
+                      ${e.name}
                     </li>
                   `;
-                }).join("")}
+                })
+        .join("")}
             </ul>
           </div>
         </div>
@@ -637,18 +431,16 @@ function renderProfile(data, { isOwner }) {
         <ul>
           ${(p.equipment || [])
             .map(e => {
-              const eq = getEquipmentData(e);
-
-              if (!eq) return `<li>${e}</li>`;
+              if (!e) return "";
 
               return `
                 <li>
-                  <span style="${getIconStyle(eq.iconIndex)}"></span>
-                  ${e}
+                  <span style="${getIconStyle(e.iconIndex)}"></span>
+                  ${e.name}
                 </li>
               `;
             })
-            .join("")}
+        .join("")}
         </ul>
       </div>
     `)
