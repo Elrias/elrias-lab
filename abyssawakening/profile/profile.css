@@ -217,8 +217,8 @@ body {
 
 .avatar-wrapper {
   position: relative;
-  width: 96px;
-  height: 96px;
+  width: 120px;
+  height: 120px;
 }
 
 #avatar {
@@ -262,6 +262,25 @@ body {
 
 .avatar-wrapper.loading .avatar-loader {
   opacity: 1;
+}
+
+.profile-name {
+  align-items: center;
+  font-size: 20px;
+}
+
+.profile-title {
+  font-size: 15px;
+}
+
+#username {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+#active-title {
+  font-size: 16px;
+  color: #aaa;
 }
 
 @keyframes spin {

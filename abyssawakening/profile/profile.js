@@ -321,7 +321,7 @@ function renderProfile(data, { isOwner }) {
   avatarWrapper = document.querySelector(".avatar-wrapper");
   if (isOwner) {
     avatarImg.style.cursor = "pointer";
-    avatarImg.onclick = () => {
+    avatarWrapper.onclick = () => {
       if (avatarInput) avatarInput.click();
     };
   }
