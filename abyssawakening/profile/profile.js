@@ -3,6 +3,14 @@ const BASE_PATH = "/elrias-lab/abyssawakening/";
 
 const DEFAULT_AVATAR = BASE_PATH + "img/avatars/default.png";
 const DEFAULT_ACHIEVEMENT_ICON = BASE_PATH + "img/achievements/default.png";
+let ACTORS_DB = [];
+
+fetch(`${BASE_PATH}data/Actors.json`)
+  .then(r => r.json())
+  .then(data => {
+    ACTORS_DB = data.filter(Boolean);
+    console.log("Actors DB loaded:", ACTORS_DB.length);
+  });
 
 const ACHIEVEMENT_CONFIG = {
   DEFEAT_GREAT_RAGEWOLF: {
@@ -270,6 +278,35 @@ const TITLE_RULES = [
   },
 ];
 
+function getActorByName(name) {
+  if (!name) return null;
+
+  const actor = ACTORS_DB.find(a => a.name === name);
+
+  if (!actor) {
+    console.warn("Actor not found for name:", name);
+  }
+  
+  return actor;
+}
+
+function getFaceStyleFromName(name) {
+  const actor = getActorByName(name);
+
+  if (!actor) return "";
+
+  const faceName = actor.faceName;
+  const faceIndex = actor.faceIndex;
+
+  const x = -(faceIndex % 4) * 144;
+  const y = -Math.floor(faceIndex / 4) * 144;
+
+  return `
+    background-image: url('${BASE_PATH}img/faces/${faceName}.png');
+    background-position: ${x}px ${y}px;
+  `;
+}
+
 function getFaceStyle(faceName, faceIndex) {
   const x = -(faceIndex % 4) * 144;
   const y = -Math.floor(faceIndex / 4) * 144;
@@ -385,10 +422,6 @@ function renderProfile(data, { isOwner }) {
     return;
   }
 
-  console.log("FULL DATA:", data);
-  console.log("MAIN CHARACTER:", data.mainCharacter);
-  console.log("PARTY:", data.party);
-  
   // HEADER
   const avatarImg = document.getElementById("avatar");
 
@@ -481,7 +514,7 @@ function renderProfile(data, { isOwner }) {
 
       <div class="card">
         <div class="character-header">
-          <div class="character-face" style="${getFaceStyle(main.faceName, main.faceIndex)}"></div>
+          <div class="character-face" style="${getFaceStyleFromName(main.name)}"></div>
 
           <h3>${main.name} (Lvl ${main.level})</h3>
         </div>
@@ -517,7 +550,7 @@ function renderProfile(data, { isOwner }) {
     .map(p => `
       <div class="card party-card">
         <div class="character-header">
-          <div class="character-face" style="${getFaceStyle(p.faceName, p.faceIndex)}"></div>
+          <div class="character-face" style="${getFaceStyleFromName(p.name)}"></div>
 
           <strong>${p.name} (Lvl ${p.level})</strong>
         </div>
