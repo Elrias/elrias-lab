@@ -375,9 +375,6 @@ function renderProfile(data, { isOwner }) {
     return;
   }
 
-  console.log("MAIN:", data.mainCharacter);
-  console.log("PARTY:", data.party);
-
   // HEADER
   const avatarImg = document.getElementById("avatar");
 
@@ -464,10 +461,20 @@ function renderProfile(data, { isOwner }) {
 
   if (main) {
     document.getElementById("main-character").innerHTML = `
+      <h2>Party</h2>
+
       <div class="card">
         <h3>${main.name} (Lvl ${main.level})</h3>
-        <p><strong>Skills:</strong> ${main.skills.join(", ")}</p>
-        <p><strong>Equipment:</strong> ${main.equipment.join(", ")}</p>
+
+        <p><strong>Skills:</strong></p>
+        <ul>
+          ${(main.skills || []).map(s => `<li>${s}</li>`).join("")}
+        </ul>
+
+        <p><strong>Equipment:</strong></p>
+        <ul>
+          ${(main.equipment || []).map(e => `<li>${e}</li>`).join("")}
+        </ul>
       </div>
     `;
   }
@@ -477,12 +484,12 @@ function renderProfile(data, { isOwner }) {
   // =========================
   const party = (data.party || []).slice(0, 3);
 
-  document.getElementById("party").innerHTML = party
+  document.getElementById("party-members").innerHTML = party
     .map(p => `
-      <div class="card">
+      <div class="card party-card">
         <strong>${p.name} (Lvl ${p.level})</strong>
 
-        <div><strong>Equipment:</strong></div>
+        <p><strong>Equipment:</strong></p>
         <ul>
           ${(p.equipment || []).map(e => `<li>${e}</li>`).join("")}
         </ul>

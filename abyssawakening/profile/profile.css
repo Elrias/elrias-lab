@@ -108,3 +108,21 @@ body {
   font-style: italic;
   color: #888;
 }
+
+#content {
+  display: flex;
+  gap: 20px;
+}
+
+#party {
+  flex: 2;
+}
+
+#achievements {
+  flex: 1;
+}
+
+#party-members {
+  display: flex;
+  gap: 10px;
+}
