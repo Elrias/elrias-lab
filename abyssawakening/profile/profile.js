@@ -40,21 +40,21 @@ const ACHIEVEMENT_CONFIG = {
   KILL_100: { icon: "battle", rarity: "bronze" },
   KILL_500: { icon: "battle", rarity: "silver" },
   KILL_1000: { icon: "battle", rarity: "gold" },
-  HIRO_50: { icon: "character", rarity: "silver" },
-  DAN_50: { icon: "character", rarity: "silver" },
-  ERIKA_50: { icon: "character", rarity: "silver" },
-  JASMINE_50: { icon: "character", rarity: "silver" },
-  LESLIE_50: { icon: "character", rarity: "silver" },
-  REYAN_50: { icon: "character", rarity: "silver" },
-  EMI_50: { icon: "character", rarity: "silver" },
-  KAI_50: { icon: "character", rarity: "silver" },
-  VALERYA_50: { icon: "character", rarity: "silver" },
-  LEO_50: { icon: "character", rarity: "silver" },
-  GALAD_50: { icon: "character", rarity: "silver" },
-  VALENTINE_50: { icon: "character", rarity: "silver" },
-  SHELON_50: { icon: "character", rarity: "silver" },
-  THYME_50: { icon: "character", rarity: "silver" },
-  CLAW_50: { icon: "character", rarity: "silver" },
+  HIRO_50: { icon: "chara", rarity: "silver" },
+  DAN_50: { icon: "chara", rarity: "silver" },
+  ERIKA_50: { icon: "chara", rarity: "silver" },
+  JASMINE_50: { icon: "chara", rarity: "silver" },
+  LESLIE_50: { icon: "chara", rarity: "silver" },
+  REYAN_50: { icon: "chara", rarity: "silver" },
+  EMI_50: { icon: "chara", rarity: "silver" },
+  KAI_50: { icon: "chara", rarity: "silver" },
+  VALERYA_50: { icon: "chara", rarity: "silver" },
+  LEO_50: { icon: "chara", rarity: "silver" },
+  GALAD_50: { icon: "chara", rarity: "silver" },
+  VALENTINE_50: { icon: "chara", rarity: "silver" },
+  SHELON_50: { icon: "chara", rarity: "silver" },
+  THYME_50: { icon: "chara", rarity: "silver" },
+  CLAW_50: { icon: "chara", rarity: "silver" },
   GOLD_20000: { icon: "gold", rarity: "bronze" },
   GOLD_100000: { icon: "gold", rarity: "silver" },
   GOLD_500000: { icon: "gold", rarity: "gold" },
@@ -90,6 +90,30 @@ const TITLE_RULES = [
   { title: "Seasoned Adventurer", achievements: ["DEFEAT_EMBERHEART"] },
   { title: "The Green Devil", achievements: ["DEFEAT_CORRUPTED_ALRIC"] },
 ];
+
+async function updateProfile({ username, title }) {
+  const token = localStorage.getItem("cloudsave_token");
+
+  const res = await fetch(`${API_BASE}/profile/update`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({
+      username,
+      title
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    throw new Error("Update failed");
+  }
+
+  return data;
+}
 
 function findByName(name, db) {
   return db.find(e =>
@@ -313,14 +337,22 @@ function renderProfile(data, { isOwner }) {
       select.appendChild(option);
     });
 
-  select.onchange = () => {
-    const newTitle = select.value;
+    select.onchange = async () => {
+      const newTitle = select.value;
+      if (newTitle === titleSpan.textContent) return;
+      try {
+        await updateProfile({
+          username: document.getElementById("username").textContent,
+          title: newTitle
+        });
 
-    titleSpan.textContent = newTitle;
+        titleSpan.textContent = newTitle;
 
-    // TODO backend
-    console.log("New title:", newTitle);
-  };
+      } catch (err) {
+        alert("Failed to update title");
+        console.error(err);
+      }
+    };
 
   if (!isOwner) {
     select.style.display = "none";
@@ -339,13 +371,22 @@ function renderProfile(data, { isOwner }) {
   if (isOwner) {
     const btn = document.getElementById("edit-username-btn");
 
-    btn.onclick = () => {
+    btn.onclick = async () => {
       const newName = prompt("Enter new username:");
-
       if (!newName) return;
 
-      // TODO: envoyer au backend plus tard
-      document.getElementById("username").textContent = newName;
+      try {
+        await updateProfile({
+          username: newName,
+          title: titleSpan.textContent
+        });
+
+        document.getElementById("username").textContent = newName;
+
+      } catch (err) {
+        alert("Failed to update username");
+        console.error(err);
+      }
     };
   } else {
     document.getElementById("edit-username-btn").style.display = "none";
