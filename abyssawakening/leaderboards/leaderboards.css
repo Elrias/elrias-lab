@@ -28,7 +28,7 @@ body {
 
 .leaderboard-row:hover {
   transform: scale(1.02);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  background: #232838;
 }
 
 .rank {
@@ -52,4 +52,32 @@ body {
 .score {
   color: #ffd700;
   font-weight: bold;
+}
+
+#leaderboards-page {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+#content {
+  padding: 0 20px 40px;
+}
+
+.avatar.rank-1 {
+  border: 3px solid gold;
+  box-shadow: 0 0 10px gold;
+}
+
+.avatar.rank-2 {
+  border: 3px solid silver;
+  box-shadow: 0 0 8px silver;
+}
+
+.avatar.rank-3 {
+  border: 3px solid #cd7f32; /* bronze */
+  box-shadow: 0 0 8px #cd7f32;
+}
+
+.leaderboard-row {
+  cursor: pointer;
 }
