@@ -475,7 +475,7 @@ function renderProfile(data, { isOwner }) {
   // =========================
   // PARTY
   // =========================
-  const party = (data.party || []).slice(1, 4);
+  const party = (data.party || []).slice(0, 3);
 
   document.getElementById("party").innerHTML = party
     .map(p => `
