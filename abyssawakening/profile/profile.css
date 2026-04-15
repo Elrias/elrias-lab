@@ -47,15 +47,17 @@ body {
 
 .achievement {
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 15px;
+
   border: 1px solid #333;
-  padding: 10px;
+  padding: 15px;
   margin-bottom: 10px;
 }
 
 .achievement img {
-  width: 40px;
-  height: 40px;
+  width: 72px;
+  height: 72px;
 }
 
 .icon-btn {
@@ -149,4 +151,21 @@ li span {
 ul {
   list-style: none;
   padding-left: 0;
+}
+
+.achievement-info {
+  flex: 1;
+}
+
+.achievement-info p {
+  margin: 4px 0 0;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.achievement-score {
+  font-weight: bold;
+  font-size: 16px;
+  color: #ffd700;
+  white-space: nowrap;
 }

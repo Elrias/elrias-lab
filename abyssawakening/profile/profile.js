@@ -662,12 +662,15 @@ function renderProfile(data, { isOwner }) {
 
         return `
           <div class="achievement">
-            <img src="${icon}" 
-                onerror="this.src='${DEFAULT_ACHIEVEMENT_ICON}'">
-            <div>
+            <img src="${icon}" onerror="this.src='${DEFAULT_ACHIEVEMENT_ICON}'">
+
+            <div class="achievement-info">
               <strong>${a.title}</strong>
               <p>${a.description}</p>
-              <span>${a.score} pts</span>
+            </div>
+
+            <div class="achievement-score">
+              ${a.score} pts
             </div>
           </div>
         `;
