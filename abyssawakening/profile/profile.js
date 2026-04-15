@@ -424,7 +424,7 @@ async function renderProfile(data, { isOwner }) {
 
   scoreEl.innerHTML = `
     Achievements score : ${data.user.score} pts 
-    | Rank : ${rank ? "#" + rank : "-"}
+    - Rank : ${rank ? "#" + rank : "-"}
     <button id="leaderboard-btn" class="icon-btn">🏆</button>
   `;
 
