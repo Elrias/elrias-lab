@@ -145,3 +145,8 @@ body {
 li span {
   image-rendering: pixelated;
 }
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}

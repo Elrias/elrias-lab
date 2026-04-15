@@ -631,7 +631,20 @@ function renderProfile(data, { isOwner }) {
 
         <p><strong>Equipment:</strong></p>
         <ul>
-          ${(p.equipment || []).map(e => `<li>${e}</li>`).join("")}
+          ${(p.equipment || [])
+            .map(e => {
+              const eq = getEquipmentData(e);
+
+              if (!eq) return `<li>${e}</li>`;
+
+              return `
+                <li>
+                  <span style="${getIconStyle(eq.iconIndex)}"></span>
+                  ${e}
+                </li>
+              `;
+            })
+            .join("")}
         </ul>
       </div>
     `)
