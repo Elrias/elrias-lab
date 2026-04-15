@@ -463,18 +463,20 @@ function renderProfile(data, { isOwner }) {
     document.getElementById("main-character").innerHTML = `
       <h2>Party</h2>
 
-      <div class="card">
-        <h3>${main.name} (Lvl ${main.level})</h3>
+      <div class="main-grid">
+        <div>
+          <p><strong>Skills:</strong></p>
+          <ul>
+            ${(main.skills || []).map(s => `<li>${s}</li>`).join("")}
+          </ul>
+        </div>
 
-        <p><strong>Skills:</strong></p>
-        <ul>
-          ${(main.skills || []).map(s => `<li>${s}</li>`).join("")}
-        </ul>
-
-        <p><strong>Equipment:</strong></p>
-        <ul>
-          ${(main.equipment || []).map(e => `<li>${e}</li>`).join("")}
-        </ul>
+        <div>
+          <p><strong>Equipment:</strong></p>
+          <ul>
+            ${(main.equipment || []).map(e => `<li>${e}</li>`).join("")}
+          </ul>
+        </div>
       </div>
     `;
   }

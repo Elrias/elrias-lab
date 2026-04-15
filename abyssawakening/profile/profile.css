@@ -31,11 +31,11 @@ body {
 }
 
 #left {
-  width: 40%;
+  width: 65%;
 }
 
 #right {
-  width: 60%;
+  width: 35%;
 }
 
 .card {
@@ -125,4 +125,10 @@ body {
 #party-members {
   display: flex;
   gap: 10px;
+}
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
