@@ -93,6 +93,24 @@ const TITLE_RULES = [
   { title: "The Green Devil", achievements: ["DEFEAT_CORRUPTED_ALRIC"] },
 ];
 
+async function getUserRank(username) {
+  try {
+    const res = await fetch(`${API_BASE}/leaderboards`);
+    const data = await res.json();
+
+    const players = data.players || [];
+
+    const index = players.findIndex(p => p.username === username);
+
+    if (index === -1) return null;
+
+    return index + 1; // rank
+  } catch (err) {
+    console.error("Failed to get rank:", err);
+    return null;
+  }
+}
+
 async function updateAvatar(file) {
   const token = localStorage.getItem("cloudsave_token");
 
@@ -310,7 +328,7 @@ function handleError(err) {
 // =========================
 // RENDER PROFILE
 // =========================
-function renderProfile(data, { isOwner }) {
+async function renderProfile(data, { isOwner }) {
   if (!data || !data.user) {
     console.error("Invalid profile data");
     return;
@@ -393,8 +411,30 @@ function renderProfile(data, { isOwner }) {
     select.style.display = "none";
   }
 
-  document.getElementById("score").textContent =
-    "Achievements score :  " + data.user.score + " pts";
+  const scoreEl = document.getElementById("score");
+  const rank = await getUserRank(data.user.username);
+
+  if (avatarWrapper) {
+    avatarWrapper.classList.remove("rank-1", "rank-2", "rank-3");
+
+    if (rank === 1) avatarWrapper.classList.add("rank-1");
+    else if (rank === 2) avatarWrapper.classList.add("rank-2");
+    else if (rank === 3) avatarWrapper.classList.add("rank-3");
+  }
+
+  scoreEl.innerHTML = `
+    Achievements score : ${data.user.score} pts 
+    | Rank : ${rank ? "#" + rank : "-"}
+    <button id="leaderboard-btn" class="icon-btn">🏆</button>
+  `;
+
+  const btn = document.getElementById("leaderboard-btn");
+
+  if (btn) {
+    btn.onclick = () => {
+      window.location.href = `${BASE_PATH}leaderboards/`;
+    };
+  }
 
   // OWNER BUTTON
   if (isOwner) {

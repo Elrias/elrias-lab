@@ -16,6 +16,9 @@ body {
 #score {
   margin-left: auto;
   font-size: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 #content {
@@ -293,4 +296,34 @@ ul {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+#leaderboard-btn {
+  font-size: 16px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+#leaderboard-btn:hover {
+  transform: scale(1.1);
+}
+
+/* ========================= */
+/* RANK AVATAR BORDER */
+/* ========================= */
+
+.avatar-wrapper.rank-1 #avatar {
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.9);
+  border: 2px solid gold;
+}
+
+.avatar-wrapper.rank-2 #avatar {
+  box-shadow: 0 0 10px rgba(192, 192, 192, 0.9);
+  border: 2px solid silver;
+}
+
+.avatar-wrapper.rank-3 #avatar {
+  box-shadow: 0 0 10px rgba(205, 127, 50, 0.9);
+  border: 2px solid #cd7f32;
 }
