@@ -472,7 +472,10 @@ function renderProfile(data, { isOwner }) {
           <div>
             <p><strong>Skills:</strong></p>
             <ul>
-              ${(main.skills || []).map(s => `<li>${s}</li>`).join("")}
+              ${(main.skills || [])
+                .filter(s => s !== "Weapon Mastery")
+                .map(s => `<li>${s}</li>`)
+                .join("")}
             </ul>
           </div>
 
