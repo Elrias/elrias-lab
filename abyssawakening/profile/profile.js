@@ -1,6 +1,7 @@
 const API_BASE = "https://abyssawakening-backend.onrender.com";
 const BASE_PATH = "/elrias-lab/abyssawakening/";
-
+let avatarInput = null;
+let avatarImg = null;
 const DEFAULT_AVATAR = BASE_PATH + "img/avatars/default.png";
 const DEFAULT_ACHIEVEMENT_ICON = BASE_PATH + "img/achievements/default.png";
 let ACTORS_DB = [];
@@ -90,6 +91,29 @@ const TITLE_RULES = [
   { title: "Seasoned Adventurer", achievements: ["DEFEAT_EMBERHEART"] },
   { title: "The Green Devil", achievements: ["DEFEAT_CORRUPTED_ALRIC"] },
 ];
+
+async function updateAvatar(file) {
+  const token = localStorage.getItem("cloudsave_token");
+
+  const formData = new FormData();
+  formData.append("avatar", file);
+
+  const res = await fetch(`${API_BASE}/profile/avatar`, {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + token
+    },
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    throw new Error("Upload failed");
+  }
+
+  return data.url;
+}
 
 async function updateProfile({ username, title }) {
   const token = localStorage.getItem("cloudsave_token");
@@ -290,13 +314,15 @@ function renderProfile(data, { isOwner }) {
     console.error("Invalid profile data");
     return;
   }
-  console.log("FULL DATA:", data);
-  console.log("MAIN CHARACTER:", data.mainCharacter);
-  console.log("PARTY:", data.party);
 
   // HEADER
-  const avatarImg = document.getElementById("avatar");
-
+  avatarImg = document.getElementById("avatar");
+  if (isOwner) {
+    avatarImg.style.cursor = "pointer";
+    avatarImg.onclick = () => {
+      if (avatarInput) avatarInput.click();
+    };
+  }
   avatarImg.src = data.user.avatar || DEFAULT_AVATAR;
 
   avatarImg.onerror = () => {
@@ -512,6 +538,41 @@ function renderProfile(data, { isOwner }) {
       })
       .join("");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  avatarInput = document.getElementById("avatar-input");
+
+  avatarInput.onchange = async () => {
+    const file = avatarInput.files[0];
+    if (!file) return;
+
+    if (file.size > 2_000_000) {
+      alert("Max 2MB");
+      return;
+    }
+
+    try {
+      if (avatarImg) {
+        avatarImg.style.opacity = "0.5";
+      }
+
+      const url = await updateAvatar(file);
+
+      if (avatarImg) {
+        avatarImg.src = url;
+        avatarImg.style.opacity = "1"; 
+      }
+
+    } catch (err) {
+      if (avatarImg) {
+        avatarImg.style.opacity = "1"; 
+      }
+
+      alert("Failed to upload avatar");
+      console.error(err);
+    }
+  };
+});
 
 // =========================
 // COPY PROFILE LINK
