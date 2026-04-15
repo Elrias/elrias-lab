@@ -1,4 +1,5 @@
 const API_BASE = "https://abyssawakening-backend.onrender.com";
+const BASE_PATH = "/elrias-lab/abyssawakening/";
 
 async function loadLeaderboard() {
   try {
@@ -20,7 +21,7 @@ function renderLeaderboard(players) {
       
       <div class="rank">#${index + 1}</div>
 
-      <img class="avatar" src="${p.avatar_url || "img/avatars/default.png"}">
+      <img class="avatar" src="${p.avatar_url || BASE_PATH + "img/avatars/default.png"}">
 
       <div class="name">${p.username}</div>
 
