@@ -16,7 +16,7 @@ Promise.all([
   fetch(`${BASE_PATH}data/Skills.json`).then(r => r.json()),
   fetch(`${BASE_PATH}data/Weapons.json`).then(r => r.json()),
   fetch(`${BASE_PATH}data/Armors.json`).then(r => r.json())
-]).then(([skills, weapons, armors]) => {
+]).then(([skills]) => {
   SKILLS_DB = skills.filter(Boolean);
 });
 
