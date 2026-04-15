@@ -317,6 +317,7 @@ function renderProfile(data, { isOwner }) {
 
   // HEADER
   avatarImg = document.getElementById("avatar");
+  const avatarWrapper = document.querySelector(".avatar-wrapper");
   if (isOwner) {
     avatarImg.style.cursor = "pointer";
     avatarImg.onclick = () => {
@@ -552,21 +553,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      if (avatarImg) {
-        avatarImg.style.opacity = "0.5";
-      }
+      // START LOADING
+      if (avatarWrapper) avatarWrapper.classList.add("loading");
 
       const url = await updateAvatar(file);
 
       if (avatarImg) {
         avatarImg.src = url;
-        avatarImg.style.opacity = "1"; 
       }
 
+      // STOP LOADING
+      if (avatarWrapper) avatarWrapper.classList.remove("loading");
+
     } catch (err) {
-      if (avatarImg) {
-        avatarImg.style.opacity = "1"; 
-      }
+      // STOP LOADING SI ERREUR
+      if (avatarWrapper) avatarWrapper.classList.remove("loading");
 
       alert("Failed to upload avatar");
       console.error(err);
