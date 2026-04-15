@@ -297,12 +297,16 @@ function getFaceStyleFromName(name) {
   const faceName = actor.faceName;
   const faceIndex = actor.faceIndex;
 
-  const x = -(faceIndex % 4) * 144;
-  const y = -Math.floor(faceIndex / 4) * 144;
+  const scale = 0.5; // 50%
+
+  const x = -(faceIndex % 4) * 144 * scale;
+  const y = -Math.floor(faceIndex / 4) * 144 * scale;
 
   return `
     background-image: url('${BASE_PATH}img/faces/${faceName}.png');
+    background-size: ${576 * scale}px ${288 * scale}px;
     background-position: ${x}px ${y}px;
+    background-repeat: no-repeat;
   `;
 }
 
