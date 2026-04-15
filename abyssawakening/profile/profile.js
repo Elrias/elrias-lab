@@ -472,7 +472,7 @@ function renderProfile(data, { isOwner }) {
     console.error("Invalid profile data");
     return;
   }
-
+  console.log("FULL DATA: "+data);
   // HEADER
   const avatarImg = document.getElementById("avatar");
 
@@ -561,7 +561,7 @@ function renderProfile(data, { isOwner }) {
 
   if (main) {
     document.getElementById("main-character").innerHTML = `
-      <h2>Party</h2>
+      <h2>Current Party</h2>
 
       <div class="card">
         <div class="character-header">
