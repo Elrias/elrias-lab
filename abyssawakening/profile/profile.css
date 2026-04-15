@@ -167,11 +167,6 @@ ul {
 /* GLOBAL STYLE (WIKI STYLE) */
 /* ========================= */
 
-body {
-  background: #0f1117;
-  font-family: 'Cinzel', serif;
-}
-
 .card {
   background: #1b1f2a;
   border-radius: 16px;
