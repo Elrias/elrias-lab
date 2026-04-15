@@ -397,14 +397,16 @@ function renderProfile(data, { isOwner }) {
   const titles = getUnlockedTitles(data.achievements);
 
   // sécurité : ajouter le titre actif même si pas dans les règles
-  if (!titles.includes(data.user.active_title)) {
+  if (data.user.active_title && !titles.includes(data.user.active_title)) {
     titles.push(data.user.active_title);
   }
 
   // remplir dropdown
   select.innerHTML = "";
 
-  titles.forEach(title => {
+  titles
+  .filter(Boolean)
+  .forEach(title => {
     const option = document.createElement("option");
     option.value = title;
     option.textContent = title;
