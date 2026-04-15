@@ -582,7 +582,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function copyProfileLink() {
   const username = document.getElementById("username").textContent;
 
-  const url = `${window.location.origin}${BASE_PATH}/profile/?user=${username}`;
+  const url = `${window.location.origin}${BASE_PATH}profile/?user=${username}`;
 
   navigator.clipboard.writeText(url);
   alert("Profile link copied!");
