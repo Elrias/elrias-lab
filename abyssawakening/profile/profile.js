@@ -18,8 +18,6 @@ Promise.all([
   fetch(`${BASE_PATH}data/Armors.json`).then(r => r.json())
 ]).then(([skills, weapons, armors]) => {
   SKILLS_DB = skills.filter(Boolean);
-  WEAPONS_DB = weapons.filter(Boolean);
-  ARMORS_DB = armors.filter(Boolean);
 });
 
 const ACHIEVEMENT_CONFIG = {
