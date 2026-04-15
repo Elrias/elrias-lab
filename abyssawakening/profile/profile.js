@@ -9,7 +9,6 @@ fetch(`${BASE_PATH}data/Actors.json`)
   .then(r => r.json())
   .then(data => {
     ACTORS_DB = data.filter(Boolean);
-    console.log("Actors DB loaded:", ACTORS_DB.length);
   });
 
 const ACHIEVEMENT_CONFIG = {
@@ -286,7 +285,7 @@ function getActorByName(name) {
   if (!actor) {
     console.warn("Actor not found for name:", name);
   }
-  
+
   return actor;
 }
 
