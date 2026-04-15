@@ -319,11 +319,18 @@ function renderProfile(data, { isOwner }) {
   // HEADER
   avatarImg = document.getElementById("avatar");
   avatarWrapper = document.querySelector(".avatar-wrapper");
+
   if (isOwner) {
     avatarImg.style.cursor = "pointer";
+
+    avatarWrapper.classList.add("editable");
+
     avatarWrapper.onclick = () => {
       if (avatarInput) avatarInput.click();
     };
+
+  } else {
+    avatarWrapper.classList.remove("editable");
   }
   avatarImg.src = data.user.avatar || DEFAULT_AVATAR;
 
