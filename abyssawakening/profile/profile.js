@@ -472,7 +472,11 @@ function renderProfile(data, { isOwner }) {
     console.error("Invalid profile data");
     return;
   }
-  console.log("FULL DATA: "+data);
+  
+  console.log("FULL DATA:", data);
+  console.log("MAIN CHARACTER:", data.mainCharacter);
+  console.log("PARTY:", data.party);
+
   // HEADER
   const avatarImg = document.getElementById("avatar");
 
