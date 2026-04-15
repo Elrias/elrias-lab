@@ -27,9 +27,10 @@ body {
   cursor: pointer;
   border: 2px solid transparent;
   transition: all 0.3s ease;
-  .name {
+}
+
+.name {
     flex: 1;
-  }
 }
 
 .leaderboard-row.rank-1 {
