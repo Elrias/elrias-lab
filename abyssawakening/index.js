@@ -264,7 +264,11 @@ profileBtn?.addEventListener("click", async () => {
     const res = await api("/profile");
     const username = res.user.username;
 
-    window.location.href = `/elrias-lab/abyssawakening/profile/?user=${username}`;
+    window.open(
+      `/elrias-lab/abyssawakening/profile/?user=${username}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
   } catch (err) {
     console.error("Failed to fetch profile:", err);
     alert("Failed to open profile");
