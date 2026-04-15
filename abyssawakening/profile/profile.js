@@ -2,6 +2,7 @@ const API_BASE = "https://abyssawakening-backend.onrender.com";
 const BASE_PATH = "/elrias-lab/abyssawakening/";
 let avatarInput = null;
 let avatarImg = null;
+let avatarWrapper = null;
 const DEFAULT_AVATAR = BASE_PATH + "img/avatars/default.png";
 const DEFAULT_ACHIEVEMENT_ICON = BASE_PATH + "img/achievements/default.png";
 let ACTORS_DB = [];
@@ -317,7 +318,7 @@ function renderProfile(data, { isOwner }) {
 
   // HEADER
   avatarImg = document.getElementById("avatar");
-  const avatarWrapper = document.querySelector(".avatar-wrapper");
+  avatarWrapper = document.querySelector(".avatar-wrapper");
   if (isOwner) {
     avatarImg.style.cursor = "pointer";
     avatarImg.onclick = () => {
