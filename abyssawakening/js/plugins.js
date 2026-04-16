@@ -72,5 +72,6 @@ var $plugins =
 {"name":"MeteorFall","status":true,"description":"","parameters":{}},
 {"name":"EnemyBreakGauge","status":true,"description":"","parameters":{}},
 {"name":"IndependentWeaponDrops","status":true,"description":"Convert dropped weapons into DM_IndependentItems instances.","parameters":{}},
-{"name":"AchievementManager","status":true,"description":"Achievement Manager","parameters":{}}
+{"name":"AchievementManager","status":true,"description":"Achievement Manager","parameters":{}},
+{"name":"Emberheart_Behavior","status":true,"description":"","parameters":{}}
 ];
