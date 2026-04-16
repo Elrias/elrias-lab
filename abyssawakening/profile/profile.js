@@ -77,6 +77,12 @@ const ACHIEVEMENT_CONFIG = {
   RECRUIT_ALL: { icon: "backup", rarity: "gold" },
   WEAPON_EMBER_9: { icon: "battle", rarity: "silver" },
   WEAPON_EMBER_10: { icon: "battle", rarity: "gold" },
+  MINING_10: { icon: "gold", rarity: "bronze" },
+  MINING_100: { icon: "gold", rarity: "silver" },
+  MINING_200: { icon: "gold", rarity: "gold" },
+  CHESTS_10: { icon: "gold", rarity: "bronze" },
+  CHESTS_100: { icon: "gold", rarity: "silver" },
+  CHESTS_200: { icon: "gold", rarity: "gold" },
 };
 
 const TITLE_RULES = [
@@ -91,6 +97,8 @@ const TITLE_RULES = [
   { title: "One man army", achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"] },
   { title: "Seasoned Adventurer", achievements: ["DEFEAT_EMBERHEART"] },
   { title: "The Green Devil", achievements: ["DEFEAT_CORRUPTED_ALRIC"] },
+  { title: "Treasure Hunter", achievements: ["CHESTS_200"] },
+  { title: "Honest Worker", achievements: ["MINING_200"] },
 ];
 
 async function getUserRank(username) {
