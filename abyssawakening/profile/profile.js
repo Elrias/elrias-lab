@@ -587,7 +587,7 @@ async function renderProfile(data, { isOwner }) {
       (a.achievement_id || a.id) === id
     );
 
-    const title = unlockedData?.title || id.replaceAll("_", " ");
+    const title = unlockedData?.title || "???";
     const description = unlockedData?.description || "???";
     const score = unlockedData?.score || 0;
 
