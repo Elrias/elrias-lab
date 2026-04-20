@@ -109,7 +109,6 @@ body {
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
-  color: white;
 }
 
 #pagination span {
@@ -127,6 +126,6 @@ body {
 
 .page-number.active {
   background: #ffd700;
-  color: black;
+  color: #ffd700;
   font-weight: bold;
 }
