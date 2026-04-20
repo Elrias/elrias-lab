@@ -571,29 +571,43 @@ async function renderProfile(data, { isOwner }) {
   // =========================
   // ACHIEVEMENTS
   // =========================
+  const unlockedIds = (data.achievements || []).map(a => a.achievement_id || a.id);
+
+  const allAchievements = Object.keys(ACHIEVEMENT_CONFIG);
+
   document.getElementById("achievements").innerHTML =
-    (data.achievements || [])
-      .map(a => {
-        const achievementId = a.achievement_id || a.id;
+  allAchievements.map(id => {
 
-        const icon = getAchievementIcon(achievementId);
+    const isUnlocked = unlockedIds.includes(id);
 
-        return `
-          <div class="achievement">
-            <img src="${icon}" onerror="this.src='${DEFAULT_ACHIEVEMENT_ICON}'">
+    const icon = getAchievementIcon(id);
 
-            <div class="achievement-info">
-              <strong>${a.title}</strong>
-              <p>${a.description}</p>
-            </div>
+    // retrouver data si débloqué
+    const unlockedData = (data.achievements || []).find(a =>
+      (a.achievement_id || a.id) === id
+    );
 
-            <div class="achievement-score">
-              ${a.score} pts
-            </div>
+    const title = unlockedData?.title || id.replaceAll("_", " ");
+    const description = unlockedData?.description || "???";
+    const score = unlockedData?.score || 0;
+
+    return `
+      <div class="achievement-icon ${isUnlocked ? "unlocked" : "locked"}">
+        
+        <img src="${icon}" onerror="this.src='${DEFAULT_ACHIEVEMENT_ICON}'">
+
+        <div class="achievement-tooltip">
+          <strong>${title}</strong>
+          <p>${description}</p>
+          <span>${score} pts</span>
+          <div class="status">
+            ${isUnlocked ? "Unlocked" : "Not unlocked"}
           </div>
-        `;
-      })
-      .join("");
+        </div>
+
+      </div>
+    `;
+  }).join("");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
