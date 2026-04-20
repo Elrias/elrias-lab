@@ -9,17 +9,7 @@ async function loadLeaderboard() {
     const res = await fetch(`${API_BASE}/leaderboards`);
     const data = await res.json();
 
-    let players = data.players || [];
-
-    // FAKE DATA
-    const fakePlayers = generateFakePlayers(100);
-
-    players = [...players, ...fakePlayers];
-
-    // trier par score
-    players.sort((a, b) => b.score - a.score);
-
-    allPlayers = players;
+    allPlayers = data.players || [];
 
     renderPage(1);
 
@@ -30,20 +20,6 @@ async function loadLeaderboard() {
 
 function goToProfile(username) {
   window.location.href = `${BASE_PATH}profile/?user=${username}`;
-}
-
-function generateFakePlayers(count) {
-  const fake = [];
-
-  for (let i = 1; i <= count; i++) {
-    fake.push({
-      username: "Bot_" + i,
-      score: Math.floor(Math.random() * 10000),
-      avatar_url: null
-    });
-  }
-
-  return fake;
 }
 
 function renderPage(page) {
