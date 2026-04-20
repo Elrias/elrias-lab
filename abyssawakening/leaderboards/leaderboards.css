@@ -1,5 +1,5 @@
 body {
-  background: #0f1117; /* même que ton profile/wiki */
+  background: #0f1117; 
   color: white;
   font-family: "Segoe UI", sans-serif;
   margin: 0;
@@ -109,6 +109,7 @@ body {
   justify-content: center;
   gap: 10px;
   margin-top: 20px;
+  color: white;
 }
 
 #pagination span {
