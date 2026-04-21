@@ -75,14 +75,14 @@ const ACHIEVEMENT_CONFIG = {
   RECRUIT_1: { icon: "backup", rarity: "bronze" },
   RECRUIT_5: { icon: "backup", rarity: "silver" },
   RECRUIT_ALL: { icon: "backup", rarity: "gold" },
-  WEAPON_EMBER_9: { icon: "battle", rarity: "silver" },
-  WEAPON_EMBER_10: { icon: "battle", rarity: "gold" },
-  MINING_10: { icon: "gold", rarity: "bronze" },
-  MINING_100: { icon: "gold", rarity: "silver" },
-  MINING_200: { icon: "gold", rarity: "gold" },
-  CHESTS_10: { icon: "gold", rarity: "bronze" },
-  CHESTS_100: { icon: "gold", rarity: "silver" },
-  CHESTS_200: { icon: "gold", rarity: "gold" },
+  WEAPON_EMBER_9: { icon: "upgrade", rarity: "bronze" },
+  WEAPON_EMBER_10: { icon: "upgrade", rarity: "silver" },
+  MINING_10: { icon: "mine", rarity: "bronze" },
+  MINING_100: { icon: "mine", rarity: "silver" },
+  MINING_200: { icon: "mine", rarity: "gold" },
+  CHESTS_10: { icon: "chest", rarity: "bronze" },
+  CHESTS_100: { icon: "chest", rarity: "silver" },
+  CHESTS_200: { icon: "chest", rarity: "gold" },
 };
 
 const TITLE_RULES = [
