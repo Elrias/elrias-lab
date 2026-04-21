@@ -241,7 +241,7 @@ function getFaceStyle(faceName, faceIndex) {
 function getUnlockedTitles(achievements) {
   const unlocked = ["Rookie"];
 
-  const userAchievementIds = achievements.map(a => a.achievement_id);
+  const userAchievementIds = achievements.map(a => a.achievement_id || a.id);
 
   TITLE_RULES.forEach(rule => {
     const hasAll = rule.achievements.every(id =>
