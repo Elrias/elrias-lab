@@ -87,14 +87,14 @@ const ACHIEVEMENT_CONFIG = {
 
 const TITLE_RULES = [
   { title: "Beast Slayer", achievements: ["KILL_1000"] },
-  { title: "Ultimate Speedrunner", achievements: ["SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART"] },
+  { title: "The Speedrunner", achievements: ["SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART"] },
   { title: "Maximum Firepower", achievements: ["WEAPON_EMBER_10"] },
   { title: "The Collector", achievements: ["RECRUIT_ALL"] },
   { title: "Master Supplier", achievements: ["BACKUP_500"] },
   { title: "Nuclear", achievements: ["BURST_THUNDERWING", "BURST_LEVIATHAN", "BURST_EMBERHEART"] },
   { title: "The Addict", achievements: ["PLAYTIME_6000"] },
-  { title: "Golden Sovereign", achievements: ["GOLD_500000"] },
-  { title: "One man army", achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"] },
+  { title: "Money Printer", achievements: ["GOLD_500000"] },
+  { title: "Completionist", achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"] },
   { title: "Seasoned Adventurer", achievements: ["DEFEAT_EMBERHEART"] },
   { title: "The Green Devil", achievements: ["DEFEAT_CORRUPTED_ALRIC"] },
   { title: "Treasure Hunter", achievements: ["CHESTS_200"] },
