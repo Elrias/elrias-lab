@@ -373,7 +373,7 @@ async function renderProfile(data, { isOwner }) {
 
   // titre actuel
   titleSpan.textContent = data.user.active_title || "Rookie";
-  console.log(data);
+  
   // titres débloqués
   const titles = getUnlockedTitles(data.achievements);
 
