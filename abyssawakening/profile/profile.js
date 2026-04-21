@@ -163,7 +163,7 @@ async function updateProfile({ username, title }) {
   if (!data.success) {
     throw new Error("Update failed");
   }
-  console.log("UPDATE RESPONSE:", data);
+
   return data;
 }
 
@@ -373,7 +373,7 @@ async function renderProfile(data, { isOwner }) {
 
   // titre actuel
   titleSpan.textContent = data.user.active_title || "Rookie";
-  console.log("active_title = "+data.user.active_title);
+  console.log(data);
   // titres débloqués
   const titles = getUnlockedTitles(data.achievements);
 
