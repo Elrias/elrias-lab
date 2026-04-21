@@ -92,13 +92,14 @@ const TITLE_RULES = [
   { title: "The Collector", achievements: ["RECRUIT_ALL"] },
   { title: "Master Supplier", achievements: ["BACKUP_500"] },
   { title: "Nuclear", achievements: ["BURST_THUNDERWING", "BURST_LEVIATHAN", "BURST_EMBERHEART"] },
-  { title: "Absolute Addict", achievements: ["PLAYTIME_6000"] },
+  { title: "The Addict", achievements: ["PLAYTIME_6000"] },
   { title: "Golden Sovereign", achievements: ["GOLD_500000"] },
   { title: "One man army", achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"] },
   { title: "Seasoned Adventurer", achievements: ["DEFEAT_EMBERHEART"] },
   { title: "The Green Devil", achievements: ["DEFEAT_CORRUPTED_ALRIC"] },
   { title: "Treasure Hunter", achievements: ["CHESTS_200"] },
   { title: "Honest Worker", achievements: ["MINING_200"] },
+  { title: "The Absolute", achievements: ["WEAPON_EMBER_10", "RECRUIT_ALL", "BACKUP_500", "SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART", "BURST_THUNDERWING", "BURST_LEVIATHAN", "BURST_EMBERHEART", "PLAYTIME_6000", "GOLD_500000", "KILL_1000", "DEFEAT_CORRUPTED_ALRIC", "DEFEAT_EMBERHEART", "MINING_200", "CHESTS_200", "HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50", ] },
 ];
 
 async function getUserRank(username) {
