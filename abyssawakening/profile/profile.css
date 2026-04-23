@@ -225,7 +225,7 @@ ul {
 
 /* Locked = noir et blanc */
 .achievement-icon.locked img {
-  filter: grayscale(100%) brightness(0.6);
+  filter: grayscale(100%) brightness(0.3);
 }
 
 /* Hover effet */
