@@ -487,7 +487,7 @@ async function renderProfile(data, { isOwner }) {
 
       <div class="card">
         <div class="character-header">
-          <div class="character-face" style="${getFaceStyleFromName(main.name)}"></div>
+          <div class="character-face" style="${getFaceStyle(main.faceName, main.faceIndex)}"></div>
 
           <h3>${main.name} (Lvl ${main.level})</h3>
         </div>
