@@ -1,5 +1,5 @@
 body {
-  background: #0f1117; /* même que ton profile/wiki */
+  background: #0f1117; 
   color: white;
   font-family: "Segoe UI", sans-serif;
   margin: 0;
@@ -98,4 +98,34 @@ body {
 .avatar.rank-3 {
   border: 3px solid #cd7f32; /* bronze */
   box-shadow: 0 0 8px #cd7f32;
+}
+
+/* ========================= */
+/* PAGINATION */
+/* ========================= */
+
+#pagination {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#pagination span {
+  padding: 6px 10px;
+  background: #1b1f2a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#pagination span:hover {
+  background: #2a2f3a;
+}
+
+.page-number.active {
+  background: #ffd700;
+  color: #ffd700;
+  font-weight: bold;
 }

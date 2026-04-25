@@ -75,30 +75,31 @@ const ACHIEVEMENT_CONFIG = {
   RECRUIT_1: { icon: "backup", rarity: "bronze" },
   RECRUIT_5: { icon: "backup", rarity: "silver" },
   RECRUIT_ALL: { icon: "backup", rarity: "gold" },
-  WEAPON_EMBER_9: { icon: "battle", rarity: "silver" },
-  WEAPON_EMBER_10: { icon: "battle", rarity: "gold" },
-  MINING_10: { icon: "gold", rarity: "bronze" },
-  MINING_100: { icon: "gold", rarity: "silver" },
-  MINING_200: { icon: "gold", rarity: "gold" },
-  CHESTS_10: { icon: "gold", rarity: "bronze" },
-  CHESTS_100: { icon: "gold", rarity: "silver" },
-  CHESTS_200: { icon: "gold", rarity: "gold" },
+  WEAPON_EMBER_9: { icon: "upgrade", rarity: "bronze" },
+  WEAPON_EMBER_10: { icon: "upgrade", rarity: "silver" },
+  MINING_10: { icon: "mine", rarity: "bronze" },
+  MINING_100: { icon: "mine", rarity: "silver" },
+  MINING_200: { icon: "mine", rarity: "gold" },
+  CHESTS_10: { icon: "chest", rarity: "bronze" },
+  CHESTS_100: { icon: "chest", rarity: "silver" },
+  CHESTS_200: { icon: "chest", rarity: "gold" },
 };
 
 const TITLE_RULES = [
   { title: "Beast Slayer", achievements: ["KILL_1000"] },
-  { title: "Ultimate Speedrunner", achievements: ["SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART"] },
+  { title: "The Speedrunner", achievements: ["SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART"] },
   { title: "Maximum Firepower", achievements: ["WEAPON_EMBER_10"] },
   { title: "The Collector", achievements: ["RECRUIT_ALL"] },
   { title: "Master Supplier", achievements: ["BACKUP_500"] },
   { title: "Nuclear", achievements: ["BURST_THUNDERWING", "BURST_LEVIATHAN", "BURST_EMBERHEART"] },
-  { title: "Absolute Addict", achievements: ["PLAYTIME_6000"] },
-  { title: "Golden Sovereign", achievements: ["GOLD_500000"] },
-  { title: "One man army", achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"] },
+  { title: "The Addict", achievements: ["PLAYTIME_6000"] },
+  { title: "Money Printer", achievements: ["GOLD_500000"] },
+  { title: "Completionist", achievements: ["HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50"] },
   { title: "Seasoned Adventurer", achievements: ["DEFEAT_EMBERHEART"] },
   { title: "The Green Devil", achievements: ["DEFEAT_CORRUPTED_ALRIC"] },
   { title: "Treasure Hunter", achievements: ["CHESTS_200"] },
   { title: "Honest Worker", achievements: ["MINING_200"] },
+  { title: "The Absolute", achievements: ["WEAPON_EMBER_10", "RECRUIT_ALL", "BACKUP_500", "SPEED_THUNDERWING", "SPEED_LEVIATHAN", "SPEED_EMBERHEART", "BURST_THUNDERWING", "BURST_LEVIATHAN", "BURST_EMBERHEART", "PLAYTIME_6000", "GOLD_500000", "KILL_1000", "DEFEAT_CORRUPTED_ALRIC", "DEFEAT_EMBERHEART", "MINING_200", "CHESTS_200", "HIRO_50", "DAN_50", "ERIKA_50", "JASMINE_50", "THYME_50", "SHELON_50", "EMI_50", "REYAN_50", "LESLIE_50", "KAI_50", "VALERYA_50", "CLAW_50", "VALENTINE_50", "GALAD_50", "LEO_50", ] },
 ];
 
 async function getUserRank(username) {
@@ -228,19 +229,23 @@ function getFaceStyleFromName(name) {
 }
 
 function getFaceStyle(faceName, faceIndex) {
-  const x = -(faceIndex % 4) * 144;
-  const y = -Math.floor(faceIndex / 4) * 144;
+  const scale = 0.5;
+
+  const x = -(faceIndex % 4) * 144 * scale;
+  const y = -Math.floor(faceIndex / 4) * 144 * scale;
 
   return `
     background-image: url('${BASE_PATH}img/faces/${faceName}.png');
+    background-size: ${576 * scale}px ${288 * scale}px;
     background-position: ${x}px ${y}px;
+    background-repeat: no-repeat;
   `;
 }
 
 function getUnlockedTitles(achievements) {
   const unlocked = ["Rookie"];
 
-  const userAchievementIds = achievements.map(a => a.achievement_id);
+  const userAchievementIds = achievements.map(a => a.achievement_id || a.id);
 
   TITLE_RULES.forEach(rule => {
     const hasAll = rule.achievements.every(id =>
@@ -372,7 +377,7 @@ async function renderProfile(data, { isOwner }) {
 
   // titre actuel
   titleSpan.textContent = data.user.active_title || "Rookie";
-
+  
   // titres débloqués
   const titles = getUnlockedTitles(data.achievements);
 
@@ -486,7 +491,7 @@ async function renderProfile(data, { isOwner }) {
 
       <div class="card">
         <div class="character-header">
-          <div class="character-face" style="${getFaceStyleFromName(main.name)}"></div>
+          <div class="character-face" style="${getFaceStyle(main.faceName, main.faceIndex)}"></div>
 
           <h3>${main.name} (Lvl ${main.level})</h3>
         </div>
@@ -571,29 +576,43 @@ async function renderProfile(data, { isOwner }) {
   // =========================
   // ACHIEVEMENTS
   // =========================
+  const unlockedIds = (data.achievements || []).map(a => a.achievement_id || a.id);
+
+  const allAchievements = Object.keys(ACHIEVEMENT_CONFIG);
+
   document.getElementById("achievements").innerHTML =
-    (data.achievements || [])
-      .map(a => {
-        const achievementId = a.achievement_id || a.id;
+  allAchievements.map(id => {
 
-        const icon = getAchievementIcon(achievementId);
+    const isUnlocked = unlockedIds.includes(id);
 
-        return `
-          <div class="achievement">
-            <img src="${icon}" onerror="this.src='${DEFAULT_ACHIEVEMENT_ICON}'">
+    const icon = getAchievementIcon(id);
 
-            <div class="achievement-info">
-              <strong>${a.title}</strong>
-              <p>${a.description}</p>
-            </div>
+    // retrouver data si débloqué
+    const unlockedData = (data.achievements || []).find(a =>
+      (a.achievement_id || a.id) === id
+    );
 
-            <div class="achievement-score">
-              ${a.score} pts
-            </div>
+    const title = unlockedData?.title || "???";
+    const description = unlockedData?.description || "???";
+    const score = unlockedData?.score || 0;
+
+    return `
+      <div class="achievement-icon ${isUnlocked ? "unlocked" : "locked"}">
+        
+        <img src="${icon}" onerror="this.src='${DEFAULT_ACHIEVEMENT_ICON}'">
+
+        <div class="achievement-tooltip">
+          <strong>${title}</strong>
+          <p>${description}</p>
+          <span>${score} pts</span>
+          <div class="status">
+            ${isUnlocked ? "Unlocked" : "Not unlocked"}
           </div>
-        `;
-      })
-      .join("");
+        </div>
+
+      </div>
+    `;
+  }).join("");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
