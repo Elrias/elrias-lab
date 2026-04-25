@@ -91,19 +91,19 @@
 
         // ===== SIDE QUESTS =====
         DEFEAT_GIANT_SNAKE: { type: "side", title: "Snake Charmer", description: "Defeat Giant Snake", trigger: "boss_kill", target: 32, score: 10 },
-        DEFEAT_ORECLAD: { type: "side", title: "Shell Shocked", description: "Defeat Oreclad Gastropod", trigger: "boss_kill", target: 33, score: 15 },
-        DEFEAT_THUNDERWING: { type: "side", title: "Thunderstruck", description: "Defeat Thunderwing Drake", trigger: "boss_kill", target: 34, score: 20 },
-        DEFEAT_HYDROCARNUM: { type: "side", title: "Jaws", description: "Defeat Hydrocarnum", trigger: "boss_kill", target: 37, score: 25 },
-        DEFEAT_GLACIAL_SERPENT: { type: "side", title: "Cold-Blooded", description: "Defeat Glacial Serpent", trigger: "boss_kill", target: 38, score: 30 },
-        DEFEAT_LEVIATHAN: { type: "side", title: "Seasick", description: "Defeat Leviathan", trigger: "boss_kill", target: 39, score: 35 },
-        DEFEAT_CRIMSON_DRAGON: { type: "side", title: "Playing with fire", description: "Defeat Crimson Dragon", trigger: "boss_kill", target: 42, score: 40 },
-        DEFEAT_IFRIT: { type: "side", title: "Ashes to ashes", description: "Defeat Ifrit", trigger: "boss_kill", target: 43, score: 45 },
-        DEFEAT_EMBERHEART: { type: "side", title: "The last ember", description: "Defeat Emberheart Dragon", trigger: "boss_kill", target: 44, score: 50 },
+        DEFEAT_ORECLAD: { type: "side", title: "Shell Shocked", description: "Defeat Oreclad Gastropod", trigger: "boss_kill", target: 33, score: 10 },
+        DEFEAT_THUNDERWING: { type: "side", title: "Thunderstruck", description: "Defeat Thunderwing Drake", trigger: "boss_kill", target: 34, score: 15 },
+        DEFEAT_HYDROCARNUM: { type: "side", title: "Jaws", description: "Defeat Hydrocarnum", trigger: "boss_kill", target: 37, score: 15 },
+        DEFEAT_GLACIAL_SERPENT: { type: "side", title: "Cold-Blooded", description: "Defeat Glacial Serpent", trigger: "boss_kill", target: 38, score: 15 },
+        DEFEAT_LEVIATHAN: { type: "side", title: "Seasick", description: "Defeat Leviathan", trigger: "boss_kill", target: 39, score: 20 },
+        DEFEAT_CRIMSON_DRAGON: { type: "side", title: "Playing with fire", description: "Defeat Crimson Dragon", trigger: "boss_kill", target: 42, score: 20 },
+        DEFEAT_IFRIT: { type: "side", title: "Ashes to ashes", description: "Defeat Ifrit", trigger: "boss_kill", target: 43, score: 20 },
+        DEFEAT_EMBERHEART: { type: "side", title: "The last ember", description: "Defeat Emberheart Dragon", trigger: "boss_kill", target: 44, score: 25 },
 
         // ===== BATTLE =====
         KILL_100: { type: "battle", title: "Bloodbath", description: "Defeat 100 enemies", trigger: "enemy_kill_count", target: 100, score: 15 },
-        KILL_500: { type: "battle", title: "Massacre", description: "Defeat 500 enemies", trigger: "enemy_kill_count", target: 500, score: 20 },
-        KILL_1000: { type: "battle", title: "Extinction", description: "Defeat 1000 enemies", trigger: "enemy_kill_count", target: 1000, score: 25 },
+        KILL_500: { type: "battle", title: "Massacre", description: "Defeat 500 enemies", trigger: "enemy_kill_count", target: 500, score: 25 },
+        KILL_1000: { type: "battle", title: "Extinction", description: "Defeat 1000 enemies", trigger: "enemy_kill_count", target: 1000, score: 35 },
 
         // ===== CHARACTER =====
         HIRO_50: { type: "character", title: "Ambitious", description: "Raise Hiro to lvl 50", trigger: "actor_level", target: { actorId: 1, level: 50 }, score: 15 },
@@ -133,14 +133,14 @@
         PLAYTIME_6000: { type: "playtime", title: "No way out", description: "Play for a total of 6000 minutes", trigger: "playtime", target: 6000 * 60, score: 60 },
 
         // ===== SPEEDRUN =====
-        SPEED_THUNDERWING: { type: "speedrun", title: "Lightning fast", description: "Defeat Thunderwing Drake in under 60 minutes of play time", trigger: "boss_kill_time", target: { enemyId: 34, maxTime: 60 * 60 }, score: 50 },
-        SPEED_LEVIATHAN: { type: "speedrun", title: "Swift current", description: "Defeat Leviathan in under 120 minutes of play time", trigger: "boss_kill_time", target: { enemyId: 39, maxTime: 120 * 60 }, score: 70 },
-        SPEED_EMBERHEART: { type: "speedrun", title: "Blazing speed", description: "Defeat Emberheart Dragon in under 180 minutes of play time", trigger: "boss_kill_time", target: { enemyId: 44, maxTime: 180 * 60 }, score: 100 },
+        SPEED_THUNDERWING: { type: "speedrun", title: "Lightning fast", description: "Defeat Thunderwing Drake in under 120 minutes of play time", trigger: "boss_kill_time", target: { enemyId: 34, maxTime: 120 * 60 }, score: 60 },
+        SPEED_LEVIATHAN: { type: "speedrun", title: "Swift current", description: "Defeat Leviathan in under 240 minutes of play time", trigger: "boss_kill_time", target: { enemyId: 39, maxTime: 240 * 60 }, score: 80 },
+        SPEED_EMBERHEART: { type: "speedrun", title: "Blazing speed", description: "Defeat Emberheart Dragon in under 360 minutes of play time", trigger: "boss_kill_time", target: { enemyId: 44, maxTime: 360 * 60 }, score: 100 },
 
         // ===== BURST =====
         BURST_THUNDERWING: { type: "burst", title: "Stormbreaker", description: "Defeat Thunderwing Drake in one turn", trigger: "boss_kill_turn", target: { enemyId: 34, maxTurn: 1 }, score: 50 },
-        BURST_LEVIATHAN: { type: "burst", title: "Tidebreaker", description: "Defeat Leviathan in one turn", trigger: "boss_kill_turn", target: { enemyId: 39, maxTurn: 1 }, score: 75 },
-        BURST_EMBERHEART: { type: "burst", title: "Flamebreaker", description: "Defeat Emberheart Dragon in one turn", trigger: "boss_kill_turn", target: { enemyId: 44, maxTurn: 1 }, score: 100 },
+        BURST_LEVIATHAN: { type: "burst", title: "Tidebreaker", description: "Defeat Leviathan in one turn", trigger: "boss_kill_turn", target: { enemyId: 39, maxTurn: 1 }, score: 60 },
+        BURST_EMBERHEART: { type: "burst", title: "Flamebreaker", description: "Defeat Emberheart Dragon in one turn", trigger: "boss_kill_turn", target: { enemyId: 44, maxTurn: 1 }, score: 70 },
 
         // ===== BACKUP =====
         BACKUP_50: { type: "backup", title: "Now Hiring", description: "Call for backup 50 times", trigger: "backup_count", target: 50, score: 10 },
@@ -153,8 +153,18 @@
         RECRUIT_ALL: { type: "recruit", title: "The place to be", description: "Recruit all characters", trigger: "recruit_count", target: 12, score: 50 },
 
         // ===== WEAPON =====
-        WEAPON_EMBER_9: { type: "weapon", title: "Power Spike", description: "Raise an Emberheart weapon to +9", trigger: "weapon_level", target: { weaponIds: [15,21,27,33,39,45,51,57,63,69], level: 9 }, score: 50 },
-        WEAPON_EMBER_10: { type: "weapon", title: "Unlimited Power", description: "Raise an Emberheart weapon to +10", trigger: "weapon_level", target: { weaponIds: [15,21,27,33,39,45,51,57,63,69], level: 10 }, score: 100 },
+        WEAPON_EMBER_9: { type: "weapon", title: "Power Spike", description: "Raise an Emberheart weapon to +9", trigger: "weapon_level", target: { weaponIds: [15,21,27,33,39,45,51,57,63,69], level: 9 }, score: 30 },
+        WEAPON_EMBER_10: { type: "weapon", title: "Unlimited Power", description: "Raise an Emberheart weapon to +10", trigger: "weapon_level", target: { weaponIds: [15,21,27,33,39,45,51,57,63,69], level: 10 }, score: 50 },
+
+        // ===== MINING =====
+        MINING_10: { type: "mining", title: "Pickaxe testing", description: "Mine ore 10 times", trigger: "mining", target: 10, score: 10 },
+        MINING_100: { type: "mining", title: "Pacifist", description: "Mine ore 100 times", trigger: "mining", target: 100, score: 20 },
+        MINING_200: { type: "mining", title: "IRL Miner", description: "Mine ore 200 times", trigger: "mining", target: 200, score: 30 },
+
+        // ===== CHESTS =====
+        CHESTS_10: { type: "chests", title: "Lucky find", description: "Open 10 chests", trigger: "chests", target: 10, score: 10},
+        CHESTS_100: { type: "chests", title: "And another one", description: "Open 100 chests", trigger: "chests", target: 100, score: 20},
+        CHESTS_200: { type: "chests", title: "Lucksack", description: "Open 200 chests", trigger: "chests", target: 200, score: 30}
     },
 
         // =========================
@@ -163,6 +173,8 @@
         data: {
             enemiesKilled: 0,
             backupCalls: 0,
+            chestsOpened: 0,
+            oresMined: 0,
             recruitedActors: [],
             pendingSync: []
         },
@@ -247,6 +259,8 @@
 
                 this.data.enemiesKilled = this.data.enemiesKilled || 0;
                 this.data.backupCalls = this.data.backupCalls || 0;
+                this.data.oresMined = this.data.oresMined || 0;
+                this.data.chestsOpened = this.data.chestsOpened || 0;
                 this.data.recruitedActors = this.data.recruitedActors || [];
                 this.data.pendingSync = this.data.pendingSync || [];
 
@@ -356,6 +370,42 @@
                     }
                 }
             }
+        },
+
+        onMining(amount = 1) {
+            this.data.oresMined += amount;
+
+            console.log("Ores mined:", this.data.oresMined);
+
+            for (const id in this.achievements) {
+                const ach = this.achievements[id];
+
+                if (ach.trigger === "mining") {
+                    if (this.data.oresMined >= ach.target) {
+                        this.unlock(id);
+                    }
+                }
+            }
+
+            this.save();
+        },
+
+        onChestOpen(amount = 1) {
+            this.data.chestsOpened += amount;
+
+            console.log("Chests Opened:", this.data.chestsOpened);
+
+            for (const id in this.achievements) {
+                const ach = this.achievements[id];
+
+                if (ach.trigger === "chests") {
+                    if (this.data.chestsOpened >= ach.target) {
+                        this.unlock(id);
+                    }
+                }
+            }
+
+            this.save();
         },
 
         onBackupCall(amount = 1) {
@@ -469,6 +519,8 @@
             this.data = {
                 enemiesKilled: 0,
                 backupCalls: 0,
+                oresMined: 0,
+                chestsOpened: 0,
                 recruitedActors: [],
                 pendingSync: []
             };
