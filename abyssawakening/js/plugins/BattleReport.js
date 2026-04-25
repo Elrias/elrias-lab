@@ -22,8 +22,11 @@ const ELEMENT_COLORS = [
 ];
 
 function formatNumber(n) {
-    if (n >= 1000) return Math.floor(n / 1000) + "k";
-    return n.toString();
+    if (n >= 100000) {
+        const value = n / 1000;
+        return (Math.floor(value * 10) / 10) + "k";
+    }
+    return Math.floor(n).toString();
 }
 
 // ------------------------------------------------------------
@@ -542,22 +545,20 @@ Window_BattleLogList.prototype.drawItem = function(index) {
     let iconX = rect.x;
     let iconY = baseY + 8;
 
-    battle.enemies.slice(0, 3).forEach(enemyName => {
+    const enemyName = battle.enemies[0];
 
+    if (enemyName) {
         const bitmap = ImageManager.loadBitmap("img/enemies/HBportraits/", enemyName);
 
         if (bitmap.isReady()) {
-
             this.contents.blt(
                 bitmap,
-                0, 0, bitmap.width, bitmap.height, // source
+                0, 0, bitmap.width, bitmap.height,
                 iconX, iconY,
-                iconSize, iconSize // destination resize
+                iconSize, iconSize
             );
         }
-
-        iconX += iconSize + 4;
-    });
+    }
 
     // ----------------------
     // TEXT (3 LINES)
