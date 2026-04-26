@@ -74,19 +74,23 @@ Game_Action.prototype.apply = function(target) {
             elementIds = [this.item().damage.elementId];
         }
 
-        elementIds.forEach(id => {
-            id = id || 0;
-            subject._battleStats.damageByElement[id] =
-                (subject._battleStats.damageByElement[id] || 0) + value;
-        });
+        if (value > 0) {
+            // DÉGÂTS
+            elementIds.forEach(id => {
+                id = id || 0;
+
+                subject._battleStats.damageByElement[id] =
+                    (subject._battleStats.damageByElement[id] || 0) + value;
+            });
+        }
+        else if (value < 0) {
+            // HEAL
+            subject._battleStats.healing += Math.abs(value);
+        }
     }
 
     if (target?.isActor() && target._battleStats && value > 0) {
         target._battleStats.taken += value;
-    }
-
-    if (subject?.isActor() && subject._battleStats && value < 0) {
-        subject._battleStats.healing += Math.abs(value);
     }
 };
 
@@ -352,7 +356,8 @@ Window_BattleReport.prototype.refresh = function(){
 Window_BattleReport.prototype.totalDamage = function(actor){
     let total = 0;
     for(const id in actor.stats.damageByElement){
-        total += actor.stats.damageByElement[id];
+        const value = actor.stats.damageByElement[id];
+        if (value > 0) total += value;
     }
     return total;
 };
