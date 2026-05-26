@@ -88,10 +88,6 @@ Game_Action.prototype.apply = function(target) {
             subject._battleStats.healing += Math.abs(value);
         }
     }
-
-    if (target?.isActor() && target._battleStats && value > 0) {
-        target._battleStats.taken += value;
-    }
 };
 
 // ------------------------------------------------------------
@@ -464,7 +460,9 @@ Game_Battler.prototype.addState = function(stateId) {
             this._stateSources = {};
         }
 
-        this._stateSources[stateId] = user;
+        this._stateSources[stateId] = {
+            actorId: user.actorId()
+        };
     }
 };
 
@@ -476,6 +474,10 @@ Game_Battler.prototype.removeState = function(stateId) {
 
     if (this._stateSources) {
         delete this._stateSources[stateId];
+    }
+    
+    if (this._dotInitStates) {
+        delete this._dotInitStates[stateId];
     }
 };
 
@@ -489,7 +491,7 @@ BattleStats.trackDot = function(user, target, value, elementId) {
     const damage = Math.floor(value);
     if (damage <= 0) return;
 
-    user._battleStats.damageByElement[elementId] ??= 4;
+    user._battleStats.damageByElement[elementId] ??= 0;
     user._battleStats.damageByElement[elementId] += damage;
 };
 
@@ -631,6 +633,37 @@ Window_BattleReport.prototype.drawBattleInfo = function() {
 
     this.resetTextColor();
     this.drawText(timeText, x + 80, y + 30, 100, "right");
+};
+
+Game_Battler.prototype.stateSourceActor = function(stateId) {
+
+    if (!this._stateSources) return null;
+
+    const data = this._stateSources[stateId];
+
+    if (!data) return null;
+
+    return $gameActors.actor(data.actorId);
+};
+
+const _BattleManager_endBattle_Cleanup =
+BattleManager.endBattle;
+
+BattleManager.endBattle = function(result) {
+
+    $gameParty.members().forEach(actor => {
+
+        delete actor._stateSources;
+        delete actor._lastAttacker;
+    });
+
+    $gameTroop.members().forEach(enemy => {
+
+        delete enemy._stateSources;
+        delete enemy._lastAttacker;
+    });
+
+    _BattleManager_endBattle_Cleanup.call(this, result);
 };
 
 })();

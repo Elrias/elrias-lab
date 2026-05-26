@@ -457,7 +457,7 @@
         },
 
         onWeaponUpgrade(weapon, level) {
-            const baseId = weapon.baseItemId || weapon.id;
+            const baseId = weapon.originalId || weapon.baseItemId || weapon.id;
 
             console.log("Weapon upgrade:", baseId, "Level:", level);
 
