@@ -86,9 +86,31 @@ document.addEventListener(
 
 document.addEventListener(
   "pointerdown",
-  e => {
-    if (window.__menuOpen) {
-      console.log("POINTERDOWN", e.target);
+  function(e) {
+    if (!window.__menuOpen) return;
+
+    if (panel?.contains(e.target)) {
+      console.log("BLOCK POINTERDOWN");
+
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    }
+  },
+  true
+);
+
+document.addEventListener(
+  "pointerup",
+  function(e) {
+    if (!window.__menuOpen) return;
+
+    if (panel?.contains(e.target)) {
+      console.log("BLOCK POINTERUP");
+
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
     }
   },
   true
