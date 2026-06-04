@@ -90,8 +90,6 @@ document.addEventListener(
     if (!window.__menuOpen) return;
     if (!panel?.contains(e.target)) return;
 
-    console.log("BLOCK MOUSEDOWN");
-
     const tag = e.target.tagName;
 
     const isFormField =
