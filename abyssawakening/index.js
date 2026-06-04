@@ -88,7 +88,10 @@ if (window.TouchInput) {
 
   const _onMouseDown = TouchInput._onMouseDown;
   TouchInput._onMouseDown = function(event) {
-    if (window.__menuOpen) return;
+    if (window.__menuOpen) {
+      console.log("BLOCKED MOUSEDOWN");
+      return;
+    }
     _onMouseDown.call(this, event);
   };
 
