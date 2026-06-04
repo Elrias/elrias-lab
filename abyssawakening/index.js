@@ -23,6 +23,33 @@ const toggleModeBtn = document.getElementById("authToggleModeBtn");
 const forgotBtn = document.getElementById("authForgotBtn");
 const authLinksRow = document.getElementById("authLinksRow");
 const profileBtn = document.getElementById("profileBtn");
+
+document.addEventListener(
+  "keydown",
+  function(e) {
+    if (!window.__menuOpen) return;
+
+    console.log("BLOCK KEY:", e.key);
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  },
+  true
+);
+
+document.addEventListener(
+  "keyup",
+  function(e) {
+    if (!window.__menuOpen) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  },
+  true
+);
+
 // éviter submit (Enter)
 authForm?.addEventListener("submit", (e) => e.preventDefault());
 
@@ -60,21 +87,13 @@ function closeMenu() {
   setToggleState(false);
 }
 function openMenu() {
-  console.log("MENU OPEN");
-
   panel?.classList.add("open");
   document.body.classList.add("menu-open");
 
   window.__menuOpen = true;
 
-  console.log("__menuOpen =", window.__menuOpen);
-
-  if (window.Input) {
-    console.log("Input trouvé");
-    Input.clear();
-  } else {
-    console.log("Input NON trouvé");
-  }
+  if (window.Input) Input.clear();
+  if (window.TouchInput) TouchInput.clear();
 
   setToggleState(true);
 }
