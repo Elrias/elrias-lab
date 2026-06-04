@@ -1,5 +1,5 @@
 const API_BASE = "https://abyssawakening-backend.onrender.com";
-const BASE_PATH = "/elrias-lab/abyssawakening/";
+const BASE_PATH = "/";
 const PLAYERS_PER_PAGE = 20;
 let currentPage = 1;
 let allPlayers = [];
@@ -33,7 +33,27 @@ function renderPage(page) {
   const players = allPlayers.slice(start, end);
 
   container.innerHTML = players.map((p, index) => {
-    const globalRank = start + index + 1;
+    let globalRank = 1;
+
+    if (start + index > 0) {
+
+      const currentPlayer = allPlayers[start + index];
+      const previousPlayer = allPlayers[start + index - 1];
+
+      if (currentPlayer.score === previousPlayer.score) {
+
+        // même score = même rang
+        globalRank = allPlayers[start + index - 1]._rank;
+
+      } else {
+
+        // sinon rang réel dans la liste
+        globalRank = start + index + 1;
+      }
+
+    }
+
+    p._rank = globalRank;
 
     return `
       <div 
