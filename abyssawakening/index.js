@@ -85,29 +85,42 @@ document.addEventListener(
 );
 
 document.addEventListener(
-  "pointerdown",
+  "mousedown",
   function(e) {
     if (!window.__menuOpen) return;
+    if (!panel?.contains(e.target)) return;
 
-    if (panel?.contains(e.target)) {
+    console.log("BLOCK MOUSEDOWN");
 
+    const tag = e.target.tagName;
+
+    const isFormField =
+      tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      tag === "SELECT" ||
+      e.target.isContentEditable;
+
+    if (isFormField) {
       e.stopPropagation();
       e.stopImmediatePropagation();
+      return;
     }
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
   },
   true
 );
 
 document.addEventListener(
-  "pointerup",
+  "mouseup",
   function(e) {
     if (!window.__menuOpen) return;
+    if (!panel?.contains(e.target)) return;
 
-    if (panel?.contains(e.target)) {
-
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-    }
+    e.stopPropagation();
+    e.stopImmediatePropagation();
   },
   true
 );
