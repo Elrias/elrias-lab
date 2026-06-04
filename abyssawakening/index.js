@@ -90,9 +90,7 @@ document.addEventListener(
     if (!window.__menuOpen) return;
 
     if (panel?.contains(e.target)) {
-      console.log("BLOCK POINTERDOWN");
 
-      e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
     }
@@ -106,9 +104,7 @@ document.addEventListener(
     if (!window.__menuOpen) return;
 
     if (panel?.contains(e.target)) {
-      console.log("BLOCK POINTERUP");
 
-      e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
     }
