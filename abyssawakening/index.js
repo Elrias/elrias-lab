@@ -29,7 +29,11 @@ document.addEventListener(
   function(e) {
     if (!window.__menuOpen) return;
 
-    console.log("BLOCK KEY:", e.key);
+    if (e.key === "Tab") {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return;
+    }
 
     e.preventDefault();
     e.stopPropagation();
@@ -42,6 +46,20 @@ document.addEventListener(
   "keyup",
   function(e) {
     if (!window.__menuOpen) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  },
+  true
+);
+
+document.addEventListener(
+  "pointerdown",
+  function(e) {
+    if (!window.__menuOpen) return;
+
+    if (panel?.contains(e.target)) return;
 
     e.preventDefault();
     e.stopPropagation();
