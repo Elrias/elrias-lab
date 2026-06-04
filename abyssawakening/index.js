@@ -60,13 +60,21 @@ function closeMenu() {
   setToggleState(false);
 }
 function openMenu() {
+  console.log("MENU OPEN");
+
   panel?.classList.add("open");
   document.body.classList.add("menu-open");
 
   window.__menuOpen = true;
 
-  if (window.Input) Input.clear();
-  if (window.TouchInput) TouchInput.clear();
+  console.log("__menuOpen =", window.__menuOpen);
+
+  if (window.Input) {
+    console.log("Input trouvé");
+    Input.clear();
+  } else {
+    console.log("Input NON trouvé");
+  }
 
   setToggleState(true);
 }
