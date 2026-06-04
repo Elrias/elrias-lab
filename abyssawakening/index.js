@@ -11,6 +11,7 @@ const menuLabel = document.getElementById("menuLabel");
 const discordBtn = document.getElementById("discordBtn");
 const backdrop = document.getElementById("backdrop");
 const fsBtn = document.getElementById("fullscreenBtn");
+window.__menuOpen = false;
 // Auth
 const authForm = document.getElementById("authForm");
 const authTitle = document.getElementById("authTitle");
@@ -50,11 +51,23 @@ function setToggleState(isOpen) {
 function closeMenu() {
   panel?.classList.remove("open");
   document.body.classList.remove("menu-open");
+
+  window.__menuOpen = false;
+
+  if (window.Input) Input.clear();
+  if (window.TouchInput) TouchInput.clear();
+
   setToggleState(false);
 }
 function openMenu() {
   panel?.classList.add("open");
   document.body.classList.add("menu-open");
+
+  window.__menuOpen = true;
+
+  if (window.Input) Input.clear();
+  if (window.TouchInput) TouchInput.clear();
+
   setToggleState(true);
 }
 toggle?.addEventListener("click", () => {
@@ -358,6 +371,22 @@ logoutBtn?.addEventListener("click", () => {
   sessionStorage.setItem(FLASH_KEY, "Logged out. Guest mode enabled.");
   location.reload();
 });
+
+if (window.Input) {
+
+  const _onKeyDown = Input._onKeyDown;
+  Input._onKeyDown = function(event) {
+    if (window.__menuOpen) return;
+    _onKeyDown.call(this, event);
+  };
+
+  const _onKeyUp = Input._onKeyUp;
+  Input._onKeyUp = function(event) {
+    if (window.__menuOpen) return;
+    _onKeyUp.call(this, event);
+  };
+
+}
 
 // init
 setMode("login");
