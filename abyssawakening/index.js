@@ -84,48 +84,15 @@ document.addEventListener(
   true
 );
 
-if (window.TouchInput) {
-
-  const _onMouseDown = TouchInput._onMouseDown;
-  TouchInput._onMouseDown = function(event) {
+document.addEventListener(
+  "pointerdown",
+  e => {
     if (window.__menuOpen) {
-      console.log("BLOCKED MOUSEDOWN");
-      return;
+      console.log("POINTERDOWN", e.target);
     }
-    _onMouseDown.call(this, event);
-  };
-
-  const _onMouseUp = TouchInput._onMouseUp;
-  TouchInput._onMouseUp = function(event) {
-    if (window.__menuOpen) return;
-    _onMouseUp.call(this, event);
-  };
-
-  const _onMouseMove = TouchInput._onMouseMove;
-  TouchInput._onMouseMove = function(event) {
-    if (window.__menuOpen) return;
-    _onMouseMove.call(this, event);
-  };
-
-  const _onTouchStart = TouchInput._onTouchStart;
-  TouchInput._onTouchStart = function(event) {
-    if (window.__menuOpen) return;
-    _onTouchStart.call(this, event);
-  };
-
-  const _onTouchMove = TouchInput._onTouchMove;
-  TouchInput._onTouchMove = function(event) {
-    if (window.__menuOpen) return;
-    _onTouchMove.call(this, event);
-  };
-
-  const _onTouchEnd = TouchInput._onTouchEnd;
-  TouchInput._onTouchEnd = function(event) {
-    if (window.__menuOpen) return;
-    _onTouchEnd.call(this, event);
-  };
-
-}
+  },
+  true
+);
 
 // éviter submit (Enter)
 authForm?.addEventListener("submit", (e) => e.preventDefault());
