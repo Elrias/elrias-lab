@@ -62,15 +62,17 @@ var $plugins =
 {"name":"DeepFreeze","status":true,"description":"Tint (blue) battlers while a specific state is active (e.g. Deep Freeze). v1.0","parameters":{"stateId":"261","useTone":"true","toneR":"-68","toneG":"-34","toneB":"102","toneGray":"0","useBlend":"false","blendR":"80","blendG":"140","blendB":"255","blendA":"90"}},
 {"name":"UnderWaterBattle","status":true,"description":"Underwater battle rules via troop comment tag <UnderwaterBattle> (Breath states 10..0 + DoT on Breath0) + Debug","parameters":{"tagName":"UnderwaterBattle","breathStateId0":"249","breathMax":"10","initBreathOnStart":"true","stateAgitation":"255","stypeId1":"1","stypeId2":"2","dotPercentAtBreath0":"25","debug":"true"}},
 {"name":"StateDisplay","status":true,"description":"(VisuStella HUD compatible) Affiche toutes les icônes d'états/buffs en 2 colonnes (5 lignes) sur les panels acteurs. Désactive l'icône alternée. Compatible StateTooltips.","parameters":{"rows":"5","cols":"2","iconSize":"32","colGap":"2","rowGap":"2","iconOffsetX":"6","iconOffsetY":"6","contentShiftX":"-70","showOverflow":"true"}},
-{"name":"CloudSyncOnBoot","status":true,"description":"Cloud Sync on Boot (imports cloud saves to local storage at startup)","parameters":{"ApiBaseUrl":"https://abyssawakening-backend.onrender.com","GameId":"abyssawakening","TokenKey":"cloudsave_token"}},
-{"name":"CloudUploadOnSave","status":true,"description":"Cloud Upload on Save (uploads the saved slot to backend after saving)","parameters":{"ApiBaseUrl":"https://abyssawakening-backend.onrender.com","GameId":"abyssawakening","TokenKey":"cloudsave_token"}},
+{"name":"CloudSyncOnBoot","status":false,"description":"Cloud Sync on Boot (imports cloud saves to local storage at startup)","parameters":{"ApiBaseUrl":"https://abyssawakening-backend.onrender.com","GameId":"abyssawakening","TokenKey":"cloudsave_token"}},
+{"name":"CloudUploadOnSave","status":false,"description":"Cloud Upload on Save (uploads the saved slot to backend after saving)","parameters":{"ApiBaseUrl":"https://abyssawakening-backend.onrender.com","GameId":"abyssawakening","TokenKey":"cloudsave_token"}},
 {"name":"AttackStates","status":true,"description":"Fix Attack States: 1 tentative par état (dédoublonnage) + cap à 100%","parameters":{}},
-{"name":"IndependentSellProxy","status":true,"description":"[Compat] More Currencies: sell Independent equips using their base (originalId) for UI & payment, but remove the independent instance.","parameters":{}},
+{"name":"IndependentSellProxy","status":false,"description":"[Compat] More Currencies: sell Independent equips using their base (originalId) for UI & payment, but remove the independent instance.","parameters":{}},
 {"name":"BarrierGauge","status":true,"description":"(Addon) Affiche le bouclier Absorb (VisuStella Anti-Damage Barriers) en bleu sur la jauge HP.","parameters":{}},
 {"name":"ElusiveRythm","status":true,"description":"","parameters":{}},
 {"name":"MeteorFall","status":true,"description":"","parameters":{}},
 {"name":"EnemyBreakGauge","status":true,"description":"","parameters":{}},
 {"name":"IndependentWeaponDrops","status":true,"description":"Convert dropped weapons into DM_IndependentItems instances.","parameters":{}},
-{"name":"AchievementManager","status":true,"description":"Achievement Manager","parameters":{}},
-{"name":"BattleReport","status":true,"description":"Battle Statistics Overlay (TAB during Victory Aftermath)","parameters":{}}
+{"name":"AchievementManager","status":false,"description":"Achievement Manager","parameters":{}},
+{"name":"BattleReport","status":true,"description":"Battle Statistics Overlay (TAB during Victory Aftermath)","parameters":{}},
+{"name":"TurnCount","status":true,"description":"Simple Battle Turn Counter","parameters":{}},
+{"name":"lukDebuffRemove","status":true,"description":"Désactive l'influence de la LUK sur les états et debuffs.","parameters":{}}
 ];
