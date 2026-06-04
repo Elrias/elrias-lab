@@ -86,34 +86,40 @@ document.addEventListener(
 
 if (window.TouchInput) {
 
-  const _isPressed = TouchInput.isPressed;
-  TouchInput.isPressed = function() {
-    if (window.__menuOpen) return false;
-    return _isPressed.call(this);
+  const _onMouseDown = TouchInput._onMouseDown;
+  TouchInput._onMouseDown = function(event) {
+    if (window.__menuOpen) return;
+    _onMouseDown.call(this, event);
   };
 
-  const _isTriggered = TouchInput.isTriggered;
-  TouchInput.isTriggered = function() {
-    if (window.__menuOpen) return false;
-    return _isTriggered.call(this);
+  const _onMouseUp = TouchInput._onMouseUp;
+  TouchInput._onMouseUp = function(event) {
+    if (window.__menuOpen) return;
+    _onMouseUp.call(this, event);
   };
 
-  const _isReleased = TouchInput.isReleased;
-  TouchInput.isReleased = function() {
-    if (window.__menuOpen) return false;
-    return _isReleased.call(this);
+  const _onMouseMove = TouchInput._onMouseMove;
+  TouchInput._onMouseMove = function(event) {
+    if (window.__menuOpen) return;
+    _onMouseMove.call(this, event);
   };
 
-  const _isClicked = TouchInput.isClicked;
-  TouchInput.isClicked = function() {
-    if (window.__menuOpen) return false;
-    return _isClicked.call(this);
+  const _onTouchStart = TouchInput._onTouchStart;
+  TouchInput._onTouchStart = function(event) {
+    if (window.__menuOpen) return;
+    _onTouchStart.call(this, event);
   };
 
-  const _isMoved = TouchInput.isMoved;
-  TouchInput.isMoved = function() {
-    if (window.__menuOpen) return false;
-    return _isMoved.call(this);
+  const _onTouchMove = TouchInput._onTouchMove;
+  TouchInput._onTouchMove = function(event) {
+    if (window.__menuOpen) return;
+    _onTouchMove.call(this, event);
+  };
+
+  const _onTouchEnd = TouchInput._onTouchEnd;
+  TouchInput._onTouchEnd = function(event) {
+    if (window.__menuOpen) return;
+    _onTouchEnd.call(this, event);
   };
 
 }
