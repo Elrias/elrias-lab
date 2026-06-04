@@ -84,23 +84,39 @@ document.addEventListener(
   true
 );
 
-panel?.addEventListener(
-  "pointerdown",
-  function(e) {
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-  },
-  true
-);
+if (window.TouchInput) {
 
-panel?.addEventListener(
-  "click",
-  function(e) {
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-  },
-  true
-);
+  const _isPressed = TouchInput.isPressed;
+  TouchInput.isPressed = function() {
+    if (window.__menuOpen) return false;
+    return _isPressed.call(this);
+  };
+
+  const _isTriggered = TouchInput.isTriggered;
+  TouchInput.isTriggered = function() {
+    if (window.__menuOpen) return false;
+    return _isTriggered.call(this);
+  };
+
+  const _isReleased = TouchInput.isReleased;
+  TouchInput.isReleased = function() {
+    if (window.__menuOpen) return false;
+    return _isReleased.call(this);
+  };
+
+  const _isClicked = TouchInput.isClicked;
+  TouchInput.isClicked = function() {
+    if (window.__menuOpen) return false;
+    return _isClicked.call(this);
+  };
+
+  const _isMoved = TouchInput.isMoved;
+  TouchInput.isMoved = function() {
+    if (window.__menuOpen) return false;
+    return _isMoved.call(this);
+  };
+
+}
 
 // éviter submit (Enter)
 authForm?.addEventListener("submit", (e) => e.preventDefault());
@@ -450,22 +466,6 @@ logoutBtn?.addEventListener("click", () => {
   sessionStorage.setItem(FLASH_KEY, "Logged out. Guest mode enabled.");
   location.reload();
 });
-
-if (window.Input) {
-
-  const _onKeyDown = Input._onKeyDown;
-  Input._onKeyDown = function(event) {
-    if (window.__menuOpen) return;
-    _onKeyDown.call(this, event);
-  };
-
-  const _onKeyUp = Input._onKeyUp;
-  Input._onKeyUp = function(event) {
-    if (window.__menuOpen) return;
-    _onKeyUp.call(this, event);
-  };
-
-}
 
 // init
 setMode("login");
