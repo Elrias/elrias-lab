@@ -29,6 +29,22 @@ document.addEventListener(
   function(e) {
     if (!window.__menuOpen) return;
 
+    const tag = e.target.tagName;
+
+    const isFormField =
+      tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      tag === "SELECT" ||
+      e.target.isContentEditable;
+
+    // Laisser fonctionner normalement les champs de formulaire
+    if (isFormField) {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return;
+    }
+
+    // Laisser TAB naviguer
     if (e.key === "Tab") {
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -47,6 +63,20 @@ document.addEventListener(
   function(e) {
     if (!window.__menuOpen) return;
 
+    const tag = e.target.tagName;
+
+    const isFormField =
+      tag === "INPUT" ||
+      tag === "TEXTAREA" ||
+      tag === "SELECT" ||
+      e.target.isContentEditable;
+
+    if (isFormField) {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      return;
+    }
+
     e.preventDefault();
     e.stopPropagation();
     e.stopImmediatePropagation();
@@ -54,14 +84,18 @@ document.addEventListener(
   true
 );
 
-document.addEventListener(
+panel?.addEventListener(
   "pointerdown",
   function(e) {
-    if (!window.__menuOpen) return;
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+  },
+  true
+);
 
-    if (panel?.contains(e.target)) return;
-
-    e.preventDefault();
+panel?.addEventListener(
+  "click",
+  function(e) {
     e.stopPropagation();
     e.stopImmediatePropagation();
   },
